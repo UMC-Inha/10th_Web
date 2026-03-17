@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo_List</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background-color: pink;
+      }
+      header {
+        display: flex;
+      }
+      .Todo_list {
+        width: 1400px;
+        height: 400px;
+        color: darkslategray;
+        font-size: 100px;
+        text-align: center;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .line {
+        width: 1200px;
+        height: 3px;
+        background-color: darkslategray;
+        transform: translateX(100px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .todo_input {
+        margin-top: 50px;
+        width: 1000px;
+        height: 100px;
+        transform: translateX(200px);
+        font-size: 30px;
+        background-color: aliceblue;
+        border: 1px solid gray;
+        color: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .board {
+        margin-top: 50px;
+        transform: translateX(350px);
+        width: 1000px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .todo,
+      .complete {
+        width: 500px;
+        min-height: 650px;
+        font-size: 30px;
+        font-weight: bold;
+        color: darkslategray;
+      }
+      .todo-list li,
+      .done-list li {
+        width: 200px;
+        justify-content: space-between;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 20px;
+        color: black;
+        list-style: none;
+      }
+      .todo-list button,
+      .done-list button {
+        padding: 8px 14px;
+        font-size: 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .complete {
+        font-size: 30px;
+        font-weight: bold;
+        color: darkslategray;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="Todo_list">Todo_List</div>
+    </header>
+    <div class="line"></div>
+    <form>
+      <input
+        type="text"
+        id="todoInput"
+        class="todo_input"
+        placeholder="오늘의 할 일을 입력해 보세요"
+      />
+    </form>
+    <section class="board">
+      <div class="todo">
+        해야 할 일
+        <ul id="todoList" class="todo-list"></ul>
+      </div>
+      <div class="complete">
+        해낸 일
+        <ul id="doneList" class="done-list"></ul>
+      </div>
+    </section>
+    <script src="./todo_list.js"></script>
+  </body>
+</html>
