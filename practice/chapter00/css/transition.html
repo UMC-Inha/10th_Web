@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+        padding: 40px;
+      }
+      .box {
+        width: 100px;
+        height: 100px;
+        background-color: pink;
+        transform: rotate(45deg);
+        transition: background-color 0.3s ease;
+      }
+      .box:hover {
+        background-color: purple;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Transform 예시</title>
+    <style>
+      section {
+        border: 1px solid #000000;
+        padding: 16px;
+        margin-bottom: 24px;
+      }
+
+      .box {
+        display: inline-block;
+        padding: 16px 24px;
+        border: 2px solid #333333;
+        background-color: #f5f5f5;
+        font-weight: 600;
+      }
+
+      .translate-box {
+        transform: translate(40px, 20px);
+      }
+
+      .scale-box {
+        transform: scale(1.5, 0.8);
+      }
+
+      .rotate-box {
+        transform: rotate(30deg);
+      }
+
+      .skew-box {
+        transform: skew(20deg, 5deg);
+      }
+
+      .matrix-box {
+        /* x 방향을 1.2배, y 방향을 0.8배, x축으로 20deg 정도 기울인 예시 */
+        transform: matrix(1.2, 0.364, 0, 0.8, 0, 0);
+      }
+    </style>
+  </head>
+  <body>
+    <h2>translate</h2>
+    <section>
+      <div class="box translate-box">BOX</div>
+    </section>
+
+    <h2>scale</h2>
+    <section>
+      <div class="box scale-box">BOX</div>
+    </section>
+
+    <h2>rotate</h2>
+    <section>
+      <div class="box rotate-box">BOX</div>
+    </section>
+
+    <h2>skew</h2>
+    <section>
+      <div class="box skew-box">BOX</div>
+    </section>
+
+    <h2>matrix</h2>
+    <section>
+      <div class="box matrix-box">BOX</div>
+    </section>
+  </body>
+</html>
