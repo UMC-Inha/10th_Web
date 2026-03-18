@@ -1,0 +1,137 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #f0f4f8; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 80px; 
+}
+
+header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #000;
+    margin-bottom: 30px;
+}
+
+
+.divider {
+    width: 70%;
+    max-width: 800px;
+    margin: 0 auto;
+    border: none;
+    border-top: 1px solid #d1d9e6;
+}
+
+.container {
+    width: 70%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+
+.input-section {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.input-section input {
+    width: 100%;
+    padding: 15px;
+    font-size: 1rem;
+    border: 1px solid #4a78d2; 
+    border-radius: 4px;
+    outline: none;
+    background-color: #fff; 
+}
+
+.input-section input::placeholder {
+    color: #b0c0d0;
+    font-style: italic;
+}
+
+
+.lists-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 40px; 
+}
+
+.list-section {
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.list-section h2 {
+    font-size: 1rem;
+    color: #000;
+    margin-bottom: 20px;
+}
+
+.list-section h2 span {
+    border-bottom: 1px solid #000; 
+    padding-bottom: 2px;
+}
+
+.task-list {
+    list-style: none;
+    width: 100%;
+}
+
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background-color: #fff;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.task-text {
+    flex: 1;
+    font-size: 0.95rem;
+    color: #333;
+    word-break: break-all;
+}
+
+.completed-text {
+    text-decoration: line-through;
+    color: #a0aec0;
+}
+
+.btn-group button {
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin-left: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    background-color: #edf2f7;
+    color: #4a5568;
+    transition: background-color 0.2s;
+}
+
+.btn-group button:hover {
+    background-color: #e2e8f0;
+}

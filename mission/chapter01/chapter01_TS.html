@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSCAR TODO - TS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+    
+    <main class="todo-card">
+        <header class="todo-card__header">
+            <h1 class="todo-card__title">OSCAR TODO</h1>
+        </header>
+
+        <div class="todo-input-group">
+            <input type="text" id="todo-input-field" class="todo-input-group__field" placeholder="할 일 입력">
+            <button id="add-btn" class="todo-input-group__button">할 일 추가</button>
+        </div>
+
+        <div class="todo-lists">
+            <section class="todo-board">
+                <h2 class="todo-board__title">할 일</h2>
+                <ul id="todo-list" class="task-list">
+                    </ul>
+            </section>
+
+            <section class="todo-board">
+                <h2 class="todo-board__title">완료</h2>
+                <ul id="done-list" class="task-list task-list--done">
+                    </ul>
+            </section>
+        </div>
+    </main>
+
+    <script type="module" src="dist/app.js"></script>
+</body>
+</html>
