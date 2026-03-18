@@ -1,0 +1,139 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f5f6f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.todo-card {
+    background-color: white;
+    width: 95%;
+    max-width: 700px; 
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.todo-card__header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.todo-card__title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+    letter-spacing: -1px;
+}
+
+.todo-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 40px;
+    justify-content: center;
+}
+
+.todo-input-group__field {
+    width: 70%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.todo-input-group__field:focus {
+    border-color: #2ecc71;
+}
+
+.todo-input-group__button {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.todo-lists {
+    display: flex;
+    flex-direction: row;
+    gap: 30px; 
+    align-items: flex-start;
+}
+
+.todo-board {
+    flex: 1;
+    min-height: 200px;
+}
+
+.todo-board__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+.task-list {
+    list-style: none;
+    min-height: 50px;
+}
+
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.task-item__text {
+    font-size: 0.9rem;
+    color: #444;
+    word-break: break-all;
+}
+
+.task-item__text--completed {
+    text-decoration: line-through;
+    color: #bbb;
+}
+
+.task-item__btn-group {
+    display: flex;
+    gap: 4px;
+}
+
+.task-item__button {
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: white;
+}
+
+.task-item__button--complete {
+    background-color: #2ecc71;
+}
+
+.task-item__button--delete {
+    background-color: #e74c3c;
+}
