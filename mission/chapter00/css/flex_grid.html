@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Flex + Grid Layout</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      body {
+        min-height: 100vh;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+
+      .layout {
+        height: 100vh;
+        display: grid;
+        grid-template-rows: 1fr 2fr 2fr 1fr;
+      }
+
+      /* 1행: HEADER + MENU (flex) */
+      .layout__top {
+        display: flex;
+      }
+
+      .top-bar__header,
+      .top-bar__menu {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-weight: 600;
+      }
+
+      .top-bar__header {
+        flex: 0 0 30%;
+        background-color: #0f2138;
+      }
+
+      .top-bar__menu {
+        flex: 1;
+        background-color: #f24755;
+      }
+
+      /* 2행: HERO */
+      .layout__hero {
+        background-color: #3f7ec4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 24px;
+      }
+
+      /* 3행: MAIN / EMPTY / (IMAGE+EXTRA) */
+      .layout__content {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+      }
+
+      .content__main,
+      .content__empty,
+      .content__side > div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+      }
+
+      .content__main {
+        background-color: #0f2138;
+        color: #ffffff;
+      }
+
+      .content__side {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .content__image {
+        flex: 1;
+        background-color: #c6edf0;
+      }
+
+      .content__extra {
+        flex: 1;
+        background-color: #27ae7a;
+      }
+
+      .content__image,
+      .content__extra {
+        color: #000;
+      }
+
+      /* 4행: BANNER */
+      .layout__banner {
+        background-color: #f6c650;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <header class="layout__top">
+        <div class="top-bar__header">HEADER</div>
+        <div class="top-bar__menu">MENU</div>
+      </header>
+
+      <section class="layout__hero">HERO</section>
+
+      <section class="layout__content">
+        <main class="content__main">MAIN</main>
+        <div></div>
+        <aside class="content__side">
+          <div class="content__image">IMAGE</div>
+          <div class="content__extra">EXTRA</div>
+        </aside>
+      </section>
+
+      <footer class="layout__banner">BANNER</footer>
+    </div>
+  </body>
+</html>
