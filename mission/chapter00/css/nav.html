@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nav Mission</title>
+    <style>
+      :root {
+        --nav-border-color: #111111;
+        --nav-accent: #52ad4b;
+      }
+
+      body {
+        margin: 0;
+        padding: 40px;
+        background-color: var(--nav-accent);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 40px;
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 12px 24px;
+        border-radius: 50px;
+        background-color: #ffffff;
+        border: 2px solid var(--nav-border-color);
+        box-shadow: 0 6px 0 var(--nav-border-color);
+      }
+
+      .nav__brand,
+      .nav__menu,
+      .nav__lang {
+        display: flex;
+        align-items: center;
+      }
+
+      .nav__brand {
+        gap: 12px;
+      }
+
+      .nav__logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        border: 2px solid var(--nav-border-color);
+        object-fit: cover;
+      }
+
+      .nav__title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .nav__menu {
+        flex: 1;
+        justify-content: center;
+        gap: 32px;
+        font-size: 14px;
+      }
+
+      .nav__menu-link {
+        text-decoration: none;
+        color: #999999;
+      }
+
+      .nav__menu-link--active {
+        color: var(--nav-accent);
+        font-weight: 600;
+      }
+
+      .nav__lang {
+        gap: 8px;
+        font-size: 12px;
+        color: #555555;
+      }
+
+      .nav__lang-toggle {
+        display: inline-flex;
+        gap: 4px;
+        padding: 2px;
+        border-radius: 999px;
+        border: 2px solid var(--nav-border-color);
+        background-color: #ffffff;
+      }
+
+      .nav__lang-btn {
+        min-width: 32px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: none;
+        font-size: 11px;
+        cursor: pointer;
+        background-color: transparent;
+        color: #111111;
+      }
+
+      .nav__lang-btn--active {
+        background-color: var(--nav-accent);
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav__brand">
+        <img class="nav__logo" src="./image.jpg" alt="Aido 로고" />
+        <p class="nav__title">MINISERIES</p>
+      </div>
+
+      <div class="nav__menu">
+        <a class="nav__menu-link" href="#">SLOM</a>
+        <a class="nav__menu-link" href="#">SUMIN</a>
+        <a class="nav__menu-link nav__menu-link--active" href="#">MINISERIES</a>
+      </div>
+
+      <div class="nav__lang">
+        <div class="nav__lang-toggle">
+          <button class="nav__lang-btn">KO</button>
+          <button class="nav__lang-btn nav__lang-btn--active">EN</button>
+        </div>
+      </div>
+    </nav>
+  </body>
+</html>
