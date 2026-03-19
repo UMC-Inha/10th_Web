@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        background-color: #f9fafb;
+        font-family: sans-serif;
+      }
+
+      section {
+        display: flex;
+        gap: 20px;
+      }
+
+      .box {
+        width: 120px;
+        height: 120px;
+        background-color: rgba(223, 255, 163, 0.776);
+        padding: 10px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        font-weight: bold;
+      }
+
+      .border-box {
+        box-sizing: border-box;
+      }
+
+      .content-box {
+        box-sizing: content-box;
+      }
+
+      .border {
+        border: 10px solid rgb(97, 176, 97);
+      }
+
+      .outline {
+        outline: 10px solid rgb(97, 176, 97);
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>border-box</h1>
+    <section>
+      <div class="box border-box border">border</div>
+      <div class="box border-box outline">outline</div>
+    </section>
+
+    <h1>content-box</h1>
+    <section>
+      <div class="box content-box border">border</div>
+      <div class="box content-box outline">outline</div>
+    </section>
+  </body>
+</html>
