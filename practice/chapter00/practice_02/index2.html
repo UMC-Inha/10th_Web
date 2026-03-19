@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>border vs outline</title>
+    <style>
+      body {
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        background-color: #f9fafb;
+        font-family: sans-serif;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+      }
+
+      section {
+        display: flex;
+        gap: 20px;
+      }
+
+      .box {
+        width: 120px;
+        height: 120px;
+        background-color: rgba(223, 255, 163, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+      }
+
+      /* border */
+      .border {
+        border: 10px solid green;
+      }
+
+      /* outline */
+      .outline {
+        outline: 10px solid green;
+      }
+
+      /* 기준 박스 */
+      .target {
+        background-color: lightcoral;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- border 비교 -->
+    <div>
+      <h1>border → 요소를 밀어냄</h1>
+      <section>
+        <div class="box border">border</div>
+        <div class="box target">기준</div>
+      </section>
+    </div>
+
+    <!-- outline 비교 -->
+    <div>
+      <h1>outline → 요소에 영향 없음</h1>
+      <section>
+        <div class="box outline">outline</div>
+        <div class="box target">기준</div>
+      </section>
+    </div>
+  </body>
+</html>

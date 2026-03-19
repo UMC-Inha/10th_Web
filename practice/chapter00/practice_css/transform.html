@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>transform 실습</title>
+
+    <style>
+      body {
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+        font-family: sans-serif;
+        background: #f9fafb;
+      }
+
+      .section {
+        border: 2px solid #ccc;
+        padding: 20px;
+        background: white;
+      }
+
+      .container {
+        height: 150px;
+        border: 2px dashed #ccc;
+        display: flex;
+        gap: 20px;
+        margin-top: 10px;
+      }
+
+      .box {
+        width: 80px;
+        height: 80px;
+        background: lightcoral;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- translate -->
+    <div class="section">
+      <h2>✔️ translate</h2>
+
+      <b>기준</b>
+      <div class="container">
+        <div class="box">기준</div>
+      </div>
+      <br />
+
+      <b>translateX(100px)</b>
+      <div class="container">
+        <div class="box" style="transform: translateX(100px)">이동</div>
+      </div>
+      <br />
+
+      <b>translateY(50px)</b>
+      <div class="container">
+        <div class="box" style="transform: translateY(50px)">이동</div>
+      </div>
+      <br />
+
+      <b>translate(100px, 50px)</b>
+      <div class="container">
+        <div class="box" style="transform: translate(100px, 50px)">이동</div>
+      </div>
+      <br />
+
+      <b>translate(50%, 50%)</b>
+      <div class="container">
+        <div class="box" style="transform: translate(50%, 50%)">이동</div>
+      </div>
+    </div>
+
+    <!-- scale -->
+    <div class="section">
+      <h2>✔️ scale</h2>
+
+      <b>기준</b>
+      <div class="container">
+        <div class="box">기준</div>
+      </div>
+      <br />
+
+      <b>scale(1.5)</b>
+      <div class="container" style="margin-top: 30px">
+        <div class="box" style="transform: scale(1.5)">확대</div>
+      </div>
+      <br />
+
+      <b>scaleX(2)</b>
+      <div class="container">
+        <div class="box" style="transform: scaleX(1.5)">확대</div>
+      </div>
+      <br />
+
+      <b>scaleY(0.5)</b>
+      <div class="container">
+        <div class="box" style="transform: scaleY(0.5)">축소</div>
+      </div>
+    </div>
+
+    <!-- rotate -->
+    <div class="section">
+      <h2>✔️ rotate</h2>
+
+      <b>기준</b>
+      <div class="container">
+        <div class="box">기준</div>
+      </div>
+      <br />
+
+      <b> rotate(45deg)</b>
+      <div class="container">
+        <div class="box" style="transform: rotate(45deg)">회전</div>
+      </div>
+      <br />
+
+      <b> rotate(-45deg)</b>
+      <div class="container">
+        <div class="box" style="transform: rotate(-45deg)">회전</div>
+      </div>
+    </div>
+
+    <!-- skew -->
+    <div class="section">
+      <h2>✔️ skew</h2>
+
+      <b>기준</b>
+      <div class="container">
+        <div class="box">기준</div>
+      </div>
+      <br />
+
+      <b>skewX(20deg)</b>
+      <div class="container">
+        <div class="box" style="transform: skewX(20deg)">변형</div>
+      </div>
+      <br />
+
+      <b>skewY(20deg)</b>
+      <div class="container">
+        <div class="box" style="transform: skewY(20deg)">변형</div>
+      </div>
+      <br />
+
+      <b> skew(20deg, 10deg)</b>
+      <div class="container">
+        <div class="box" style="transform: skew(20deg, 10deg)">변형</div>
+      </div>
+    </div>
+
+    <!-- matrix -->
+    <div class="section">
+      <h2>✔️ matrix</h2>
+
+      <b>기준</b>
+      <div class="container">
+        <div class="box">기준</div>
+      </div>
+      <br />
+
+      <b>matrix(1.2, 0, 0, 1.2, 40, 20)</b>
+      <div class="container">
+        <div class="box" style="transform: matrix(1.2, 0, 0, 1.2, 40, 20)">
+          matrix
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

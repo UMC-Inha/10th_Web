@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>transition 실습</title>
+
+    <style>
+      body {
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+        font-family: sans-serif;
+        background: #f9fafb;
+      }
+
+      .section {
+        border: 2px solid #ccc;
+        padding: 20px;
+        background: white;
+      }
+
+      .container {
+        display: flex;
+        gap: 20px;
+        margin-top: 10px;
+      }
+
+      .box {
+        width: 80px;
+        height: 80px;
+        background: lightcoral;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- property -->
+    <div class="section">
+      <h2>✔️ transition-property</h2>
+      <b>all 적용 (여러 속성)</b>
+      <div class="container">
+        <div
+          class="box"
+          style="transition-property: all; transition-duration: 0.5s"
+          onmouseover="
+            this.style.width = '150px';
+            this.style.height = '200px';
+            this.style.background = 'teal';
+          "
+          onmouseout="
+            this.style.width = '80px';
+            this.style.height = '80px';
+            this.style.background = 'lightcoral';
+          "
+        >
+          all
+        </div>
+      </div>
+      <br />
+
+      <b>width 변경</b>
+      <div class="container">
+        <div
+          class="box"
+          style="transition-property: width; transition-duration: 0.5s"
+          onmouseover="this.style.width = '150px'"
+          onmouseout="this.style.width = '80px'"
+        >
+          width
+        </div>
+      </div>
+      <br />
+
+      <b>transform 변경</b>
+      <div class="container">
+        <div
+          class="box"
+          style="transition-property: transform; transition-duration: 0.5s"
+          onmouseover="this.style.transform = 'translate(100px, 100px)'"
+          onmouseout="this.style.transform = 'translate(0, 0)'"
+        >
+          transform
+        </div>
+      </div>
+      <br />
+
+      <b>color 변경</b>
+      <div class="container">
+        <div
+          class="box"
+          style="transition-property: color; transition-duration: 0.5s"
+          onmouseover="this.style.color = 'black'"
+          onmouseout="this.style.color = 'white'"
+        >
+          color
+        </div>
+      </div>
+      <br />
+    </div>
+
+    <!-- duration -->
+    <div class="section">
+      <h2>✔️ transition-duration</h2>
+
+      <b>속도 차이</b>
+      <div class="container">
+        <div
+          class="box"
+          style="transition: all 0.1s"
+          onmouseover="this.style.transform = 'scale(1.3)'"
+          onmouseout="this.style.transform = 'scale(1)'"
+        >
+          빠름
+        </div>
+
+        <div
+          class="box"
+          style="transition: all 2s"
+          onmouseover="this.style.transform = 'scale(1.3)'"
+          onmouseout="this.style.transform = 'scale(1)'"
+        >
+          느림
+        </div>
+      </div>
+    </div>
+
+    <!-- timing -->
+    <div class="section">
+      <h2>✔️ transition-timing-function</h2>
+
+      <b>속도 곡선</b>
+      <div class="container" style="display: flex; flex-direction: column">
+        <div
+          class="box"
+          style="transition: transform 2s ease"
+          onmouseover="this.style.transform = 'translateX(300px)'"
+          onmouseout="this.style.transform = 'translateX(0)'"
+        >
+          ease
+        </div>
+
+        <div
+          class="box"
+          style="transition: transform 2s linear"
+          onmouseover="this.style.transform = 'translateX(300px)'"
+          onmouseout="this.style.transform = 'translateX(0)'"
+        >
+          linear
+        </div>
+
+        <div
+          class="box"
+          style="transition: transform 2s ease-in"
+          onmouseover="this.style.transform = 'translateX(300px)'"
+          onmouseout="this.style.transform = 'translateX(0)'"
+        >
+          ease-in
+        </div>
+
+        <div
+          class="box"
+          style="transition: transform 2s ease-out"
+          onmouseover="this.style.transform = 'translateX(300px)'"
+          onmouseout="this.style.transform = 'translateX(0)'"
+        >
+          ease-out
+        </div>
+
+        <div
+          class="box"
+          style="transition: transform 2s ease-in-out"
+          onmouseover="this.style.transform = 'translateX(300px)'"
+          onmouseout="this.style.transform = 'translateX(0)'"
+        >
+          ease-in-out
+        </div>
+      </div>
+    </div>
+
+    <!-- delay -->
+    <div class="section">
+      <h2>✔️ transition-delay</h2>
+
+      <b>2초 뒤 시작</b>
+      <div class="container">
+        <div
+          class="box"
+          style="transition: transform 0.5s ease 2s"
+          onmouseover="this.style.transform = 'translateY(-20px)'"
+          onmouseout="this.style.transform = 'translateY(0)'"
+        >
+          delay
+        </div>
+      </div>
+    </div>
+
+    <!-- 축약 -->
+    <div class="section">
+      <h2>✔️ transition 축약형</h2>
+
+      <b>all + ease</b>
+      <div class="container">
+        <div
+          class="box"
+          style="transition: all 0.3s ease"
+          onmouseover="
+            this.style.background = 'teal';
+            this.style.transform = 'scale(1.2)';
+          "
+          onmouseout="
+            this.style.background = 'lightcoral';
+            this.style.transform = 'scale(1)';
+          "
+        >
+          축약
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

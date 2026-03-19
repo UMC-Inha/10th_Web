@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>background 실습</title>
+
+    <style>
+      body {
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        font-family: sans-serif;
+        background: #f9fafb;
+      }
+
+      .section {
+        border: 2px solid #ccc;
+        padding: 20px;
+        background: white;
+      }
+
+      .box {
+        width: 300px;
+        height: 150px;
+        border: 2px dashed #ccc;
+        margin-top: 10px;
+        background-image: url(ddol.png);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- repeat -->
+    <div class="section">
+      <h2>✔️ background-repeat</h2>
+      <b>repeat (기본)</b>
+      <div class="box" style="background-repeat: repeat"></div>
+      <br />
+
+      <b>no-repeat</b>
+      <div class="box" style="background-repeat: no-repeat"></div>
+
+      <b>repeat-x </b>
+      <div class="box" style="background-repeat: repeat-x"></div>
+      <br />
+
+      <b>repeat-y </b>
+      <div class="box" style="background-repeat: repeat-y"></div>
+      <br />
+    </div>
+
+    <!-- position -->
+    <div class="section">
+      <h2>✔️ background-position</h2>
+
+      <b>left top</b>
+      <div
+        class="box"
+        style="background-repeat: no-repeat; background-position: left top"
+      ></div>
+      <br />
+
+      <b>center</b>
+      <div
+        class="box"
+        style="background-repeat: no-repeat; background-position: center"
+      ></div>
+      <br />
+
+      <b>right bottom</b>
+      <div
+        class="box"
+        style="background-repeat: no-repeat; background-position: right bottom"
+      ></div>
+      <br />
+
+      <b>50% 50%</b>
+      <div
+        class="box"
+        style="background-repeat: no-repeat; background-position: 50% 50%"
+      ></div>
+      <br />
+
+      <b>100px 50px</b>
+      <div
+        class="box"
+        style="background-repeat: no-repeat; background-position: 100px 50px"
+      ></div>
+    </div>
+
+    <!-- size -->
+    <div class="section">
+      <h2>✔️ background-size</h2>
+
+      <b>auto (기본)</b>
+      <div
+        class="box"
+        style="background-size: auto; background-repeat: no-repeat"
+      ></div>
+      <br />
+
+      <b>cover</b>
+      <div
+        class="box"
+        style="background-size: cover; background-repeat: no-repeat"
+      ></div>
+      <br />
+
+      <b>contain</b>
+      <div
+        class="box"
+        style="background-size: contain; background-repeat: no-repeat"
+      ></div>
+      <br />
+
+      <b>100px 100px</b>
+      <div
+        class="box"
+        style="background-size: 100px 100px; background-repeat: no-repeat"
+      ></div>
+      <br />
+
+      <b>50% 50%</b>
+      <div
+        class="box"
+        style="background-size: 50% 50%; background-repeat: no-repeat"
+      ></div>
+    </div>
+
+    <!-- shorthand -->
+    <div class="section">
+      <h2>✔️ background (축약형)</h2>
+
+      <b>no-repeat center / cover</b>
+      <div
+        class="box"
+        style="background: url(ddol.png) no-repeat center / cover"
+      ></div>
+    </div>
+  </body>
+</html>

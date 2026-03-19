@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>grid 실습</title>
+
+    <style>
+      body {
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+        font-family: sans-serif;
+        background: #f9fafb;
+      }
+
+      .section {
+        border: 2px solid #ccc;
+        padding: 20px;
+        background: white;
+      }
+
+      .container {
+        display: grid;
+        border: 2px dashed #ccc;
+        margin-top: 10px;
+      }
+
+      .box {
+        background: lightcoral;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        border: 0.1px solid rgb(255, 188, 188);
+        border-radius: 5px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- grid 기본 -->
+    <div class="section">
+      <h2>✔️ grid 기본 (2차원)</h2>
+
+      <b>3열 생성</b>
+      <div class="container" style="grid-template-columns: repeat(3, 1fr)">
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+      </div>
+    </div>
+
+    <!-- column -->
+    <div class="section">
+      <h2>✔️ 열 정의 grid-template-columns</h2>
+
+      <b>고정 크기</b>
+      <div class="container" style="grid-template-columns: 100px 200px 100px">
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+      </div>
+      <br />
+
+      <b>비율 1fr 2fr 1fr</b>
+      <div class="container" style="grid-template-columns: 1fr 2fr 1fr">
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+      </div>
+      <br />
+
+      <b>반복 repeat(6, 1fr)</b>
+      <div class="container" style="grid-template-columns: repeat(6, 1fr)">
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+      </div>
+      <br />
+
+      <b>최소/최대 minmax(100px, 1fr)</b>
+      <div class="container" style="grid-template-columns: minmax(100px, 1fr)">
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+      </div>
+      <br />
+
+      <b>자동 맞춤 auto-fit</b>
+      <div class="container" style="grid-template-columns: auto-fit">
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+      </div>
+      <br />
+    </div>
+
+    <!-- row -->
+    <div class="section">
+      <h2>✔️ 행 정의 grid-template-rows</h2>
+
+      <b>고정 크기 100px 200px</b>
+      <div
+        class="container"
+        style="
+          grid-template-columns: repeat(3, 1fr);
+          grid-template-rows: 100px 200px;
+        "
+      >
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+        <div class="box">4</div>
+        <div class="box">5</div>
+      </div>
+      <br />
+
+      <b>반복 repeat(3, minmax(100px, auto))</b>
+      <div
+        class="container"
+        style="grid-template-rows: repeat(3, minmax(100px, auto))"
+      >
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+        <!-- 행 자동추가 -->
+        <div class="box">4</div>
+        <div class="box">5</div>
+      </div>
+      <br />
+    </div>
+
+    <!-- area -->
+    <div class="section">
+      <h2>✔️ 영역 정의</h2>
+
+      <b> grid-template-areas</b>
+      <div
+        class="container"
+        style="
+          grid-template-columns: 1fr 2fr;
+          grid-template-areas:
+            &quot;header header&quot;
+            &quot;sidebar main&quot;
+            &quot;footer footer&quot;;
+        "
+      >
+        <div class="box" style="grid-area: header">header</div>
+        <div class="box" style="grid-area: sidebar">sidebar</div>
+        <div class="box" style="grid-area: main">main</div>
+        <div class="box" style="grid-area: footer">footer</div>
+      </div>
+    </div>
+
+    <!-- gap -->
+    <div class="section">
+      <h2>✔️ 간격 설정</h2>
+
+      <b>gap 모든 간격</b>
+      <div
+        class="container"
+        style="grid-template-columns: repeat(3, 1fr); gap: 20px"
+      >
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+        <div class="box">4</div>
+        <div class="box">5</div>
+      </div>
+      <br />
+
+      <b>row-gap 행 간격</b>
+      <div
+        class="container"
+        style="grid-template-columns: repeat(3, 1fr); row-gap: 20px"
+      >
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+        <div class="box">4</div>
+        <div class="box">5</div>
+      </div>
+      <br />
+
+      <b>column-gap 열 간격</b>
+      <div
+        class="container"
+        style="grid-template-columns: repeat(3, 1fr); gap: 20px"
+      >
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+      </div>
+      <br />
+    </div>
+
+    <!-- item 위치 -->
+    <div class="section">
+      <h2>✔️ 위치 지정</h2>
+
+      <b>grid-column 1 / 3 (1번 ~ 3번 라인까지) </b>
+      <div class="container" style="grid-template-columns: repeat(3, 1fr)">
+        <div class="box" style="grid-column: 1 / 3">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+      </div>
+      <br />
+
+      <b>grid-column span 2 (2개 열 차지)</b>
+      <div class="container" style="grid-template-columns: repeat(3, 1fr)">
+        <div class="box" style="grid-column: span 2">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+      </div>
+      <br />
+
+      <b>grid-row 2 / 4 (2번 ~ 4번 라인까지) </b>
+      <div class="container" style="grid-template-columns: repeat(3, 1fr)">
+        <div class="box" style="grid-row: 2 / 4">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+        <div class="box">4</div>
+        <div class="box">5</div>
+        <div class="box">6</div>
+        <div class="box">7</div>
+        <div class="box">8</div>
+        <div class="box">9</div>
+      </div>
+      <br />
+    </div>
+
+    <!-- 단축 속성 -->
+    <div class="section">
+      <h2>✔️ 단축 속성</h2>
+
+      <b
+        >grid-area: 2 / 1 / 4 / 3 (row-start / col-start / row-end / col-end)</b
+      >
+      <div class="container" style="grid-template-columns: repeat(3, 1fr)">
+        <div class="box" style="grid-area: 2 / 1 / 4 / 3">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+        <div class="box">4</div>
+        <div class="box">5</div>
+        <div class="box">6</div>
+        <div class="box">7</div>
+        <div class="box">8</div>
+        <div class="box">9</div>
+      </div>
+      <br />
+
+      <b>grid-area: header</b>
+      <div
+        class="container"
+        style="
+          grid-template-columns: repeat(3, 1fr);
+          grid-template-areas: &quot;header header header&quot;;
+        "
+      >
+        <div class="box" style="grid-area: header">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+      </div>
+    </div>
+
+    <!-- 정렬 -->
+    <div class="section">
+      <h2>✔️ 개별 정렬</h2>
+
+      <b>justify-self (가로 중앙)</b>
+      <div
+        class="container"
+        style="
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          height: 150px;
+        "
+      >
+        <div class="box" style="justify-self: center">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+      </div>
+      <br />
+
+      <b>align-self (세로 중앙)</b>
+      <div
+        class="container"
+        style="
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          height: 150px;
+        "
+      >
+        <div class="box" style="align-self: center">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+      </div>
+      <br />
+
+      <b>place-self (가로 + 세로 중앙)</b>
+      <div
+        class="container"
+        style="
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          height: 150px;
+        "
+      >
+        <div class="box" style="place-self: center">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+      </div>
+    </div>
+  </body>
+</html>

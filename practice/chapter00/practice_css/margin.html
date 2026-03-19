@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>margin 종합 실습</title>
+    <style>
+      body {
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+      }
+
+      .section {
+        border: 2px solid #ccc;
+        padding: 20px;
+        background: #f9fafb;
+      }
+
+      .box {
+        width: 120px;
+        height: 80px;
+        background: lightcoral;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .individual {
+        margin-top: 10px;
+        margin-right: 30px;
+        margin-bottom: 20px;
+        margin-left: 40px;
+        background: skyblue;
+      }
+
+      .shorthand1 {
+        margin: 20px;
+        background: orange;
+      }
+
+      .shorthand2 {
+        margin: 10px 20px;
+        background: purple;
+      }
+
+      .shorthand3 {
+        margin: 10px 20px 23px;
+        background: teal;
+      }
+
+      .shorthand4 {
+        margin: 10px 20px 30px 40px;
+        background: green;
+      }
+
+      .center {
+        margin: 0 auto;
+        background: dodgerblue;
+      }
+
+      .right {
+        margin-left: auto;
+        background: crimson;
+      }
+
+      .left {
+        margin-right: auto;
+        background: darkorange;
+      }
+
+      .collapse1 {
+        margin-bottom: 50px;
+        background: #8e44ad;
+      }
+
+      .collapse2 {
+        margin-top: 50px;
+        background: #2ecc71;
+      }
+
+      .negative {
+        margin-top: -30px;
+        background: black;
+      }
+
+      .parent {
+        margin: 50px;
+        background: lightgray;
+      }
+
+      .child {
+        margin: inherit;
+        background: pink;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- 개별 설정 -->
+    <div class="section">
+      <h2>✔️ 개별 margin 설정</h2>
+      <div class="box individual">개별</div>
+    </div>
+
+    <!-- 단축 속성 -->
+    <div class="section">
+      <h2>✔️ 단축 속성 margin</h2>
+      <p>모든 방향 10px</p>
+      <div class="box shorthand1">1값</div>
+      <p>상하 10px, 좌우 20px</p>
+      <div class="box shorthand2">2값</div>
+      <p>상 10px, 좌우 20px, 하 30px</p>
+      <div class="box shorthand3">3값</div>
+      <p>상 10px, 우 20px, 하 30px, 좌 40px</p>
+      <div class="box shorthand4">4값</div>
+    </div>
+
+    <!-- 특수 값-->
+    <div class="section">
+      <h2>✔️ margin: 0 auto</h2>
+      <p>좌우 자동 여백 (가운데 정렬)</p>
+      <div class="box center">CENTER</div>
+    </div>
+
+    <!-- 좌우 -->
+    <div class="section">
+      <h2>✔️ 좌 / 우 정렬 (여백 가능한 만큼 최대한 차지)</h2>
+      <div class="box left">LEFT</div>
+      <div class="box right">RIGHT</div>
+    </div>
+
+    <!-- margin collapse -->
+    <div class="section">
+      <h2>✔️ margin collapse (인접한 블록 요소의 상하 마진은 겹침)</h2>
+      <div class="box collapse1">A</div>
+      <div class="box collapse2">B</div>
+      <!-- 실제 간격은 100px가 아니라 50px -->
+    </div>
+
+    <!-- 음수 -->
+    <div class="section">
+      <h2>✔️ 음수 margin</h2>
+      <div class="box">기준</div>
+      <div class="box negative">위로 겹침</div>
+    </div>
+
+    <!-- inherit -->
+    <div class="section parent">
+      <h2>✔️ margin: inherit</h2>
+      <div class="box child">상속</div>
+    </div>
+  </body>
+</html>

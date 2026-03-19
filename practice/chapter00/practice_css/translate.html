@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>translate 실습</title>
+    <style>
+      body {
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 60px;
+        font-family: sans-serif;
+      }
+
+      .section {
+        border: 2px solid #ccc;
+        padding: 20px;
+      }
+
+      .container {
+        position: relative;
+        width: 300px;
+        height: 150px;
+        border: 2px dashed #ccc;
+        margin-top: 10px;
+      }
+
+      .box {
+        width: 80px;
+        height: 80px;
+        background: lightcoral;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+
+      .center-box {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .standard {
+        position: absolute;
+        border: 1px dashed lightcoral;
+        background: white;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="section">
+      <h2>✔️ 2D 이동</h2>
+      <b>기준</b>
+      <div class="container">
+        <div class="box">기준</div>
+      </div>
+      <br />
+
+      <b>X축 이동</b>
+      <div class="container">
+        <div class="box" style="transform: translateX(100px)">X</div>
+      </div>
+      <br />
+
+      <b>Y축 이동</b>
+      <div class="container">
+        <div class="box" style="transform: translateY(50px)">Y</div>
+      </div>
+      <br />
+
+      <b>X + Y 이동</b>
+      <div class="container">
+        <div class="box" style="transform: translate(100px, 50px)">XY</div>
+      </div>
+      <br />
+
+      <b>백분율 이동</b>
+      <div class="container">
+        <div class="box" style="transform: translate(50%, 50%)">XY</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>✔️ 다른 transform과 조합</h2>
+      <b>기준</b>
+      <div class="container">
+        <div class="box">기준</div>
+      </div>
+      <br />
+
+      <b>translate(50px, 30px), rotate(45deg)</b>
+      <div class="container">
+        <div class="box" style="transform: translate(50px, 30px) rotate(45deg)">
+          조합
+        </div>
+      </div>
+      <br />
+
+      <b>translate(50px, 30px), scale(1.2)</b>
+      <div class="container">
+        <div class="box" style="transform: translate(50px, 30px) scale(1.2)">
+          조합
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>✔️ position과 조합 (가운데 정렬)</h2>
+      <div class="container">
+        <div class="box center-box">CENTER</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>✔️ 변환 기준점 (transform-origin)</h2>
+
+      <b>기준</b>
+      <div class="container">
+        <div class="box">기준</div>
+      </div>
+      <br />
+
+      <b>center (중앙, 기본값)</b>
+      <div class="container">
+        <div
+          class="box"
+          style="transform-origin: center; transform: rotate(30deg)"
+        >
+          center
+        </div>
+      </div>
+      <br />
+
+      <b>top left (좌상단)</b>
+      <div class="container">
+        <div
+          class="box"
+          style="transform-origin: top left; transform: rotate(30deg)"
+        >
+          top left
+        </div>
+      </div>
+      <br />
+
+      <b>백분율</b>
+      <div class="container">
+        <div
+          class="box"
+          style="transform-origin: 50% 50%; transform: rotate(30deg)"
+        >
+          top left
+        </div>
+      </div>
+      <br />
+    </div>
+  </body>
+</html>
