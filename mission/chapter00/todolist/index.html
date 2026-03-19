@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo List 만들기</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1 class="header__title">Kasa's Daily Plan</h1>
+    </header>
+    <main>
+      <!-- 입력 -->
+      <input
+        type="text"
+        id="todo-input"
+        class="main__input"
+        placeholder="오늘의 할 일을 작성해보세요!"
+      />
+
+      <div class="main__container">
+        <!-- 해야 할 일 -->
+        <section>
+          <h2 class="section__title">🌱 해야 할 일</h2>
+          <ul id="todo-list" class="section__list"></ul>
+        </section>
+
+        <!-- 해낸 일 -->
+        <section>
+          <h2 class="section__title">🎉 해낸 일</h2>
+          <ul id="done-list" class="section__list"></ul>
+        </section>
+      </div>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,112 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+}
+
+/* 전체 레이아웃 (GRID) */
+.layout {
+  display: grid;
+  grid-template-areas:
+    "header header header"
+    "hero hero hero"
+    "main . side"
+    "banner banner banner";
+
+  grid-template-columns: 2fr 0.5fr 1fr;
+  grid-template-rows: 80px 250px 300px 100px;
+}
+
+/* 영역 지정 */
+.layout__header {
+  grid-area: header;
+}
+.layout__hero {
+  grid-area: hero;
+}
+.layout__main {
+  grid-area: main;
+}
+.layout__side {
+  grid-area: side;
+}
+.layout__banner {
+  grid-area: banner;
+}
+
+/* HEADER 내부 (FLEX) */
+.header {
+  display: flex;
+  height: 100%;
+}
+
+.header__left {
+  flex: 1;
+  background: #0f1c36;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header__right {
+  flex: 1;
+  background: #ef3b4a;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* HERO */
+.layout__hero {
+  background: #5a86b6;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+}
+
+/* MAIN */
+.layout__main {
+  background: #263a56;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* SIDE 내부 (GRID) */
+.side {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  height: 100%;
+}
+
+.side__image {
+  background: #9fbfc2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.side__extra {
+  background: #55b391;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* BANNER */
+.layout__banner {
+  background: linear-gradient(to right, #f5d07a, #e2b45a);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}

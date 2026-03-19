@@ -1,0 +1,143 @@
+body {
+  background: #fff7f0;
+  padding: 30px;
+  font-family: sans-serif;
+}
+
+/* navbar */
+.navbar {
+  background: #f9fffeff;
+  border-radius: 40px;
+  padding: 20px 30px;
+  box-shadow: 8px 8px 0 #c0dee5ff;
+}
+
+.navbar__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* left */
+.navbar__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar__logo img {
+  width: 50px;
+  border-radius: 15px;
+  background: #c0dee5ff;
+  padding: 5px;
+}
+
+.navbar__brand {
+  font-size: 28px;
+  font-weight: bold;
+  color: #404d51ff;
+}
+
+/* menu */
+.navbar__menu {
+  display: flex;
+  gap: 40px;
+}
+
+.navbar__item {
+  cursor: pointer;
+  color: #888;
+  transition: 0.3s;
+}
+
+/* 선택 상태 */
+#menu1:checked ~ label[for="menu1"],
+#menu2:checked ~ label[for="menu2"],
+#menu3:checked ~ label[for="menu3"] {
+  color: rgba(60, 112, 128, 1);
+  font-weight: bold;
+}
+
+/* right */
+.navbar__right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* 언어 */
+.navbar__lang {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid #92b3baff;
+  border-radius: 30px;
+  padding: 5px 10px;
+  box-shadow: 4px 4px 0 #92b3baff;
+  background: #fff;
+}
+
+.navbar__lang-label {
+  font-size: 14px;
+  color: #aaa;
+}
+
+/* 토글 컨테이너 */
+.navbar__lang-toggle {
+  display: flex;
+  gap: 5px;
+}
+
+/* 버튼 기본 */
+.navbar__lang-btn {
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  border: 2px solid #92b3baff;
+  background: white;
+  color: #999;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* 기본 상태 (KO active) */
+.navbar__lang-btn--ko {
+  background: #92b3baff;
+  color: white;
+  border-color: #92b3baff;
+}
+
+/* 체크되면 EN active */
+#langToggle:checked + .navbar__lang-toggle .navbar__lang-btn--ko {
+  background: white;
+  color: #999;
+  border-color: #92b3baff;
+}
+
+#langToggle:checked + .navbar__lang-toggle .navbar__lang-btn--en {
+  background: #92b3baff;
+  color: white;
+  border-color: #92b3baff;
+}
+
+/* 햄버거 */
+.navbar__menu-btn {
+  display: none;
+  font-size: 30px;
+  color: #92b3baff;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .navbar__menu {
+    display: none;
+  }
+
+  .navbar__menu-btn {
+    display: block;
+  }
+
+  .navbar__lang-label {
+    display: none;
+  }
+}

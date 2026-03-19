@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aido Navbar</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <nav class="navbar">
+      <div class="navbar__container">
+        <!-- 왼쪽 -->
+        <div class="navbar__left">
+          <div class="navbar__logo">
+            <img src="/practice/chapter00/ddol.png" />
+          </div>
+          <span class="navbar__brand">Aido</span>
+        </div>
+
+        <!-- 오른쪽 -->
+        <div class="navbar__right">
+          <!-- 메뉴  -->
+          <div class="navbar__menu">
+            <input type="radio" name="menu" id="menu1" hidden checked />
+            <input type="radio" name="menu" id="menu2" hidden />
+            <input type="radio" name="menu" id="menu3" hidden />
+
+            <label for="menu1" class="navbar__item">고양이 친구들</label>
+            <label for="menu2" class="navbar__item">패치 노트</label>
+            <label for="menu3" class="navbar__item">앱 다운로드</label>
+          </div>
+
+          <!-- 언어 -->
+          <div class="navbar__lang">
+            <span class="navbar__lang-label">언어</span>
+
+            <input type="checkbox" id="langToggle" hidden />
+
+            <label for="langToggle" class="navbar__lang-toggle">
+              <span class="navbar__lang-btn navbar__lang-btn--ko">KO</span>
+              <span class="navbar__lang-btn navbar__lang-btn--en">EN</span>
+            </label>
+          </div>
+
+          <!-- 햄버거 -->
+          <div class="navbar__menu-btn">☰</div>
+        </div>
+      </div>
+    </nav>
+  </body>
+</html>
