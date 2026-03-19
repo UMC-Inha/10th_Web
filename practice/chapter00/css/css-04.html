@@ -1,0 +1,49 @@
+<!-- ### 실습  🍠
+
+ **`animation 키워드`**를 학습한 후, 아래와 비슷한 영상을 만들어주세요!
+
+단, **`animation 축약형`**을 사용해주세요! -->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>animation 실습</title>
+    <style>
+        .background {
+            position: relative;
+            width: 400px;
+            height: 300px;
+        }
+
+        .ball {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: purple;
+            animation: bounce 0.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes bounce {
+        0% {
+            transform: translateX(-50%) translateY(0) scaleX(1.15) scaleY(0.85);
+        }
+        20% {
+            transform: translateX(-50%) translateY(-20px) scaleX(0.95) scaleY(1.05);
+        }
+        100% {
+            transform: translateX(-50%) translateY(-180px) scaleX(1) scaleY(1);
+        }
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="ball"></div>
+    </div>
+</body>
+</html>

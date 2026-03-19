@@ -1,0 +1,66 @@
+<!-- 위의 키워드를 활용해서 가운데 정렬을 구현해보세요! 🍠 
+ - text-align
+- margin
+- flex
+- translate
+- grid
+-->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가운데 정렬</title>
+    <style>
+        .box {
+            width: 200px;
+            height: 100px;
+            border: 1px solid black;
+        }
+
+        /* 텍스트 가로 가운데 정렬 가능 */
+        .text-align {
+            text-align: center;
+        }
+
+        /* 요소 자체 가로 가운데 정렬 가능 */
+        .margin {
+            margin: 0 auto;
+        }
+
+        /* 요소 내부 콘텐츠를 가로 세로 정렬 가능 */
+        .flex {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 요소 자체 가로 가운데 정렬 가능 */
+        .translate {
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 요소 내부 콘텐츠를 가로 세로 정렬 가능 */
+        .grid {
+            display: grid;
+            place-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- 정렬 대상이 텍스트 -->
+    <div class="box text-align">text-align</div>
+    <!-- 정렬 대상이 div -->
+    <div class="box margin">margin</div>
+    <!-- 정렬 대상이 텍스트 -->
+    <div class="box flex">flex</div>
+    <!-- 정렬 대상이 div -->
+    <div class="box translate">translate</div>
+    <!-- 정렬 대상이 텍스트 -->
+    <div class="box grid">grid</div>
+    
+</body>
+</html>
