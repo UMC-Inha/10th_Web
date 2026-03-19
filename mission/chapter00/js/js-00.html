@@ -1,0 +1,259 @@
+<!-- 🍠 미션 1 - Todo List 구현 (HTML, CSS, JS) -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todo List</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      padding: 40px 20px;
+    }
+
+    .todo-app {
+      max-width: 900px;
+      margin: 0 auto;
+      border-radius: 20px;
+      padding: 32px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .todo-app__title {
+      font-size: 32px;
+    }
+
+    .todo-app__input {
+      width: 100%;
+      height: 52px;
+      padding: 0 16px;
+      border: 1px solid grey;
+      border-radius: 12px;
+      font-size: 16px;
+      margin-bottom: 28px;
+    }
+
+    .todo-app__lists {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .todo-section {
+      background-color: white;
+      border-radius: 16px;
+      border: 1px solid grey;
+      padding: 20px;
+      min-height: 300px;
+    }
+
+    .todo-section__title {
+      margin: 0 0 16px;
+      font-size: 22px;
+    }
+
+    .todo-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid black;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+
+    .todo-item__text {
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .todo-item--done .todo-item__text {
+      color: grey;
+    }
+
+    .todo-item__actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .todo-btn {
+      border: none;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .todo-btn--complete {
+      background-color: skyblue;
+      color: white;
+    }
+
+    .todo-btn--delete {
+      background-color: orange;
+      color: white;
+    }
+
+    .todo-empty {
+      color: lightgray;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .todo-app__lists {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="todo-app">
+    <!-- 제목 -->
+    <header>
+      <h1 class="todo-app__title">UMC Study Plan</h1>
+    </header>
+
+    <!-- 입력창 -->
+     <form class="todoForm">
+        <input
+        id="todoInput"
+        class="todo-app__input"
+        type="text"
+        placeholder="스터디 계획을 작성해보세요!"
+        />
+    </form>
+
+    <!-- 하단 목록 -->
+    <div class="todo-app__lists">
+      <!-- 해야 할 일 -->
+      <section class="todo-section">
+        <h2 class="todo-section__title">해야 할 일</h2>
+        <ul id="todoList" class="todo-list"></ul>
+        <p id="todoEmpty" class="todo-empty">아직 해야 할 일이 없어요.</p>
+      </section>
+
+      <!-- 해낸 일 -->
+      <section class="todo-section">
+        <h2 class="todo-section__title">해낸 일</h2>
+        <ul id="doneList" class="todo-list"></ul>
+        <p id="doneEmpty" class="todo-empty">아직 완료한 일이 없어요.</p>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const todoForm = document.querySelector(".todoForm");
+    const todoInput = document.querySelector("#todoInput");
+    const todoList = document.querySelector("#todoList");
+    const doneList = document.querySelector("#doneList");
+    const todoEmpty = document.querySelector("#todoEmpty");
+    const doneEmpty = document.querySelector("#doneEmpty");
+
+    function updateEmptyMessage() {
+        todoEmpty.style.display = todoList.children.length === 0 ? "block" : "none";
+        doneEmpty.style.display = doneList.children.length === 0 ? "block" : "none";
+    }
+
+    function deleteTodo(todoItem) {
+        todoItem.remove();
+        updateEmptyMessage();
+    }
+
+    function completeTodo(todoItem, actions) {
+        todoItem.classList.add("todo-item--done");
+
+        actions.innerHTML = "";
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "todo-btn todo-btn--delete";
+        deleteButton.type = "button";
+        deleteButton.textContent = "삭제";
+
+        deleteButton.addEventListener("click", () => {
+        deleteTodo(todoItem);
+        });
+
+        actions.appendChild(deleteButton);
+        doneList.appendChild(todoItem);
+        updateEmptyMessage();
+    }
+
+    function createTodoItem(todoText) {
+        const li = document.createElement("li");
+        li.className = "todo-item";
+
+        const span = document.createElement("span");
+        span.className = "todo-item__text";
+        span.textContent = todoText;
+
+        const actions = document.createElement("div");
+        actions.className = "todo-item__actions";
+
+        const completeButton = document.createElement("button");
+        completeButton.className = "todo-btn todo-btn--complete";
+        completeButton.type = "button";
+        completeButton.textContent = "완료";
+
+        completeButton.addEventListener("click", () => {
+        completeTodo(li, actions);
+        });
+
+        actions.appendChild(completeButton);
+        li.appendChild(span);
+        li.appendChild(actions);
+
+        return li;
+    }
+
+    function addTodo() {
+        const todoText = todoInput.value.trim();
+
+        if (todoText === "") {
+        todoInput.classList.add("error");
+        todoInput.placeholder = "내용을 입력해주세요";
+        return;
+        }
+
+        const todoItem = createTodoItem(todoText);
+        todoList.appendChild(todoItem);
+
+        todoInput.value = "";
+        todoInput.classList.remove("error");
+        todoInput.placeholder = "스터디 계획을 작성해보세요!";
+
+        updateEmptyMessage();
+    }
+
+    todoInput.addEventListener("input", () => {
+        if (todoInput.classList.contains("error")) {
+        todoInput.classList.remove("error");
+        todoInput.placeholder = "스터디 계획을 작성해보세요!";
+        }
+    });
+
+    todoForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        addTodo();
+    });
+
+    updateEmptyMessage();
+    });
+  </script>
+</body>
+</html>
