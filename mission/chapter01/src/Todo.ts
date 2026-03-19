@@ -1,7 +1,7 @@
-const ts_plan_input = document.getElementById('plan_input') as HTMLInputElement ;
+const ts_plan_input = document.getElementById('input_container__plan_input') as HTMLInputElement ;
 const ts_todo_List = document.getElementById('todo_list') as HTMLUListElement;
 const ts_done_List = document.getElementById('done_list') as HTMLUListElement;
-const ts_add_btn = document.getElementById('add_btn') as HTMLButtonElement;
+const ts_add_btn = document.getElementById('input_container__add_btn') as HTMLButtonElement;
 
 ts_plan_input.addEventListener("keydown", (event:KeyboardEvent) => {
     if (event.key === 'Enter' && ts_plan_input.value.trim() !== "") {
