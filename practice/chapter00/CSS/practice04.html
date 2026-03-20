@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>배경 속성 실습 종합</title>
+  <style>
+    .container { margin-bottom: 40px; }
+    .box { border: 1px solid black; }
+
+    /* 1. background-image*/
+    .box--bg-image {
+      width: 700px;
+      height: 500px;
+      background-image: url("./Figure_1(LiDAR).png");
+    }
+
+    /* 2. background-repeat*/
+    .box--bg-repeat {
+      width: 1000px;
+      height: 500px;
+      background-image: url("./Figure_1(LiDAR).png");
+      background-repeat: repeat;
+    }
+
+    /* 3. background-position*/
+    .box--bg-position {
+      width: 1000px;
+      height: 500px;
+      background-image: url("./Figure_1(LiDAR).png");
+      background-repeat: repeat;
+      background-position: center;
+    }
+
+    /* 4. background-size */
+    .box--bg-size {
+      width: 300px;
+      height: 200px;
+      background-image: url("./Figure_1(LiDAR).png");
+      background-size: cover;
+    }
+
+    /* 5. 축약형*/
+    .box--shorthand {
+      width: 300px;
+      height: 200px;
+      background: url("./Figure_1(LiDAR).png") no-repeat center / cover;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>1. background-image</h2>
+    <div class="box box--bg-image"></div>
+  </div>
+
+  <div class="container">
+    <h2>2. background-repeat</h2>
+    <div class="box box--bg-repeat"></div>
+  </div>
+
+  <div class="container">
+    <h2>3. background-position</h2>
+    <div class="box box--bg-position"></div>
+  </div>
+
+  <div class="container">
+    <h2>4. background-size</h2>
+    <div class="box box--bg-size"></div>
+  </div>
+
+  <div class="container">
+    <h2>5. 축약형</h2>
+    <div class="box box--shorthand"></div>
+  </div>
+
+</body>
+</html>

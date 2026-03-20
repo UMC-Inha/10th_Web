@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>content-box VS border-box</title>
+  <style>
+    .container {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .box {
+      width: 200px;
+      height: 100px;
+      background-color: lightblue;
+      padding: 20px;
+      border: 10px solid black;
+    }
+
+    .content-box {
+      box-sizing: content-box;
+    }
+
+    .border-box {
+      box-sizing: border-box;
+    }
+
+    .outline-box {
+      outline: 10px solid red;
+    }
+  </style>
+</head>
+<body>
+
+<h2>1. content-box vs border-box</h2>
+<div class="container">
+  <div class="box content-box">content-box</div>
+  <div class="box border-box">border-box</div>
+</div>
+
+<h2>2. border vs outline</h2>
+<div class="container">
+  <div class="box">border</div>
+  <div class="box outline-box">outline</div>
+</div>
+
+</body>
+</html>
