@@ -1,43 +1,61 @@
-const ts_plan_input = document.getElementById('input_container__plan_input') as HTMLInputElement ;
-const ts_todo_List = document.getElementById('todo_list') as HTMLUListElement;
-const ts_done_List = document.getElementById('done_list') as HTMLUListElement;
-const ts_add_btn = document.getElementById('input_container__add_btn') as HTMLButtonElement;
+const planInput = document.getElementById('input_container__plan_input') as HTMLInputElement ;
+const todoList = document.getElementById('todo_list') as HTMLUListElement;
+const doneList = document.getElementById('done_list') as HTMLUListElement;
+const addBtn = document.getElementById('input_container__add_btn') as HTMLButtonElement;
 
-ts_plan_input.addEventListener("keydown", (event:KeyboardEvent) => {
-    if (event.key === 'Enter' && ts_plan_input.value.trim() !== "") {
-        ts_addTodo(ts_plan_input.value);
-        ts_plan_input.value = "";
-    }
-});
-ts_add_btn.addEventListener("click", () => {
-    if (ts_plan_input.value.trim() !== "") {
-        ts_addTodo(ts_plan_input.value);
-        ts_plan_input.value = "";
+planInput.addEventListener("keydown", (event:KeyboardEvent) => {
+    if (event.key === 'Enter' && planInput.value.trim() !== "") {
+        addTodo(planInput.value);
+        planInput.value = "";
     }
 });
 
-function ts_addTodo(text:string) {
+addBtn.addEventListener("click", () => {
+    if (planInput.value.trim() !== "") {
+        addTodo(planInput.value);
+        planInput.value = "";
+    }
+});
+
+todoList.addEventListener("click", (event:Event)=>{
+    const btn = event.target as HTMLButtonElement;
+    const li = btn.closest("li");
+    if(btn.classList.contains("btn-complete") && li){
+        completeTodo(li, btn);
+    };
+});
+
+doneList.addEventListener("click",(event) => {
+    const btn = event.target as HTMLButtonElement
+    const li = btn.closest("li")
+    if(btn.classList.contains("btn-delete") && li){
+        deleteTodo(li);
+    };
+});
+
+function addTodo(text:string) :void{
     const li = document.createElement('li'); 
     li.innerText = text;
-    // 삭제버튼
-    const delBtn = document.createElement('button')
-    delBtn.innerText = "삭제";
-    delBtn.onclick = () => {
-        li.remove()
-    }
     // 완료버튼
     const completeBtn = document.createElement('button');
     completeBtn.innerText = "완료";
-    completeBtn.onclick = () => {
-        li.appendChild(delBtn)
-        {ts_done_List &&
-            ts_done_List.appendChild(li)}; 
-        completeBtn.remove(); 
-    };
+    completeBtn.classList.add("btn-complete");
     li.appendChild(completeBtn);
+    todoList.appendChild(li);
+};
 
-    ts_todo_List.appendChild(li);
-}
+function completeTodo(li:HTMLLIElement, btn:HTMLButtonElement){
+    btn.remove(); 
+    // 삭제버튼
+    const delBtn = document.createElement('button');
+    delBtn.innerText = "삭제";
+    delBtn.classList.add("btn-delete");
+    li.appendChild(delBtn);
+    doneList.appendChild(li); 
+};
 
+function deleteTodo(li:HTMLLIElement){
+    li.remove();
+};
 
     

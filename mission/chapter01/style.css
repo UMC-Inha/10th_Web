@@ -32,7 +32,7 @@ main{
     display: flex;
     flex-direction: row;
 }
-section{
+#todo_area, #done_area{
     flex:1;
     display: flex;
     flex-direction: column;
