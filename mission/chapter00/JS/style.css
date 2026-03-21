@@ -1,0 +1,51 @@
+body { 
+    background-color: rgb(240, 245, 247);
+}
+
+header {
+    text-align: center; 
+    margin-top: 50px;
+    border-bottom: 2px solid  rgb(211, 234, 243);
+}
+
+input {
+    display: block;
+    margin: 20px auto;
+    width: 800px;
+    padding: 20px;
+    border: 2px solid rgb(211, 234, 243);
+}
+
+main {
+    display: flex;
+    justify-content:center;
+    gap: 200px;
+}
+
+h4 {
+    text-align: center;
+    border-bottom: 2px solid rgb(211, 234, 243);
+    padding-bottom: 5px;
+    width: 80px;
+    margin: 20px auto;
+}
+
+ul {
+    list-style: none;
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 250px;
+    margin: 0 auto;
+    border-bottom: 2px solid rgb(211, 234, 243);
+    padding: 10px;
+}
+button {
+    background-color: rgb(211, 234, 243) ;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+}

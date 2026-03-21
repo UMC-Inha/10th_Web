@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS 실습2</title>
+    <style>
+        body {
+            color: white;
+            background-color: #f0f0f0;
+        }
+
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .layout-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar-grid {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            height: 100px;
+        }
+
+        .navbar-grid__header {
+            background-color: black;
+        }
+
+        .navbar-grid__menu {
+            background-color: red;
+        }
+
+        .hero-section {
+            height: 350px;
+            background-color: rgb(117, 148, 241);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            height: 400px;
+            background-color:white;
+        }
+
+        .content-grid__main {
+            background-color: rgb(66, 66, 78);
+        }
+
+        .side-grid {
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+        }
+
+        .side-grid__image {
+            background-color: rgb(121, 241, 246);
+            color: black;
+        }
+
+        .side-grid__extra {
+            background-color: rgb(142, 225, 142);
+        }
+
+        .banner-section {
+            height: 100px;
+            background-color: rgb(242, 213, 82);
+            color:black;
+        }
+
+        @media (max-width: 768px) {
+            body { font-size: 1.2rem; }
+            .navbar-grid { grid-template-columns: 1fr 2fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="layout-container">
+        
+        <header class="navbar-grid">
+            <div class="navbar-grid__header flex-center">HEADER</div>
+            <div class="navbar-grid__menu flex-center">MENU</div>
+        </header>
+
+        <section class="hero-section flex-center">HERO</section>
+
+        <main class="content-grid">
+            <div class="content-grid__main flex-center">MAIN</div>
+            <div class="content-grid__empty"></div> <div class="side-grid">
+                <div class="side-grid__image flex-center">IMAGE</div>
+                <div class="side-grid__extra flex-center">EXTRA</div>
+            </div>
+        </main>
+
+        <footer class="banner-section flex-center">BANNER</footer>
+
+    </div>
+
+</body>
+</html>
