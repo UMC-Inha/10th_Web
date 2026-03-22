@@ -2,6 +2,70 @@
 
 ## [box-sizing-border/outline] border vs outline의 차이점 🍠
 
+### border
+
+👉 요소의 테두리 (박스 모델 포함, 레이아웃 영향 O)
+
+**✔️ 구성 속성**
+| 속성 | 설명 | 값 |
+| --------------- | ------- | --------------------------------------------------------------------------------------------- |
+| `border-width` | 두께 | `px`, `em`, `rem`, `thin`, `medium`, `thick` |
+| `border-style` | 스타일 | `none`, `hidden`, `dotted`, `dashed`, `solid`, `double`, `groove`, `ridge`, `inset`, `outset` |
+| `border-color` | 색상 | `RGB`, `RGBA`, `HEX`, `HSL`, `HSLA`, 색상 이름 |
+| `border-radius` | 모서리 둥글게 | `px`, `%` |
+
+**✔️ 특징**
+
+- 부분 적용 가능 (`border-top`, `border-right` 등)
+- 속성의 순서 영향 ❌
+- 생략한 속성은 기본 초기값으로 적용
+- 박스 크기 포함 (크기 변화 ⭕️)
+- 단축 속성 가능
+  ```css
+  border: 1px solid red;
+  ```
+
+---
+
+### outline
+
+👉 요소 바깥 외곽선 (박스 모델 미포함, 레이아웃 영향 X)
+
+**✔️ 구성 속성**
+| 속성 | 설명 | 값 |
+| ---------------- | ------ | --------------------------------------------------------------------------------------------- |
+| `outline-width` | 두께 | `px`, `em`, `rem`, `thin`, `medium`(기본값), `thick` |
+| `outline-style` | 스타일 | `none`(기본값), `hidden`, `dotted`, `dashed`, `solid`, `double`, `groove`, `ridge`, `inset`, `outset` |
+| `outline-color` | 색상 | `RGB`, `RGBA`, `HEX`, `HSL`, `HSLA`, 색상 이름 |
+| `outline-offset` | 요소와 거리 | `px`, `em`, `rem` |
+
+**✔️ 특징**
+
+- 크기 변화 없음
+- 항상 바깥쪽에 표시
+- 부분 적용 불가
+- `border-radius` 적용 안됨
+- 단축 속성 가능
+  ```css
+  outline: 2px solid blue;
+  outline-offset: 5px;
+  ```
+
+---
+
+### border vs outline
+
+| 항목          | border    | outline              |
+| ------------- | --------- | -------------------- |
+| 위치          | 요소 내부 | 요소 외부            |
+| 레이아웃 영향 | O         | X                    |
+| 크기 변화     | O         | X                    |
+| 부분 적용     | O         | X                    |
+| 둥근 모서리   | O         | X                    |
+| 간격 조절     | X         | O (`outline-offset`) |
+
+---
+
 ### ✔️ 상황 1: 요소 크기 변화
 
 ```html
