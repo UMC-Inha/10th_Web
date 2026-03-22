@@ -1,22 +1,68 @@
+// =============================================================================
+// Types & constants
+// =============================================================================
+
 type TodoItem = {
   id: number;
   text: string;
   isDone: boolean;
 };
 
-const inputEl = document.getElementById('todo-input') as HTMLInputElement | null;
-const todoListEl = document.getElementById('todo-list') as HTMLUListElement | null;
-const doneListEl = document.getElementById('done-list') as HTMLUListElement | null;
+const STORAGE_KEY = 'ts_todo_items';
 
-if (!inputEl || !todoListEl || !doneListEl) {
+const ID = {
+  input: 'todo-input',
+  todoList: 'todo-list',
+  doneList: 'done-list',
+} as const;
+
+const SEL = {
+  item: '.todo-item',
+  text: '.todo-item__text',
+  btnComplete: '.btn--complete',
+  btnDelete: '.btn--delete',
+} as const;
+
+const CLS = {
+  item: 'todo-item',
+  text: 'todo-item__text',
+  actions: 'todo-item__actions',
+  btnComplete: 'btn btn--complete',
+  btnDelete: 'btn btn--delete',
+} as const;
+
+// =============================================================================
+// DOM (narrowed after guard — 이후 단언 불필요)
+// =============================================================================
+
+const inputElRaw = document.getElementById(ID.input);
+const todoListElRaw = document.getElementById(ID.todoList);
+const doneListElRaw = document.getElementById(ID.doneList);
+
+if (!inputElRaw || !todoListElRaw || !doneListElRaw) {
   throw new Error('필수 DOM 요소를 찾을 수 없습니다.');
 }
 
-let nextId = 1;
-const STORAGE_KEY = 'ts_todo_items';
+const inputEl = inputElRaw as HTMLInputElement;
+const todoListEl = todoListElRaw as HTMLUListElement;
+const doneListEl = doneListElRaw as HTMLUListElement;
 
-function saveToStorage(items: TodoItem[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+// =============================================================================
+// State (단일 진실 공급원)
+// =============================================================================
+
+let items: TodoItem[] = [];
+let nextId = 1;
+
+// =============================================================================
+// Storage
+// =============================================================================
+
+function isTodoItem(value: unknown): value is TodoItem {
+  if (typeof value !== 'object' || value === null) return false;
+  if (!('id' in value) || !('text' in value) || !('isDone' in value)) return false;
+  const o = value as { id: unknown; text: unknown; isDone: unknown };
+  return typeof o.id === 'number' && typeof o.text === 'string' && typeof o.isDone === 'boolean';
 }
 
 function loadFromStorage(): TodoItem[] {
@@ -24,73 +70,49 @@ function loadFromStorage(): TodoItem[] {
   if (!raw) return [];
 
   try {
-    const parsed = JSON.parse(raw) as unknown;
+    const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-
-    return parsed
-      .map((item) => {
-        if (
-          typeof item === 'object' &&
-          item !== null &&
-          'id' in item &&
-          'text' in item &&
-          'isDone' in item
-        ) {
-          const { id, text, isDone } = item as {
-            id: unknown;
-            text: unknown;
-            isDone: unknown;
-          };
-
-          if (typeof id === 'number' && typeof text === 'string' && typeof isDone === 'boolean') {
-            return { id, text, isDone };
-          }
-        }
-        return null;
-      })
-      .filter((v): v is TodoItem => v !== null);
+    return parsed.filter(isTodoItem);
   } catch {
     return [];
   }
 }
 
-function getAllItems(): TodoItem[] {
-  const items: TodoItem[] = [];
-  const collect = (listEl: HTMLUListElement, isDone: boolean) => {
-    listEl.querySelectorAll<HTMLLIElement>('.todo-item').forEach((li) => {
-      const idAttr = li.dataset.id;
-      const textEl = li.querySelector<HTMLElement>('.todo-item__text');
-      if (!idAttr || !textEl) return;
-      const idNum = Number(idAttr);
-      if (Number.isNaN(idNum)) return;
-      items.push({ id: idNum, text: textEl.textContent ?? '', isDone });
-    });
-  };
+function saveToStorage(): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+}
 
-  collect(todoListEl as HTMLUListElement, false);
-  collect(doneListEl as HTMLUListElement, true);
+function syncNextIdFromItems(): void {
+  const maxId = items.reduce((max, i) => Math.max(max, i.id), 0);
+  nextId = maxId + 1;
+}
 
-  return items;
+// =============================================================================
+// Rendering
+// =============================================================================
+
+function completeButtonLabel(isDone: boolean): string {
+  return isDone ? '되돌리기' : '완료';
 }
 
 function createTodoElement(item: TodoItem): HTMLLIElement {
   const li = document.createElement('li');
-  li.className = 'todo-item';
+  li.className = CLS.item;
   li.dataset.id = String(item.id);
 
   const textSpan = document.createElement('span');
-  textSpan.className = 'todo-item__text';
+  textSpan.className = CLS.text;
   textSpan.textContent = item.text;
 
   const actions = document.createElement('div');
-  actions.className = 'todo-item__actions';
+  actions.className = CLS.actions;
 
   const completeBtn = document.createElement('button');
-  completeBtn.className = 'btn btn--complete';
-  completeBtn.textContent = item.isDone ? '되돌리기' : '완료';
+  completeBtn.className = CLS.btnComplete;
+  completeBtn.textContent = completeButtonLabel(item.isDone);
 
   const deleteBtn = document.createElement('button');
-  deleteBtn.className = 'btn btn--delete';
+  deleteBtn.className = CLS.btnDelete;
   deleteBtn.textContent = '삭제';
 
   actions.appendChild(completeBtn);
@@ -102,11 +124,20 @@ function createTodoElement(item: TodoItem): HTMLLIElement {
   return li;
 }
 
-function renderItem(item: TodoItem): void {
-  const li = createTodoElement(item);
-  const targetList = (item.isDone ? doneListEl : todoListEl) as HTMLUListElement;
-  targetList.appendChild(li);
+function renderAll(): void {
+  todoListEl.replaceChildren();
+  doneListEl.replaceChildren();
+
+  for (const item of items) {
+    const li = createTodoElement(item);
+    const target = item.isDone ? doneListEl : todoListEl;
+    target.appendChild(li);
+  }
 }
+
+// =============================================================================
+// Actions
+// =============================================================================
 
 function addTodo(text: string): void {
   const item: TodoItem = {
@@ -114,65 +145,45 @@ function addTodo(text: string): void {
     text,
     isDone: false,
   };
-  renderItem(item);
-  const all = getAllItems();
-  all.push(item);
-  saveToStorage(all);
+  items.push(item);
+  saveToStorage();
+  renderAll();
 }
 
 function toggleTodo(id: number): void {
-  const selector = `[data-id="${id}"]`;
-  const li =
-    todoListEl!.querySelector<HTMLLIElement>(selector) ??
-    doneListEl!.querySelector<HTMLLIElement>(selector);
-  if (!li) return;
-
-  const fromList = li.parentElement;
-  if (!(fromList instanceof HTMLUListElement)) return;
-
-  const goingToDone = fromList === todoListEl;
-  const targetList = (goingToDone ? doneListEl : todoListEl) as HTMLUListElement;
-
-  targetList.appendChild(li);
-
-  const btn = li.querySelector<HTMLButtonElement>('.btn--complete');
-  if (btn) {
-    btn.textContent = goingToDone ? '되돌리기' : '완료';
-  }
-
-  const all = getAllItems().map((item) =>
-    item.id === id ? { ...item, isDone: goingToDone } : item
-  );
-  saveToStorage(all);
+  const item = items.find((i) => i.id === id);
+  if (!item) return;
+  item.isDone = !item.isDone;
+  saveToStorage();
+  renderAll();
 }
 
 function deleteTodo(id: number): void {
-  const selector = `[data-id="${id}"]`;
-  const li =
-    todoListEl!.querySelector<HTMLLIElement>(selector) ??
-    doneListEl!.querySelector<HTMLLIElement>(selector);
-  if (!li) return;
-
-  li.remove();
-  const all = getAllItems().filter((item) => item.id !== id);
-  saveToStorage(all);
+  items = items.filter((i) => i.id !== id);
+  saveToStorage();
+  renderAll();
 }
 
-function handleInputKey(event: KeyboardEvent): void {
-  if (event.key !== 'Enter') return;
+// =============================================================================
+// Event handlers
+// =============================================================================
 
-  const value = inputEl!.value.trim();
+function handleInputKeydown(event: KeyboardEvent): void {
+  if (event.key !== 'Enter') return;
+  if (event.isComposing) return;
+
+  const value = inputEl.value.trim();
   if (!value) return;
 
   addTodo(value);
-  inputEl!.value = '';
+  inputEl.value = '';
 }
 
 function handleListClick(event: MouseEvent): void {
   const target = event.target;
   if (!(target instanceof HTMLElement)) return;
 
-  const li = target.closest<HTMLLIElement>('.todo-item');
+  const li = target.closest<HTMLLIElement>(SEL.item);
   if (!li) return;
 
   const idAttr = li.dataset.id;
@@ -189,19 +200,18 @@ function handleListClick(event: MouseEvent): void {
   }
 }
 
-function restoreFromStorage(): void {
-  const items = loadFromStorage();
-  if (items.length === 0) return;
+// =============================================================================
+// Bootstrap
+// =============================================================================
 
-  nextId = Math.max(...items.map((i) => i.id)) + 1;
+function init(): void {
+  items = loadFromStorage();
+  syncNextIdFromItems();
+  renderAll();
 
-  items.forEach((item) => {
-    renderItem(item);
-  });
+  inputEl.addEventListener('keydown', handleInputKeydown);
+  todoListEl.addEventListener('click', handleListClick);
+  doneListEl.addEventListener('click', handleListClick);
 }
 
-inputEl!.addEventListener('keyup', handleInputKey);
-todoListEl!.addEventListener('click', handleListClick);
-doneListEl!.addEventListener('click', handleListClick);
-
-restoreFromStorage();
+init();
