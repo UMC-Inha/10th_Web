@@ -2,7 +2,7 @@
     color:#fff;
     font-size: 24px;
 }
-.head, .menu, .hero, main, .img, .extra, .footer {
+.head, .menu, .hero, main, .img, .extra, footer {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -28,6 +28,7 @@ main { background-color: #28364c; }
 .empty { background-color: #fff; }
 aside{
     display: flex;
+    grid-column-start: 3;
     flex-direction: column;
 }
 .img{

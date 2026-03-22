@@ -1,61 +1,108 @@
-const planInput = document.getElementById('input_container__plan_input') as HTMLInputElement ;
+interface Todos {
+    id: number;
+    text: string; 
+    isDone: boolean;
+}
+
+const planInput = document.getElementById('input_container__plan_input') as HTMLInputElement;
 const todoList = document.getElementById('todo_list') as HTMLUListElement;
 const doneList = document.getElementById('done_list') as HTMLUListElement;
 const addBtn = document.getElementById('input_container__add_btn') as HTMLButtonElement;
 
-planInput.addEventListener("keydown", (event:KeyboardEvent) => {
-    if (event.key === 'Enter' && planInput.value.trim() !== "") {
-        addTodo(planInput.value);
-        planInput.value = "";
-    }
-});
+let todos: Todos[] = [];
+
+loadTodos();
+
+if (planInput) {
+    planInput.addEventListener("keydown", (event: KeyboardEvent) => {
+        if (event.isComposing) return;
+        if (event.key === 'Enter' && planInput.value.trim() !== "") {
+            addTodo(planInput.value);
+            planInput.value = "";
+        }
+    });
+}
 
 addBtn.addEventListener("click", () => {
-    if (planInput.value.trim() !== "") {
+    if (planInput && planInput.value.trim() !== "") {
         addTodo(planInput.value);
         planInput.value = "";
     }
 });
 
-todoList.addEventListener("click", (event:Event)=>{
+todoList.addEventListener("click", (event: Event) => {
     const btn = event.target as HTMLButtonElement;
     const li = btn.closest("li");
-    if(btn.classList.contains("btn-complete") && li){
+    if (btn.classList.contains("btn-complete") && li) {
         completeTodo(li, btn);
-    };
+    }
 });
 
-doneList.addEventListener("click",(event) => {
-    const btn = event.target as HTMLButtonElement
-    const li = btn.closest("li")
-    if(btn.classList.contains("btn-delete") && li){
+doneList.addEventListener("click", (event) => {
+    const btn = event.target as HTMLButtonElement;
+    const li = btn.closest("li");
+    if (btn.classList.contains("btn-delete") && li) {
         deleteTodo(li);
-    };
+    }
 });
 
-function addTodo(text:string) :void{
+function createButton(text: string, className: string, li: HTMLLIElement): void {
+    const btn = document.createElement('button');
+    btn.innerText = text;
+    btn.classList.add(className);
+    li.appendChild(btn);
+}
+
+function addTodo(text: string): void {
+    const newTodo: Todos = { id: Date.now(), text, isDone: false };
+    todos.push(newTodo);
+    renderTodo(newTodo); 
+    saveTodos();        
+}
+
+function renderTodo(todo: Todos): void {
     const li = document.createElement('li'); 
-    li.innerText = text;
-    // 완료버튼
-    const completeBtn = document.createElement('button');
-    completeBtn.innerText = "완료";
-    completeBtn.classList.add("btn-complete");
-    li.appendChild(completeBtn);
-    todoList.appendChild(li);
-};
+    li.dataset.id = todo.id.toString();
+    li.innerText = todo.text;
 
-function completeTodo(li:HTMLLIElement, btn:HTMLButtonElement){
-    btn.remove(); 
-    // 삭제버튼
-    const delBtn = document.createElement('button');
-    delBtn.innerText = "삭제";
-    delBtn.classList.add("btn-delete");
-    li.appendChild(delBtn);
-    doneList.appendChild(li); 
-};
+    if (!todo.isDone) {
+        createButton("완료", "btn-complete", li);
+        todoList.appendChild(li);
+    } else {
+        createButton("삭제", "btn-delete", li);
+        doneList.appendChild(li);
+    }
+}
 
-function deleteTodo(li:HTMLLIElement){
-    li.remove();
-};
-
+function completeTodo(li: HTMLLIElement, btn: HTMLButtonElement): void {
+    const targetId = Number(li.dataset.id);
+    const todo = todos.find(t => t.id === targetId);
     
+    if (todo) {
+        todo.isDone = true;
+        btn.remove(); 
+        createButton("삭제", "btn-delete", li);
+        doneList.appendChild(li); 
+        saveTodos(); 
+    }
+}
+
+function deleteTodo(li: HTMLLIElement): void {
+    const targetId = Number(li.dataset.id);
+    todos = todos.filter(t => t.id !== targetId);
+    li.remove();
+    saveTodos(); 
+}
+
+function saveTodos(): void {
+    localStorage.setItem('my_todos', JSON.stringify(todos));
+}
+
+
+function loadTodos(): void {
+    const saved = localStorage.getItem('my_todos');
+    if (saved) {
+        todos = JSON.parse(saved);
+        todos.forEach(todo => renderTodo(todo));
+    }
+}
