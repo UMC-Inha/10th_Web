@@ -49,20 +49,22 @@ body {
 .content {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  outline: none;
 }
 
 .main {
   background-color: #24395a;
   color: white;
-}
-
-.blank {
-  background-color: #ececec;
+  grid-column: 1;
+  grid-row: 1 / 3;
 }
 
 .side {
   display: flex;
   flex-direction: column;
+  grid-column: 3;
+  grid-row: 1 / 3;
 }
 
 .image {
@@ -99,18 +101,19 @@ body {
 
   .content {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
   }
 
   .main {
     min-height: 220px;
-  }
-
-  .blank {
-    min-height: 120px;
+    grid-column: 1;
+    grid-row: auto;
   }
 
   .side {
     min-height: 240px;
+    grid-column: 1;
+    grid-row: auto;
   }
 
   .header,
