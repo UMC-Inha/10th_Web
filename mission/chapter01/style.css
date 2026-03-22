@@ -1,0 +1,70 @@
+* {
+    box-sizing: border-box;
+}
+body{
+    display:flex;
+    align-items: center;
+    background-color: #bcc5cf;
+    height:100vh;
+    justify-content: center;
+}
+.input_container{
+    align-items: center;
+}   
+#input_container__add_btn{
+    height:30px;
+}
+.plan_container{
+    display:flex;
+    flex-direction: column;
+    border: 1px black solid;
+    align-items: center;
+    background-color: #ffffff;
+    justify-content: center;
+}
+#input_container__plan_input{
+    height:30px;
+    width:200px;
+    padding: 0;
+}
+main{
+    width:500px;
+    display: flex;
+    flex-direction: row;
+}
+#todo_area, #done_area{
+    flex:1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+ul{
+    display: flex;
+    flex-direction: column;
+    flex:1;
+    align-items: center;
+    padding:0;
+    list-style: none;
+}
+li{
+    width:150px;
+    min-height: 30px;
+    border:#7faee3 1px solid;
+    box-shadow: 4px 4px 0 0 rgb(102, 182, 228);
+    word-break: break-all;
+    overflow-wrap: break-word;
+    align-items: center;
+    padding:10px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    margin:10px;
+}
+button{
+    background-color: rgb(103, 199, 103);
+    border-radius: 10px;
+}
+#done_area button {
+    background-color: rgb(240, 76, 76);
+}
