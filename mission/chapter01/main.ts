@@ -1,12 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
   const todoForm = document.querySelector<HTMLFormElement>(".todoForm");
+  const listsContainer = document.querySelector<HTMLDivElement>(".todo-app__lists");
   const todoInput = document.querySelector<HTMLInputElement>("#todoInput");
   const todoList = document.querySelector<HTMLUListElement>("#todoList");
   const doneList = document.querySelector<HTMLUListElement>("#doneList");
   const todoEmpty = document.querySelector<HTMLParagraphElement>("#todoEmpty");
   const doneEmpty = document.querySelector<HTMLParagraphElement>("#doneEmpty");
 
-  if (!todoForm || !todoInput || !todoList || !doneList || !todoEmpty || !doneEmpty) {
+  if (!todoForm || !listsContainer || !todoInput || !todoList || !doneList || !todoEmpty || !doneEmpty) {
     console.error("필요한 DOM 요소를 찾지 못했습니다.");
     return;
   }
@@ -21,7 +22,12 @@ document.addEventListener("DOMContentLoaded", () => {
     updateEmptyMessage();
   };
 
-  const completeTodo = (todoItem: HTMLLIElement, actions: HTMLDivElement): void => {
+  const completeTodo = (todoItem: HTMLLIElement): void => {
+    const actions = todoItem.querySelector<HTMLDivElement>(".todo-item__actions");
+    if (!actions) {
+      return;
+    }
+
     todoItem.classList.add("todo-item--done");
     actions.innerHTML = "";
 
@@ -29,10 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
     deleteButton.className = "todo-btn todo-btn--delete";
     deleteButton.type = "button";
     deleteButton.textContent = "삭제";
-
-    deleteButton.addEventListener("click", () => {
-      deleteTodo(todoItem);
-    });
 
     actions.appendChild(deleteButton);
     doneList.appendChild(todoItem);
@@ -54,10 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
     completeButton.className = "todo-btn todo-btn--complete";
     completeButton.type = "button";
     completeButton.textContent = "완료";
-
-    completeButton.addEventListener("click", () => {
-      completeTodo(li, actions);
-    });
 
     actions.appendChild(completeButton);
     li.appendChild(span);
@@ -95,6 +93,28 @@ document.addEventListener("DOMContentLoaded", () => {
   todoForm.addEventListener("submit", (event: SubmitEvent) => {
     event.preventDefault();
     addTodo();
+  });
+
+  listsContainer.addEventListener("click", (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    const actionButton = target.closest<HTMLButtonElement>(".todo-btn");
+    if (!actionButton) {
+      return;
+    }
+
+    const todoItem = actionButton.closest<HTMLLIElement>(".todo-item");
+    if (!todoItem) {
+      return;
+    }
+
+    if (actionButton.classList.contains("todo-btn--complete")) {
+      completeTodo(todoItem);
+      return;
+    }
+
+    if (actionButton.classList.contains("todo-btn--delete")) {
+      deleteTodo(todoItem);
+    }
   });
 
   updateEmptyMessage();

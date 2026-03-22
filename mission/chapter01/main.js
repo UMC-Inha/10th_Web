@@ -1,11 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
     var todoForm = document.querySelector(".todoForm");
+    var listsContainer = document.querySelector(".todo-app__lists");
     var todoInput = document.querySelector("#todoInput");
     var todoList = document.querySelector("#todoList");
     var doneList = document.querySelector("#doneList");
     var todoEmpty = document.querySelector("#todoEmpty");
     var doneEmpty = document.querySelector("#doneEmpty");
-    if (!todoForm || !todoInput || !todoList || !doneList || !todoEmpty || !doneEmpty) {
+    if (!todoForm || !listsContainer || !todoInput || !todoList || !doneList || !todoEmpty || !doneEmpty) {
         console.error("필요한 DOM 요소를 찾지 못했습니다.");
         return;
     }
@@ -17,16 +18,17 @@ document.addEventListener("DOMContentLoaded", function () {
         todoItem.remove();
         updateEmptyMessage();
     };
-    var completeTodo = function (todoItem, actions) {
+    var completeTodo = function (todoItem) {
+        var actions = todoItem.querySelector(".todo-item__actions");
+        if (!actions) {
+            return;
+        }
         todoItem.classList.add("todo-item--done");
         actions.innerHTML = "";
         var deleteButton = document.createElement("button");
         deleteButton.className = "todo-btn todo-btn--delete";
         deleteButton.type = "button";
         deleteButton.textContent = "삭제";
-        deleteButton.addEventListener("click", function () {
-            deleteTodo(todoItem);
-        });
         actions.appendChild(deleteButton);
         doneList.appendChild(todoItem);
         updateEmptyMessage();
@@ -43,9 +45,6 @@ document.addEventListener("DOMContentLoaded", function () {
         completeButton.className = "todo-btn todo-btn--complete";
         completeButton.type = "button";
         completeButton.textContent = "완료";
-        completeButton.addEventListener("click", function () {
-            completeTodo(li, actions);
-        });
         actions.appendChild(completeButton);
         li.appendChild(span);
         li.appendChild(actions);
@@ -74,6 +73,24 @@ document.addEventListener("DOMContentLoaded", function () {
     todoForm.addEventListener("submit", function (event) {
         event.preventDefault();
         addTodo();
+    });
+    listsContainer.addEventListener("click", function (event) {
+        var target = event.target;
+        var actionButton = target.closest(".todo-btn");
+        if (!actionButton) {
+            return;
+        }
+        var todoItem = actionButton.closest(".todo-item");
+        if (!todoItem) {
+            return;
+        }
+        if (actionButton.classList.contains("todo-btn--complete")) {
+            completeTodo(todoItem);
+            return;
+        }
+        if (actionButton.classList.contains("todo-btn--delete")) {
+            deleteTodo(todoItem);
+        }
     });
     updateEmptyMessage();
 });
