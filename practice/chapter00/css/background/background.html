@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Background 예시</title>
+    <style>
+      section {
+        border: 1px solid #000000;
+        padding: 16px;
+        margin-bottom: 24px;
+      }
+
+      .box {
+        width: 300px;
+        height: 200px;
+        border: 2px solid #333333;
+      }
+
+      .bg-image,
+      .bg-repeat,
+      .bg-position,
+      .bg-size {
+        background-image: url('image.jpg');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+      }
+
+      /* 각 속성별로 바꾸고 싶은 것만 덮어쓰기 */
+      .bg-repeat {
+        background-repeat: repeat;
+      }
+
+      .bg-position {
+        background-position: right bottom;
+      }
+
+      .bg-size {
+        background-size: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>background-image</h2>
+    <section>
+      <div class="box bg-image"></div>
+    </section>
+
+    <h2>background-repeat</h2>
+    <section>
+      <div class="box bg-repeat"></div>
+    </section>
+
+    <h2>background-position</h2>
+    <section>
+      <div class="box bg-position"></div>
+    </section>
+
+    <h2>background-size</h2>
+    <section>
+      <div class="box bg-size"></div>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      section {
+        border: 1px solid #000000;
+        padding: 16px;
+      }
+
+      div,
+      span {
+        border: 1px solid red;
+        width: fit-content;
+      }
+
+      .text-align-wrapper {
+        text-align: center;
+      }
+
+      .margin-box {
+        margin: auto;
+      }
+
+      .flex-wrapper {
+        display: flex;
+        height: 200px;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .translate-wrapper {
+        position: relative;
+      }
+
+      .translate-box {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .grid-wrapper {
+        display: grid;
+        place-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>text-align</h2>
+    <section class="text-align-wrapper">
+      <span>BOX</span>
+    </section>
+
+    <h2>margin</h2>
+    <section>
+      <div class="margin-box">BOX</div>
+    </section>
+
+    <h2>flex</h2>
+    <section class="flex-wrapper">
+      <div>BOX</div>
+    </section>
+
+    <h2>translate</h2>
+    <section class="translate-wrapper">
+      <div class="translate-box">BOX</div>
+    </section>
+
+    <h2>grid</h2>
+    <section class="grid-wrapper">
+      <div>BOX</div>
+    </section>
+  </body>
+</html>

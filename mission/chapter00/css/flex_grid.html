@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Flex + Grid Layout</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      html {
+        height: 100%;
+      }
+
+      body {
+        min-height: 100%;
+        height: 100%;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: #ffffff;
+      }
+
+      .container {
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100dvh;
+        height: 100vh;
+        height: 100dvh;
+        display: grid;
+        grid-template-rows: minmax(56px, auto) 1fr 1fr minmax(56px, auto);
+        grid-template-columns: 1fr;
+      }
+
+      .container__top {
+        display: flex;
+        min-height: 72px;
+      }
+
+      .top__header,
+      .top__menu {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-weight: 600;
+      }
+
+      .top__header {
+        flex: 0 0 25%;
+        background-color: #24344d;
+      }
+
+      .top__menu {
+        flex: 1;
+        background-color: #f54251;
+      }
+
+      .container__hero {
+        background-color: #4a86c9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 22px;
+      }
+
+      .container__content {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        grid-template-rows: 1fr;
+        min-height: 0;
+      }
+
+      .content__main {
+        grid-column: 1;
+        background-color: #24344d;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+      }
+
+      .content__side {
+        grid-column: 3;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+
+      .content__image,
+      .content__extra {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        min-height: 0;
+      }
+
+      .content__image {
+        background-color: #bfe3e6;
+        color: #1a1a1a;
+      }
+
+      .content__extra {
+        background-color: #52be95;
+        color: #ffffff;
+      }
+
+      .container__banner {
+        background-color: #fcd373;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        min-height: 72px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="container__top">
+        <div class="top__header">HEADER</div>
+        <div class="top__menu">MENU</div>
+      </header>
+
+      <section class="container__hero">HERO</section>
+
+      <section class="container__content">
+        <main class="content__main">MAIN</main>
+        <aside class="content__side">
+          <div class="content__image">IMAGE</div>
+          <div class="content__extra">EXTRA</div>
+        </aside>
+      </section>
+
+      <footer class="container__banner">BANNER</footer>
+    </div>
+  </body>
+</html>

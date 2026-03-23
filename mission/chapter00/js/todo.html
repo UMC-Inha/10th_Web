@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>UMC Study Plan</title>
+    <link rel="stylesheet" href="./todo.css" />
+  </head>
+  <body class="page">
+    <main class="layout">
+      <section class="hero">
+        <h1 class="hero__title">UMC Study Plan</h1>
+        <p class="hero__subtitle">이번 주 스터디 계획을 기록하고 관리해 보세요.</p>
+        <div class="planner">
+          <input
+            class="planner__input"
+            type="text"
+            placeholder="예: HTML 마무리 / JS 과제 제출하기"
+          />
+        </div>
+      </section>
+
+      <section class="board">
+        <div class="board__column">
+          <h2 class="board__title">TODO</h2>
+          <ul class="todo-list" id="todo-list"></ul>
+        </div>
+        <div class="board__column">
+          <h2 class="board__title">DONE</h2>
+          <ul class="todo-list todo-list--done" id="done-list"></ul>
+        </div>
+      </section>
+    </main>
+
+    <script src="./todo.js"></script>
+  </body>
+</html>
