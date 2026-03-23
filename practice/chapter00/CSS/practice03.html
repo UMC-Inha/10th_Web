@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>정렬 5게 실습</title>
+  <style>
+    .container {
+      width: 500px;
+      height: 200px;
+      border: 2px solid black;
+      margin-bottom: 20px;
+    }
+
+    .box {
+      width: 100px;
+      height: 100px;
+      background-color: purple;
+      color: white;
+      text-align: center;
+      line-height: 100px;
+    }
+
+    /* 1. text-align */
+    .align-text { text-align: center; }
+    .align-text .box { display: inline-block; }
+
+    /* 2. margin */
+    .align-margin .box { margin: 0 auto; }
+
+    /* 3. flex */
+    .align-flex {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 4. translate */
+    .align-translate { position: relative; }
+    .align-translate .box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* 5. grid */
+    .align-grid {
+      display: grid;
+      place-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>1. text-align으로 가운데 정렬</h2>
+  <div class="container align-text">
+    <div class="box">BOX</div>
+  </div>
+
+  <h2>2. margin으로 가운데 정렬</h2>
+  <div class="container align-margin">
+    <div class="box">BOX</div>
+  </div>
+
+  <h2>3. flex로 가운데 정렬</h2>
+  <div class="container align-flex">
+    <div class="box">BOX</div>
+  </div>
+
+  <h2>4. translate로 가운데 정렬</h2>
+  <div class="container align-translate">
+    <div class="box">BOX</div>
+  </div>
+
+  <h2>5. grid로 가운데 정렬</h2>
+  <div class="container align-grid">
+    <div class="box">BOX</div>
+  </div>
+
+</body>
+</html>

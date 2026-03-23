@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO-TypeScripy ver.</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="page">
+    <div class="todo-container">
+        <header class="header">
+            <h1 class="header__title">MY TODO</h1>
+        </header>
+
+        <section class="todo-input">
+            <input type="text" id="todo-input" class="todo-input__field" placeholder="할 일 입력">
+            <button id="add-button" class="todo-input__button">할 일 추가</button>
+        </section>
+
+        <main class="todo-main">
+            <div class="todo-board">
+                <h2 class="todo-board__title">할 일</h2>
+                <ul id="todo-list" class="todo-list"></ul>
+            </div>
+            <div class="todo-board">
+                <h2 class="todo-board__title">완료</h2>
+                <ul id="done-list" class="todo-list todo-list--done"></ul>
+            </div>
+        </main>
+    </div>
+    <script src="./dist/app.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+body {
+    background-color: #f9f9f7;
+}
+
+.navbar {
+    background-color: #fff;
+    border: 2px solid #333;
+    border-radius: 40px;
+    margin: 20px;
+    padding: 12px 24px;
+}
+
+.navbar__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.navbar__logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar__logo-icon {
+    width: 30px;
+    height: 30px;
+    background-color: #ffcccc;
+    border-radius: 40%;
+}
+
+.navbar__brand-name {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.navbar__menu {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.navbar__menu-item {
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+}
+
+.navbar__btn-notify {
+    text-decoration: none;
+    color: #ff4d4f;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.lang-toggle {
+    display: flex;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.lang-toggle__btn {
+    border: none;
+    background: none;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.lang-toggle__btn--active {
+    background-color: #ff4d4f;
+    color: #fff;
+}
+
+
+@media (max-width: 768px) {
+    .navbar__menu-item--hide-mobile {
+        display: none;
+    }
+
+    .navbar {
+        margin: 10px;
+        padding: 10px 16px;
+    }
+}

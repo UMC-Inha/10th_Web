@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>CSS Transform 실습</title>
+  <style>
+    body { padding: 20px; font-family: sans-serif; }
+    .section { margin-bottom: 80px; }
+    
+    /* 원래 위치보여줌 */
+    .guide {
+      width: 100px;
+      height: 100px;
+      border: 2px dashed #ccc;
+      position: relative;
+    }
+
+    /* 실제 변형되는 박스 */
+    .box {
+      width: 100px;
+      height: 100px;
+      background: purple;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    /* 1. translate*/
+    .trans { transform: translate(150px, 30px); }
+
+    /* 2. scale*/
+    .sc { transform: scale(1.5); }
+
+    /* 3. rotate*/
+    .rot { transform: rotate(45deg); }
+
+    /* 4. skew*/
+    .sk { transform: skew(20deg, 10deg); }
+
+    /* 5. matrix*/
+    .mat { transform: matrix(1, 0.2, 0.2, 1, 50, 30); }
+  </style>
+</head>
+<body>
+
+  <h1>CSS Transform 속성 실습</h1>
+
+  <div class="section">
+    <h2>1. translate (X:150px, Y:30px 이동)</h2>
+    <div class="guide">
+      <div class="box trans">TRANS</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2. scale (1.5배 확대)</h2>
+    <div class="guide">
+      <div class="box sc">SCALE</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3. rotate (45도 시계방향 회전)</h2>
+    <div class="guide">
+      <div class="box rot">ROTATE</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4. skew (X:20도, Y:10도 기울이기)</h2>
+    <div class="guide">
+      <div class="box sk">SKEW</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5. matrix (복합 행렬 변형)</h2>
+    <div class="guide">
+      <div class="box mat">MATRIX</div>
+    </div>
+  </div>
+
+</body>
+</html>
