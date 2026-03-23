@@ -1,0 +1,16 @@
+.box {
+      width: 100px;
+      height: 100px;
+      background-color: purple;
+      color: white;
+      box-sizing: border-box;
+      position: relative;
+      top: 50px;
+      left: 50px;
+    }
+
+h1 {
+    position: relative;
+    top: -100px;
+    left: 50px;
+}

@@ -1,0 +1,40 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+
+body {
+    margin: 50px;
+}
+
+.background {
+    background-color: #dff6e7;
+    margin-bottom: 10px;
+}
+
+section {
+    margin: 20px 0;
+}
+
+.box {
+    width: 100px;
+    height: 100px;
+    background-color: #9bedc7;
+    border: 10px solid #8ad5a0;
+}
+
+.block {
+    display: block;
+}
+
+.inline {
+    display: inline;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+.margin {
+    margin: 20px;
+}
