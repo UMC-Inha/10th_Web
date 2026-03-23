@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Navbar</title>
+    <style>
+      body {
+        height: 100vh;
+        background-color: black;
+        background-image: url(plave.jpg);
+        background-size: cover;
+        background-position: center;
+      }
+      li {
+        list-style: none;
+        font-size: 20px;
+      }
+      a {
+        text-decoration: none;
+        color: black;
+        font-size: 20px;
+      }
+      a:hover {
+        color: brown;
+      }
+      nav {
+        position: relative;
+        padding: 0 2rem;
+      }
+      .navbar {
+        width: 100%;
+        height: 60px;
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .nav_title {
+        display: flex;
+        font-weight: bold;
+      }
+      .navbar_link {
+        display: flex;
+        gap: 2rem;
+      }
+      .navbar_des {
+        color: brown;
+      }
+      .button {
+        display: flex;
+        font-weight: bold;
+        gap: 2rem;
+        background-color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 0.5rem;
+      }
+      .button .action_btn {
+        border-radius: 20px;
+        border: 1px solid brown;
+        padding: 0.25rem 1rem;
+        color: black;
+        cursor: pointer;
+      }
+      .button .action_btn.active {
+        background-color: brown;
+        color: white;
+      }
+      @media (max-width: 950px) {
+        .navbar_link {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav>
+      <div class="navbar">
+        <div class="nav_title"><h2>Chae</h2></div>
+        <ul class="navbar_link">
+          <li id="menu1" class="navbar_des">강아지와 친구들</li>
+          <li id="menu2">앱 다운로드</li>
+        </ul>
+        <ul class="button">
+          <li><a href="#" class="action_btn active" id="KObtn">KO</a></li>
+          <li><a href="#" class="action_btn" id="ENbtn">EN</a></li>
+        </ul>
+      </div>
+    </nav>
+    <script>
+      const buttons = document.querySelectorAll('.action_btn');
+      const KObtn = document.getElementById('KObtn');
+      const ENbtn = document.getElementById('ENbtn');
+
+      const menu1 = document.getElementById('menu1');
+      const menu2 = document.getElementById('menu2');
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', function (event) {
+          event.preventDefault();
+
+          buttons.forEach((b) => b.classList.remove('active'));
+          this.classList.add('active');
+
+          if (this.id == 'KObtn') {
+            menu1.textContent = '강아지와 친구들';
+            menu2.textContent = '앱 다운로드';
+          } else if (this.id == 'ENbtn') {
+            menu1.textContent = 'Puppy friends';
+            menu2.textContent = 'App Download';
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

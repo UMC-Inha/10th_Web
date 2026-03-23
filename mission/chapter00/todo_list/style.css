@@ -1,0 +1,104 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  display: flex;
+  font-family: sans-serif;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: rgb(251, 226, 230);
+}
+.container {
+  width: 1000px;
+}
+header {
+  padding: 20px;
+  width: 100%;
+  background-color: white;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 3px 12px 12px gray;
+}
+.container__title {
+  font-size: 100px;
+  text-align: center;
+  margin-bottom: 100px;
+  align-items: center;
+  margin-top: 60px;
+}
+.container__form {
+  display: flex;
+  margin: 20px;
+}
+.container__input {
+  padding: 12px;
+  gap: 12px;
+  border-radius: 12px;
+  font-size: 26px;
+  flex: 1;
+  margin-right: 10px;
+}
+.container__button {
+  background-color: rgb(255, 206, 214);
+  padding: 10px;
+  border: none;
+  border-radius: 12px;
+  font-size: 26px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.container__button:hover {
+  background-color: rgb(253, 142, 160);
+}
+
+.render-container {
+  width: 1000px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+.render-container__section {
+  padding: 50px;
+  flex: 1;
+  text-align: left;
+}
+.render-container__title {
+  font-size: 40px;
+  text-align: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.render-container__todo,
+.render-container__done {
+  list-style: none;
+}
+.todo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 30px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.complete-btn {
+  font-size: 20px;
+  background-color: lightgreen;
+  border-radius: 12px;
+  border: none;
+  text-align: center;
+  padding: 6px;
+  cursor: pointer;
+}
+.delete-btn {
+  font-size: 20px;
+  background-color: lightpink;
+  border-radius: 12px;
+  border: none;
+  text-align: center;
+  padding: 6px;
+  cursor: pointer;
+}
