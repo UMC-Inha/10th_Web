@@ -187,15 +187,64 @@ const getSum = (a: number, b: number): number => {
 
 2️⃣ 익명 함수로도 사용됨
 
-```TypeScript
-const fn = () => {};
+**익명함수란?**
+👉 이름이 없는 함수
+
+```javascript
+() => {
+  console.log("hello");
+};
 ```
 
-- 이름 없이 변수에 담아서 사용
+✔️ 특징
+
+- 함수 이름이 없음
+- 변수에 담아서 사용하거나
+- 바로 실행하거나 (콜백/이벤트)
+
+**사용 예시**
+
+✔️ 변수에 담기
+
+```javascript
+const sum = function (x, y) {
+  return x + y;
+};
+```
+
+✔️ 이벤트 / 콜백
+
+```javascript
+btn.addEventListener("click", () => {
+  console.log("클릭");
+});
+```
+
+**화살표 함수로 변환**
+
+👉 위 익명 함수를 더 간단하게 쓴 것이 화살표 함수
+
+```TypeScript
+const sum = (x, y) => {
+  return x + y;
+};
+```
+
+```javascript
+btn.addEventListener("click", () => {
+  console.log("클릭");
+});
+```
+
+👉 즉, 화살표 함수는
+이름 없이 바로 정의해서 사용하는 함수 형태에 적합함
 
 ---
 
-3️⃣ **this가 고정됨**
+3️⃣ **this가 고정됨 (Lexical this)**
+
+👉 화살표 함수는 자기 this가 없음<br>
+👉 대신 바깥 스코프의 this를 그대로 사용함
 
 ```TypeScript
 const obj = {
@@ -206,8 +255,35 @@ const obj = {
 }
 ```
 
-- 화살표 함수는
-- 자기 this가 없고, 바깥 this를 그대로 사용함
+| 구분                   | this 결정 방식                                         |
+| ---------------------- | ------------------------------------------------------ |
+| 일반 함수 (`function`) | 호출되는 시점에 결정됨 (누가 호출했는지에 따라 달라짐) |
+| 화살표 함수 (`=>`)     | 선언되는 시점에 결정됨 (바깥 this 그대로 사용)         |
+
+```javascript
+const obj = {
+  value: 10,
+
+  normal: function () {
+    console.log(this.value);
+  },
+
+  arrow: () => {
+    console.log(this.value);
+  },
+};
+
+obj.normal(); // 10
+obj.arrow(); // ❌ undefined
+```
+
+✔️ 핵심
+
+- 일반 함수 → this가 바뀜 (동적)
+- 화살표 함수 → this 고정됨 (정적, Lexical this)
+
+👉 그래서 화살표 함수는
+객체 메서드로 사용할 때 주의해야 함
 
 ---
 
@@ -218,6 +294,81 @@ arr.map((item) => item * 2)
 ```
 
 - 짧고, 간단
+
+---
+
+5️⃣ arguments 객체 없음
+
+👉 화살표 함수는 `arguments`를 가지지 않음
+
+```javascript
+function normal() {
+  console.log(arguments);
+}
+
+const arrow = () => {
+  console.log(arguments); // ❌ 없음
+};
+```
+
+👉 대신 나머지 매개변수 (rest parameter) 사용
+
+```javascript
+const arrow = (...args) => {
+  console.log(args);
+};
+```
+
+---
+
+6️⃣ 생성자로 사용 불가
+
+👉 화살표 함수는 `new`로 객체 생성 불가능
+
+```javascript
+const Person = (name) => {
+  this.name = name;
+};
+
+const p = new Person("kim"); // ❌ 에러
+```
+
+👉 prototype이 없기 때문
+
+---
+
+7️⃣ 언제 사용하면 좋은가
+
+✔️ this를 유지해야 할 때
+
+- 클래스 내부
+- 콜백 함수
+- 이벤트 핸들러
+
+✔️ 짧은 함수 작성할 때
+
+- 배열 메서드 (map, filter, forEach 등)
+
+---
+
+8️⃣ 사용을 피해야 하는 경우
+
+❌ 객체 메서드 정의할 때
+
+```javascript
+const obj = {
+  name: "kim",
+  getName: () => this.name, // ❌
+};
+```
+
+👉 일반 함수 사용해야 함
+
+```javascript
+getName() {
+  return this.name;
+}
+```
 
 ---
 
