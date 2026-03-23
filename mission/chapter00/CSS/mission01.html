@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>css_mission01 - CSS only lang toggle</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Apple SD Gothic Neo", sans-serif;
+        background-color: #fff;
+      }
+
+      /* 핵심: 숨겨진 라디오 버튼 2개
+         lang-ko가 :checked 되면 → .text-ko 표시, .text-en 숨김
+         lang-en이 :checked 되면 → .text-en 표시, .text-ko 숨김 */
+      #lang-ko,
+      #lang-en {
+        display: none;
+      }
+
+      #lang-ko:checked ~ .wrapper .navbar__lang-btn[for="lang-ko"],
+      #lang-en:checked ~ .wrapper .navbar__lang-btn[for="lang-en"] {
+        color: #6c63ff;
+        font-weight: 700;
+      }
+
+      /* ko 체크 시 → .text-en 숨김 */
+      #lang-ko:checked ~ .wrapper .text-en {
+        display: none;
+      }
+      /* en 체크 시 → .text-ko 숨김 */
+      #lang-en:checked ~ .wrapper .text-ko {
+        display: none;
+      }
+
+      #lang-ko:checked ~ .wrapper .path-ko {
+        display: inline;
+      }
+      #lang-ko:checked ~ .wrapper .path-en {
+        display: none;
+      }
+      #lang-en:checked ~ .wrapper .path-en {
+        display: inline;
+      }
+      #lang-en:checked ~ .wrapper .path-ko {
+        display: none;
+      }
+
+      .navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 40px;
+        border-bottom: 1px solid #eee;
+        position: sticky;
+        top: 0;
+        background: #fff;
+        z-index: 100;
+      }
+
+      .navbar__logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 20px;
+        font-weight: 700;
+        color: #000;
+        text-decoration: none;
+      }
+
+      .navbar__menu {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        list-style: none;
+      }
+
+      .navbar__menu-item a {
+        text-decoration: none;
+        color: #333;
+        font-size: 15px;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+
+      .navbar__menu-item a:hover {
+        color: #6c63ff;
+      }
+
+      .navbar__menu-item--active a {
+        color: #6c63ff;
+        font-weight: 700;
+      }
+
+      .navbar__menu-text {
+        display: inline;
+      }
+
+      .navbar__right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .navbar__lang {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* label을 버튼처럼 스타일링 */
+      .navbar__lang-btn {
+        font-size: 14px;
+        color: #999;
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-weight: 500;
+        transition: color 0.2s;
+        font-family: inherit;
+        padding: 0;
+      }
+
+      .navbar__lang-btn:hover {
+        color: #6c63ff;
+      }
+
+      .navbar__lang-divider {
+        color: #ddd;
+        font-size: 14px;
+      }
+
+      .navbar__button {
+        background-color: #6c63ff;
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .navbar__button:hover {
+        background-color: #574fd6;
+      }
+
+      @media (max-width: 768px) {
+        .navbar {
+          padding: 14px 20px;
+        }
+        .navbar__menu-text {
+          display: none;
+        }
+        .navbar__menu {
+          gap: 20px;
+        }
+        .navbar__menu-item a {
+          font-size: 20px;
+        }
+        .navbar__button {
+          padding: 8px 14px;
+          font-size: 13px;
+        }
+        .navbar__button .navbar__menu-text {
+          display: none;
+        }
+      }
+
+      .hero {
+        text-align: center;
+        padding: 80px 20px;
+      }
+
+      .hero__title {
+        font-size: 32px;
+        font-weight: 800;
+        margin-bottom: 16px;
+      }
+
+      .hero__desc {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 8px;
+      }
+
+      .path-indicator {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #999;
+      }
+
+      .path-indicator span {
+        background: #f3f2ff;
+        color: #6c63ff;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="radio" name="lang" id="lang-ko" checked />
+    <input type="radio" name="lang" id="lang-en" />
+
+    <div class="wrapper">
+      <nav class="navbar">
+        <a href="#" class="navbar__logo">🐱 <span>Aido</span></a>
+
+        <ul class="navbar__menu">
+          <li class="navbar__menu-item navbar__menu-item--active">
+            <a href="#">
+              <span class="navbar__menu-icon">🐱</span>
+              <span class="navbar__menu-text text-ko">고양이 친구들</span>
+              <span class="navbar__menu-text text-en">Cat Friends</span>
+            </a>
+          </li>
+          <li class="navbar__menu-item">
+            <a href="#">
+              <span class="navbar__menu-icon">📋</span>
+              <span class="navbar__menu-text text-ko">패치 노트</span>
+              <span class="navbar__menu-text text-en">Patch Notes</span>
+            </a>
+          </li>
+          <li class="navbar__menu-item">
+            <a href="#">
+              <span class="navbar__menu-icon">📱</span>
+              <span class="navbar__menu-text text-ko">앱 다운로드</span>
+              <span class="navbar__menu-text text-en">Download App</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="navbar__right">
+          <div class="navbar__lang">
+            <!-- button 대신 label → 라디오 버튼 토글 -->
+            <label class="navbar__lang-btn" for="lang-ko">KO</label>
+            <span class="navbar__lang-divider">|</span>
+            <label class="navbar__lang-btn" for="lang-en">EN</label>
+          </div>
+          <button class="navbar__button">
+            <span class="text-ko">출시 알림 받기</span>
+            <span class="text-en">Get Notified</span>
+          </button>
+        </div>
+      </nav>
+
+      <div class="hero">
+        <h1 class="hero__title">
+          <span class="text-ko"
+            >작심삼일은 이제 그만,<br />친구와 함께 매일 성취하세요</span
+          >
+          <span class="text-en"
+            >Stop giving up in 3 days,<br />Achieve every day with friends</span
+          >
+        </h1>
+        <p class="hero__desc">
+          <span class="text-ko">고양이 친구들이 매일 응원해줄 거예요 🐱</span>
+          <span class="text-en"
+            >Your cat friends will cheer you on every day 🐱</span
+          >
+        </p>
+        <p class="path-indicator">
+          현재 경로:
+          <span>
+            <span class="path-ko">/ko</span>
+            <span class="path-en">/en</span>
+          </span>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
