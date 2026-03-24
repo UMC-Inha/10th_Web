@@ -1,8 +1,8 @@
 import Button from './Button';
 
 interface ButtonGroupProps {
-  handleIncrement: () => void;
-  handleDecrement: () => void;
+  handleIncrement?: () => void;
+  handleDecrement?: () => void;
 }
 
 const ButtonGroup = ({ handleIncrement, handleDecrement }: ButtonGroupProps) => {
