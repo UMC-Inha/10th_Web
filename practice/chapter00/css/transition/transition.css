@@ -1,0 +1,17 @@
+* {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+div {
+    width: 100px;
+    height: 100px;
+    transform: rotate(45deg);
+    background-color: #f9dad1;
+    margin: 40px;
+    transition: background-color 0.8s ease;
+}
+
+div:hover {
+    background-color: #934bd2;
+}

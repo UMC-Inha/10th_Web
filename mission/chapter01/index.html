@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todo List typeScript</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="todo-app">
+    <header>
+      <h1 class="todo-app__title">UMC Study Plan</h1>
+    </header>
+
+    <!-- 입력창 + 버튼 -->
+    <form class="todoForm">
+      <input
+        id="todoInput"
+        class="todo-app__input"
+        type="text"
+        placeholder="스터디 계획을 작성해보세요!"
+      />
+      <button type="submit" class="todo-app__submit-btn">할 일 추가</button>
+    </form>
+
+    <div class="todo-app__lists">
+      <section class="todo-section">
+        <h2 class="todo-section__title">해야 할 일</h2>
+        <ul id="todoList" class="todo-list"></ul>
+        <p id="todoEmpty" class="todo-empty">아직 해야 할 일이 없어요.</p>
+      </section>
+
+      <section class="todo-section">
+        <h2 class="todo-section__title">해낸 일</h2>
+        <ul id="doneList" class="todo-list"></ul>
+        <p id="doneEmpty" class="todo-empty">아직 완료한 일이 없어요.</p>
+      </section>
+    </div>
+  </div>
+
+  <script src="./main.js"></script>
+</body>
+</html>

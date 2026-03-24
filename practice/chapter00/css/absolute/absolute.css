@@ -1,0 +1,22 @@
+* {
+      margin: 0;
+      box-sizing: border-box;
+}
+
+.box1 {
+    width: 500px;
+    height: 500px;
+    background-color: purple;
+    color: white;
+    position: relative;
+}
+
+.box2 {
+    width: 200px;
+    height: 200px;
+    background-color: yellow;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    /* left를 지정하지 않으면 auto로 설정되는데, h1은 원래 자리가 왼쪽 위부터 시작하는 block 요소라서 auto여도 자동으로 붙게 됨 */
+}

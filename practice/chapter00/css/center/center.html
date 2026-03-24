@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>center</title>
+    <link rel="stylesheet" href="./center.css">
+    <link rel="stylesheet" href="../../../common.css">
+</head>
+<body>
+    <h1>정렬</h1>
+    <!-- 정렬 대상이 텍스트 -->
+    <h2>텍스트</h2>
+    <div class="background">
+        <p class="text-align border">text-align</p>
+        <p class="text-align border">text-align</p>
+        <p class="text-align border">text-align</p>
+    </div>
+    <p>text-align: center;를 통해 요소 내부 텍스트를 가운데 정렬</p>
+    <p>inline 요소 정렬에 주로 사용</p>
+
+    <!-- 정렬 대상이 div -->
+    <h2>div</h2>
+    <h3>중앙 정렬</h3>
+    <div class="background">
+        <div class="box margin-x border">margin</div>
+        <div class="box margin-x border">margin</div>
+        <div class="box margin-x border">margin</div>
+    </div>
+    <p>margin: 0 auto;를 통해 가로 중앙 정렬</p>
+    <p>세로 중앙 정렬에는 사용할 수 없음</p>
+    <p>block 요소 정렬에 주로 사용</p>
+
+    <!-- 정렬 대상이 flex -->
+    <h2>flex</h2>
+    <div class="background flex">
+        <div class="box border">flex</div>
+        <div class="box border">flex</div>
+        <div class="box border">flex</div>
+    </div>
+    <p>justify-content: center; align-items: center;을 통해 자식 요소를 부모 요소의 가운데 정렬</p>
+    
+    <!-- 정렬 대상이 transition -->
+    <h2>transition</h2>
+    <div class="background">
+        <div class="box border transition">transition</div>
+    </div>
+    <p>left: 50%와 transform: translateX(-50%)를 사용해 요소를 기준점에서 이동시켜 가로 중앙에 배치</p>
+    <p>translate 방식은 위치 이동을 이용한 가운데 배치 방법으로, 일반적인 정렬보다는 위치 보정에 자주 사용됨</p>
+    <p>주로 1차원 정렬에 사용</p>
+
+    <!-- 정렬 대상이 grid -->
+    <h2>grid</h2>
+    <div class="background grid">
+        <div class="box border">grid</div>
+        <div class="box border">grid</div>
+        <div class="box border">grid</div>
+    </div>
+    <p>display: grid; justify-content; align-content: center;를 사용하면 grid 전체를 부모 요소의 가운데에 배치할 수 있음</p>
+    <p>주로 2차원 정렬에 사용</p>
+</body>
+</html>

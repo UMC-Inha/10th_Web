@@ -1,0 +1,46 @@
+<!-- 🍠 미션 1 - Todo List 구현 (HTML, CSS, JS) -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todo List</title>
+  <link rel="stylesheet" href="./js-00.css" />
+</head>
+<body>
+  <div class="todo-app">
+    <!-- 제목 -->
+    <header>
+      <h1 class="todo-app__title">UMC Study Plan</h1>
+    </header>
+
+    <!-- 입력창 -->
+     <form class="todoForm">
+        <input
+        id="todoInput"
+        class="todo-app__input"
+        type="text"
+        placeholder="스터디 계획을 작성해보세요!"
+        />
+    </form>
+
+    <!-- 하단 목록 -->
+    <div class="todo-app__lists">
+      <!-- 해야 할 일 -->
+      <section class="todo-section">
+        <h2 class="todo-section__title">해야 할 일</h2>
+        <ul id="todoList" class="todo-list"></ul>
+        <p id="todoEmpty" class="todo-empty">아직 해야 할 일이 없어요.</p>
+      </section>
+
+      <!-- 해낸 일 -->
+      <section class="todo-section">
+        <h2 class="todo-section__title">해낸 일</h2>
+        <ul id="doneList" class="todo-list"></ul>
+        <p id="doneEmpty" class="todo-empty">아직 완료한 일이 없어요.</p>
+      </section>
+    </div>
+  </div>
+  <script src="./js-00.js"></script>
+</body>
+</html>

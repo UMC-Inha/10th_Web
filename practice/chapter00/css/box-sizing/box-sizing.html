@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>box-sizing 실습</title>
+    <link rel="stylesheet" href="./box-sizing.css">
+    <link rel="stylesheet" href="../../../common.css">
+</head>
+<body>
+    <h1>border vs outline</h1>
+
+    <!-- border -->
+    <h2>border일 때</h2>
+    <p>width: 100px; height: 100px; border: 10px로 지정</p>
+    <section class="background">
+        <h3>- border-box</h3>
+        <div class="box border-box border"></div>
+        <p>border는 지정한 width, height 내부 / 박스 내부에 추가됨</p>
+        <p>=> 총 100px / content 영역 80px</p>
+        <h3>- content-box</h3>
+        <div class="box content-box border"></div>
+    </section>
+        <p>border는 지정한 width, height 외부 / 박스 내부에 추가됨</p>
+        <p>총 120px / content 영역 100px</p>
+
+    <!-- outline -->
+    <h2>outline일 때</h2>
+    <p>width: 100px; height: 100px; outline: 10px로 지정</p>
+    <section class="background">
+        <h3>- border-box</h3>
+        <div class="box border-box outline"></div>
+        <h3>- content-box</h3>
+        <div class="box content-box outline"></div>
+    </section>
+        <p>테두리가 지정한 width, height 외부 / 박스 외부에 추가됨 => 총 100px (20px은 박스 영역으로 잡히지 않음)</p>
+        <p>outline은 box model 계산에 포함되지 않으므로 border-box든 content-box든 width / height는 그대로이고 outline은 박스 외부에 그려짐</p>
+</body>
+</html>

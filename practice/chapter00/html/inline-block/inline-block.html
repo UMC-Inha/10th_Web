@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>block, inline, inline-block 실습</title>
+    <link rel="stylesheet" href="./inline-block.css">
+    <link rel="stylesheet" href="../../../common.css">
+</head>
+<body>
+    <h1>block, inline, inline-block의 차이</h1>
+
+    <!-- 배치 -->
+    <h2>배치</h2>
+
+    <h3>- block</h3>
+    <section>
+        <div class="background">
+            <div class="box block">block 요소</div>
+            <div class="box block">block 요소</div>
+            <div class="box block">block 요소</div>
+            <div class="box block">block 요소</div>
+            <div class="box block">block 요소</div>
+        </div>
+        <p>줄바꿈이 일어나며 기본적으로 한 줄을 차지함</p>
+    </section>
+
+    <h3>- inline</h3>
+    <section>
+        <div class="background">
+            <div class="box inline">inline 요소</div>
+            <div class="box inline">inline 요소</div>
+            <div class="box inline">inline 요소</div>
+            <div class="box inline">inline 요소</div>
+            <div class="box inline">inline 요소</div>
+        </div>
+        <p>줄바꿈이 일어나지 않아 요소들이 한 줄에 배치되고, 공간이 부족하면 줄바꿈이 일어남</p>
+    </section>
+
+    <h3>- inline block</h3>
+    <section>
+        <div class="background">
+            <div class="box inline-block">inline block 요소</div>
+            <div class="box inline-block">inline block 요소</div>
+            <div class="box inline-block">inline block 요소</div>
+            <div class="box inline-block">inline block 요소</div>
+            <div class="box inline-block">inline block 요소</div>
+        </div>
+        <p>줄바꿈이 일어나지 않아 요소들이 한 줄에 배치되고, 공간이 부족하면 줄바꿈이 일어남</p>
+    </section>
+
+    <!-- width, height -->
+    <h2>width, height</h2>
+
+    <h3>- block</h3>
+    <section>
+        <div class="background">
+            <div class="box block">block 요소</div>
+            <div class="box block">block 요소</div>
+            <div class="box block">block 요소</div>
+            <div class="box block">block 요소</div>
+            <div class="box block">block 요소</div>
+        </div>
+        <p>width, height이 적용됨</p>
+        <p>block 요소의 경우 width를 지정하지 않으면 기본적으로 부모의 가로 공간을 100% 채움</p>
+    </section>
+
+    <h3>- inline</h3>
+    <section>
+        <div class="background">
+            <div class="box inline">inline 요소</div>
+            <div class="box inline">inline 요소</div>
+            <div class="box inline">inline 요소</div>
+            <div class="box inline">inline 요소</div>
+            <div class="box inline">inline 요소</div>
+        </div>
+        <p>width, height이 적용되지 않고, 높이는 줄 높이 (line-height)의 영향을 더 많이 받음</p>
+    </section>
+
+    <h3>- inline block</h3>
+    <section>
+        <div class="background">
+            <div class="box inline-block">inline block 요소</div>
+            <div class="box inline-block">inline block 요소</div>
+            <div class="box inline-block">inline block 요소</div>
+            <div class="box inline-block">inline block 요소</div>
+            <div class="box inline-block">inline block 요소</div>
+        </div>
+        <p>width, height이 적용됨</p>
+    </section>
+
+    <!-- margin -->
+    <h2>margin</h2>
+
+    <h3>- block</h3>
+    <section>
+        <div class="background">
+            <div class="box block margin">block 요소</div>
+            <div class="box block margin">block 요소</div>
+            <div class="box block margin">block 요소</div>
+            <div class="box block margin">block 요소</div>
+            <div class="box block margin">block 요소</div>
+        </div>
+     <p>margin이 적용됨, 인접한 margin에는 margin collapse가 일어남</p>
+     <p>부모 요소와 margin collapse가 일어나면 부모의 margin과 겹쳐서 부모의 여백처럼 보일 수 있음</p>
+    </section>
+    
+    <h3>- inline</h3>
+    <section>
+        <div class="background">
+            <div class="box inline margin">inline 요소</div>
+            <div class="box inline margin">inline 요소</div>
+            <div class="box inline margin">inline 요소</div>
+            <div class="box inline margin">inline 요소</div>
+            <div class="box inline margin">inline 요소</div>
+        </div>  
+        <p>좌우 margin만 적용됨</p>
+    </section>
+    
+    <h3>- inline-block</h3>
+    <section>
+        <div class="background">
+            <div class="box inline-block margin">inline block 요소</div>
+            <div class="box inline-block margin">inline block 요소</div>
+            <div class="box inline-block margin">inline block 요소</div>
+            <div class="box inline-block margin">inline block 요소</div>
+            <div class="box inline-block margin">inline block 요소</div>
+        </div>
+        <p>margin이 다 적용됨, margin collapse가 일어나지 않음</p>
+    </section>
+
+    <p>* inline, inline-block의 경우 html 태그의 엔터가 공백문자로 처리되어 margin이 존재하는 것처럼 보임 (진짜 margin x)</p>
+</body>
+</html>

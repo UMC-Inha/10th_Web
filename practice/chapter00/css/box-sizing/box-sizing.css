@@ -1,0 +1,39 @@
+* {
+    margin: 0;
+}
+
+body {
+    margin: 50px;
+}
+
+section {
+    margin: 20px 0;
+}
+
+.box {
+    width: 100px;
+    height: 100px;
+    background-color: #a8e5db;
+    margin-bottom: 10px;
+}
+
+.border-box {
+    box-sizing: border-box;
+}
+
+.content-box {
+    box-sizing: content-box;
+}
+
+.border {
+    border: 10px solid #7ecdbf;
+}
+
+.outline {
+    outline: 10px solid #7ecdbf;
+}
+
+.background {
+    background-color: #dff6e7;
+    margin-bottom: 10px;
+}
