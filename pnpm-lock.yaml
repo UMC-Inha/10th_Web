@@ -61,8 +61,6 @@ importers:
         specifier: ^8.0.1
         version: 8.0.2(@types/node@24.12.0)(jiti@2.6.1)
 
-  mission/chapter02: {}
-
   practice/chapter02: {}
 
 packages:
