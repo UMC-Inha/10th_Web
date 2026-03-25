@@ -1,7 +1,6 @@
-import './App.css';
-import List from '../components/List';
+import ListItem from '../components/ListItem';
 
-function ListContainer() {
+function List() {
   const nickname = '엠버';
   const sweetPotato = '고구마';
   const array = ['REACT', 'NEXT', 'VUE', 'SVELTE', 'ANGULAR', 'REACT-NATIVE'] as const;
@@ -13,11 +12,11 @@ function ListContainer() {
       <h1>{`${nickname}는 ${sweetPotato} 아이스크림을 좋아합니다.`}</h1>
       <ul>
         {array.map((yaho, idx) => (
-          <List key={idx} tech={yaho} />
+          <ListItem key={idx} tech={yaho} />
         ))}
       </ul>
     </>
   );
 }
 
-export default ListContainer;
+export default List;
