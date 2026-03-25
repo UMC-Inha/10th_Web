@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, useRef, type ReactNode } from 'react';
 
 export interface Todo {
   id: number;
@@ -17,7 +17,11 @@ const TodoContext = createContext<TodoContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'react_todo_items';
 
-function loadFromStorage(): Todo[] {
+const saveToStorage = (items: Todo[]): void => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+};
+
+const loadFromStorage = (): Todo[] => {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return [];
   try {
@@ -34,19 +38,22 @@ function loadFromStorage(): Todo[] {
   } catch {
     return [];
   }
-}
-
-function saveToStorage(items: Todo[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-}
+};
 
 export const TodoProvider = ({ children }: { children: ReactNode }) => {
   const [todos, setTodos] = useState<Todo[]>(loadFromStorage);
 
+  const nextIdRef = useRef(todos.length > 0 ? Math.max(...todos.map((t) => t.id)) + 1 : 1);
+
   const addTodo = (text: string) => {
+    const newTodo = {
+      id: nextIdRef.current++,
+      text,
+      isDone: false,
+    };
+
     setTodos((prev) => {
-      const nextId = prev.length > 0 ? Math.max(...prev.map((t) => t.id)) + 1 : 1;
-      const updated = [...prev, { id: nextId, text, isDone: false }];
+      const updated = [...prev, newTodo];
       saveToStorage(updated);
       return updated;
     });

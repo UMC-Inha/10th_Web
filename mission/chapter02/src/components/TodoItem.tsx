@@ -1,22 +1,21 @@
+import type { Todo } from '../context/TodoProvider';
 import { useTodo } from '../context/TodoProvider';
 
 interface TodoItemProps {
-  id: number;
-  text: string;
-  isDone: boolean;
+  todo: Todo;
 }
 
-const TodoItem = ({ id, text, isDone }: TodoItemProps) => {
+const TodoItem = ({ todo }: TodoItemProps) => {
   const { toggleTodo, deleteTodo } = useTodo();
 
   return (
-    <li className="todo-item">
-      <span className="todo-item__text">{text}</span>
+    <li key={todo.id} className="todo-item">
+      <span className="todo-item__text">{todo.text}</span>
       <div className="todo-item__actions">
-        <button className="btn btn--complete" onClick={() => toggleTodo(id)}>
-          {isDone ? '되돌리기' : '완료'}
+        <button type="button" className="btn btn--complete" onClick={() => toggleTodo(todo.id)}>
+          {todo.isDone ? '되돌리기' : '완료'}
         </button>
-        <button className="btn btn--delete" onClick={() => deleteTodo(id)}>
+        <button type="button" className="btn btn--delete" onClick={() => deleteTodo(todo.id)}>
           삭제
         </button>
       </div>

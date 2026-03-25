@@ -1,31 +1,33 @@
-import { useState, type KeyboardEvent } from 'react';
+import { useState } from 'react';
 import { useTodo } from '../context/TodoProvider';
 
-const TodoInput = () => {
+const TextInput = () => {
   const { addTodo } = useTodo();
-  const [input, setInput] = useState('');
+  const [text, setText] = useState('');
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleInputKeydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== 'Enter' || e.nativeEvent.isComposing) return;
-    const value = input.trim();
+
+    const value = text.trim();
     if (!value) return;
 
     addTodo(value);
-    setInput('');
+    setText('');
   };
 
   return (
     <section className="planner">
       <input
+        id="todo-input"
         className="planner__input"
         type="text"
         placeholder="할 일을 입력하고 Enter를 눌러 추가하세요."
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={handleKeyDown}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={handleInputKeydown}
       />
     </section>
   );
 };
 
-export default TodoInput;
+export default TextInput;

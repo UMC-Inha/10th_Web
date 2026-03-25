@@ -3,17 +3,17 @@ import TodoItem from './TodoItem';
 
 interface TodoColumnProps {
   title: string;
-  items: Todo[];
+  todos: Todo[];
   isDone?: boolean;
 }
 
-const TodoColumn = ({ title, items, isDone = false }: TodoColumnProps) => {
+const TodoColumn = ({ title, todos, isDone = false }: TodoColumnProps) => {
   return (
     <div className="board__column">
       <h2 className="board__title">{title}</h2>
       <ul className={`todo-list${isDone ? ' todo-list--done' : ''}`}>
-        {items.map((item) => (
-          <TodoItem key={item.id} id={item.id} text={item.text} isDone={item.isDone} />
+        {todos.map((item) => (
+          <TodoItem key={item.id} todo={item} />
         ))}
       </ul>
     </div>

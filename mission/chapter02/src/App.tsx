@@ -1,14 +1,34 @@
-import { Routes, Route } from 'react-router';
-import TodoPage from './pages/TodoPage';
-import DarkModePage from './pages/DarkModePage';
 import './App.css';
+import { useTodo } from './context/TodoProvider';
+import TextInput from './components/TextInput';
+import TodoColumn from './components/TodoColumn';
 
 function App() {
+  const { todos } = useTodo();
+
+  const todoItems = todos.filter((t) => !t.isDone);
+  const doneItems = todos.filter((t) => t.isDone);
+
   return (
-    <Routes>
-      <Route path="/" element={<TodoPage />} />
-      <Route path="/dark-mode" element={<DarkModePage />} />
-    </Routes>
+    <div className="page">
+      <main className="layout">
+        <h1 className="layout__title">TODO</h1>
+
+        <TextInput />
+
+        <section className="board">
+          <TodoColumn
+            title="TODO"
+            todos={todoItems}
+          />
+          <TodoColumn
+            title="DONE"
+            todos={doneItems}
+            isDone
+          />
+        </section>
+      </main>
+    </div>
   );
 }
 
