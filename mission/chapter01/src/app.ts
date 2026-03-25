@@ -9,8 +9,7 @@ const todoList = document.getElementById('todo-list') as HTMLUListElement;
 const doneList = document.getElementById('done-list') as HTMLUListElement;
 const addBtn = document.getElementById('add-btn') as HTMLButtonElement;
 
-// [피드백 1 반영] JSON.parse 결과에 명시적으로 as Todo[] 단언 추가
-let todos: Todo[] = JSON.parse(localStorage.getItem('todos') || '[]') as Todo[];
+let todos: Todo[] = JSON.parse(localStorage.getItem('todos') || '[]');
 
 const init = (): void => {
     render();
@@ -49,7 +48,7 @@ const toggleTodo = (id: number): void => {
     todos = todos.map(todo => 
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
     );
-    syncAndUpdate();
+    update();
 };
 
 const deleteTodo = (id: number): void => {
