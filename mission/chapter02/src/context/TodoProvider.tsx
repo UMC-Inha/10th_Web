@@ -29,7 +29,7 @@ function loadFromStorage(): Todo[] {
         v !== null &&
         typeof v.id === 'number' &&
         typeof v.text === 'string' &&
-        typeof v.isDone === 'boolean',
+        typeof v.isDone === 'boolean'
     );
   } catch {
     return [];
@@ -78,7 +78,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
 export const useTodo = () => {
   const context = useContext(TodoContext);
   if (context === undefined) {
-    throw new Error('useTodo는 반드시 TodoProvider 내부에서 사용해야 합니다');
+    throw new Error('useTodo는 반드시 TodoProvider 내부에서 사용해야 합니다.');
   }
   return context;
 };
