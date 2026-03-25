@@ -18,12 +18,12 @@
   - 빌드 및 배포 구조
 - 따라서 개발자는 필요한 도구를 직접 선택하여 조합해야 함
 
-| 역할 | 라이브러리 예시 |
-|---|---|
-| 라우팅 | React Router |
-| 상태 관리 | Zustand, Redux, Jotai, Recoil |
-| 데이터 패칭 | TanStack Query |
-| 번들러 | Vite, Webpack, Rollup |
+| 역할        | 라이브러리 예시               |
+| ----------- | ----------------------------- |
+| 라우팅      | React Router                  |
+| 상태 관리   | Zustand, Redux, Jotai, Recoil |
+| 데이터 패칭 | TanStack Query                |
+| 번들러      | Vite, Webpack, Rollup         |
 
 - 높은 유연성을 가지지만, 초기 설계 시 기술 선택에 대한 부담이 존재함
 
@@ -123,8 +123,8 @@ React의 렌더링은 크게 두 단계로 나뉨
 
 ```tsx
 function handleClick() {
-  setCount(c => c + 1);
-  setFlag(f => !f);
+  setCount((c) => c + 1);
+  setFlag((f) => !f);
   // React 18: 위 두 setState가 하나의 리렌더링으로 배칭됨
 }
 ```
@@ -145,7 +145,7 @@ state나 props가 변경되면 React는 다음 과정을 수행함
 2. 이전 Virtual DOM 트리와 비교(Diff)함
 3. 변경 사항만 실제 DOM에 반영함
 
-이 전체 과정을 **Reconciliation(재조정)**이라고 함
+이 전체 과정을 <strong>Reconciliation(재조정)</strong>이라고 함
 
 ### Diffing Algorithm
 
@@ -175,7 +175,7 @@ items.map((item) => <li key={item.id}>{item.name}</li>);
 ### 개념
 
 - React 18에서 도입된 렌더링 방식으로, 렌더링 작업을 여러 단위로 분할하고 우선순위에 따라 스케줄링하는 메커니즘임
-- "동시에 실행된다"는 의미가 아니라, 렌더링 작업을 **중단(interrupt)**하고 더 중요한 작업을 먼저 처리할 수 있다는 의미임
+- "동시에 실행된다"는 의미가 아니라, 렌더링 작업을 <strong>중단(interrupt)</strong>하고 더 중요한 작업을 먼저 처리할 수 있다는 의미임
 - 사용자 경험(UX)을 개선하기 위한 스케줄링 전략임
 
 ### 스케줄링과 우선순위
@@ -311,10 +311,10 @@ function App() {
 
 React는 기본적으로 부모가 리렌더링되면 모든 자식도 리렌더링함. 필요한 경우 다음 API를 사용하여 불필요한 리렌더링을 방지할 수 있음
 
-| API | 용도 |
-|---|---|
-| `React.memo` | props가 변경되지 않으면 컴포넌트의 리렌더링을 건너뜀 |
-| `useMemo` | 의존성 배열(deps)이 변경되지 않으면 계산 결과를 재사용함 |
+| API           | 용도                                                     |
+| ------------- | -------------------------------------------------------- |
+| `React.memo`  | props가 변경되지 않으면 컴포넌트의 리렌더링을 건너뜀     |
+| `useMemo`     | 의존성 배열(deps)이 변경되지 않으면 계산 결과를 재사용함 |
 | `useCallback` | 의존성 배열(deps)이 변경되지 않으면 함수 참조를 재사용함 |
 
 ```tsx

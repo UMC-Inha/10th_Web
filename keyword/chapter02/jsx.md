@@ -43,7 +43,7 @@ function App() {
 export default App;
 ```
 
-여러 엘리먼트를 반환해야 하지만 불필요한 DOM 노드를 추가하고 싶지 않을 때는 **Fragment(`<> </>`)**를 사용함
+여러 엘리먼트를 반환해야 하지만 불필요한 DOM 노드를 추가하고 싶지 않을 때는 <strong>Fragment(`<> </>`)</strong>를 사용함
 
 ```tsx
 function App() {
@@ -215,14 +215,16 @@ export default App;
 
 ```tsx
 // 중괄호 사용: return 필요
-{techStack.map((tech, idx) => {
-  return <li key={idx}>{tech}</li>;
-})}
+{
+  techStack.map((tech, idx) => {
+    return <li key={idx}>{tech}</li>;
+  });
+}
 
 // 소괄호 사용: return 생략 가능
-{techStack.map((tech, idx) => (
-  <li key={idx}>{tech}</li>
-))}
+{
+  techStack.map((tech, idx) => <li key={idx}>{tech}</li>);
+}
 ```
 
 ### key의 역할
@@ -234,9 +236,9 @@ export default App;
 
 ```tsx
 // 권장: 고유 id 사용
-{items.map((item) => (
-  <li key={item.id}>{item.name}</li>
-))}
+{
+  items.map((item) => <li key={item.id}>{item.name}</li>);
+}
 ```
 
 변수 이름은 배열에는 복수형, 개별 항목에는 단수형을 사용하면 가독성이 좋음
@@ -244,9 +246,7 @@ export default App;
 ```tsx
 const frameworks = ['React', 'Vue', 'Svelte'];
 
-frameworks.map((framework) => (
-  <li key={framework}>{framework}</li>
-));
+frameworks.map((framework) => <li key={framework}>{framework}</li>);
 ```
 
 ## 컴포넌트 분리
@@ -337,11 +337,7 @@ export default List;
 
 ```tsx
 const List = ({ tech }) => {
-  return (
-    <li style={{ listStyle: 'none' }}>
-      {tech}
-    </li>
-  );
+  return <li style={{ listStyle: 'none' }}>{tech}</li>;
 };
 
 export default List;
@@ -359,11 +355,7 @@ interface ListProps {
 }
 
 const List = ({ tech }: ListProps) => {
-  return (
-    <li style={{ listStyle: 'none' }}>
-      {tech}
-    </li>
-  );
+  return <li style={{ listStyle: 'none' }}>{tech}</li>;
 };
 
 export default List;

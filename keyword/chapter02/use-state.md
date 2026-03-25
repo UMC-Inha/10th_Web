@@ -78,7 +78,7 @@ TypeScript에서 `useState`에 초기값을 전달하면, 해당 초기값으로
 const [count, setCount] = useState(0);
 // count: number로 추론됨
 
-setCount(5);       // 정상
+setCount(5); // 정상
 setCount('hello'); // 컴파일 에러: 'string'은 'number'에 할당 불가
 ```
 
@@ -92,7 +92,7 @@ setCount('hello'); // 컴파일 에러: 'string'은 'number'에 할당 불가
 const [value, setValue] = useState<string | null>(null);
 
 setValue('Hello'); // 정상
-setValue(123);     // 컴파일 에러: 'number'은 'string | null'에 할당 불가
+setValue(123); // 컴파일 에러: 'number'은 'string | null'에 할당 불가
 ```
 
 ```tsx
@@ -132,10 +132,10 @@ const handleIncreaseNumber = () => {
 
 ### Updater Function (함수형 업데이트)
 
-setter 함수에 값 대신 함수를 전달하면, React는 이 함수(updater function)에 **이전 state(pending state)**를 인자로 넘겨줌. 이를 통해 이전 업데이트 결과를 기반으로 연속적인 상태 변경이 가능함
+setter 함수에 값 대신 함수를 전달하면, React는 이 함수(updater function)에 <strong>이전 state(pending state)</strong>를 인자로 넘겨줌. 이를 통해 이전 업데이트 결과를 기반으로 연속적인 상태 변경이 가능함
 
 ```tsx
-setCount(prev => prev + 1);
+setCount((prev) => prev + 1);
 ```
 
 - `prev`(관례상 `prev` 또는 state 변수명의 첫 글자를 사용)는 직전 업데이트가 반영된 pending state임
@@ -143,12 +143,12 @@ setCount(prev => prev + 1);
 
 ```tsx
 const handleIncreaseNumber = () => {
-  setCount(prev => prev + 1); // 0 -> 1
-  setCount(prev => prev + 1); // 1 -> 2
-  setCount(prev => prev + 1); // 2 -> 3
-  setCount(prev => prev + 1); // 3 -> 4
-  setCount(prev => prev + 1); // 4 -> 5
-  setCount(prev => prev + 1); // 5 -> 6
+  setCount((prev) => prev + 1); // 0 -> 1
+  setCount((prev) => prev + 1); // 1 -> 2
+  setCount((prev) => prev + 1); // 2 -> 3
+  setCount((prev) => prev + 1); // 3 -> 4
+  setCount((prev) => prev + 1); // 4 -> 5
+  setCount((prev) => prev + 1); // 5 -> 6
   // 최종 결과: 6
 };
 ```
@@ -195,14 +195,14 @@ function App() {
   });
 
   const updateCity = () => {
-    setPerson(prev => ({
+    setPerson((prev) => ({
       ...prev,
       city: '인천',
     }));
   };
 
   const increaseAge = () => {
-    setPerson(prev => ({
+    setPerson((prev) => ({
       ...prev,
       age: prev.age + 1,
     }));
@@ -228,7 +228,7 @@ export default App;
 
 ### 얕은 복사와 깊은 복사
 
-spread 연산자는 **얕은 복사(shallow copy)**를 수행함. 1단계 깊이의 속성만 새로 복사하고, 중첩된 객체는 원본과 같은 참조를 공유함
+spread 연산자는 <strong>얕은 복사(shallow copy)</strong>를 수행함. 1단계 깊이의 속성만 새로 복사하고, 중첩된 객체는 원본과 같은 참조를 공유함
 
 ```tsx
 const [person, setPerson] = useState({
@@ -255,7 +255,7 @@ const [user, setUser] = useState({
 });
 
 const updateDistrict = () => {
-  setUser(prev => ({
+  setUser((prev) => ({
     ...prev,
     address: {
       ...prev.address,
@@ -265,7 +265,7 @@ const updateDistrict = () => {
 };
 ```
 
-**깊은 복사(deep copy)**는 중첩된 모든 레벨의 객체를 완전히 새로운 복사본으로 만드는 것임
+<strong>깊은 복사(deep copy)</strong>는 중첩된 모든 레벨의 객체를 완전히 새로운 복사본으로 만드는 것임
 
 ```tsx
 const deepCopy = JSON.parse(JSON.stringify(original));
