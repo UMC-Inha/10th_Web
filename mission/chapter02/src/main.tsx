@@ -1,9 +1,12 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { TodoProvider } from './context/TodoProvider.tsx';
 import App from './App.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
-  </StrictMode>
+    <TodoProvider>
+      <App />
+    </TodoProvider>
+  </StrictMode>,
 );
