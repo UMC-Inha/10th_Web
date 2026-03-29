@@ -26,7 +26,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
 
   const addTodo = (text: string) => {
     const newTodo: TTodo = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       text,
     };
 
