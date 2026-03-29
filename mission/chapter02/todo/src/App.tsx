@@ -1,9 +1,9 @@
 import './App.css';
-import { useTodo } from './context/TodoProvider';
+import { TodoProvider, useTodo } from './context/TodoProvider';
 import TextInput from './components/TextInput';
 import TodoColumn from './components/TodoColumn';
 
-function App() {
+function TodoApp() {
   const { todos } = useTodo();
 
   const todoItems = todos.filter((t) => !t.isDone);
@@ -29,6 +29,14 @@ function App() {
         </section>
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <TodoProvider>
+      <TodoApp />
+    </TodoProvider>
   );
 }
 
