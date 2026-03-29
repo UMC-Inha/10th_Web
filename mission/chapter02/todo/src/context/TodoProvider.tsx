@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef, type ReactNode } from 'react';
+import { createContext, useContext, useState, useRef, useCallback, useMemo, type ReactNode } from 'react';
 
 export interface Todo {
   id: number;
@@ -45,7 +45,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
 
   const nextIdRef = useRef(todos.reduce((max, t) => Math.max(max, t.id), 0) + 1);
 
-  const addTodo = (text: string) => {
+  const addTodo = useCallback((text: string) => {
     const newTodo = {
       id: nextIdRef.current++,
       text,
@@ -57,26 +57,31 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
       saveToStorage(updated);
       return updated;
     });
-  };
+  }, []);
 
-  const toggleTodo = (id: number) => {
+  const toggleTodo = useCallback((id: number) => {
     setTodos((prev) => {
       const updated = prev.map((t) => (t.id === id ? { ...t, isDone: !t.isDone } : t));
       saveToStorage(updated);
       return updated;
     });
-  };
+  }, []);
 
-  const deleteTodo = (id: number) => {
+  const deleteTodo = useCallback((id: number) => {
     setTodos((prev) => {
       const updated = prev.filter((t) => t.id !== id);
       saveToStorage(updated);
       return updated;
     });
-  };
+  }, []);
+
+  const value = useMemo(
+    () => ({ todos, addTodo, toggleTodo, deleteTodo }),
+    [todos, addTodo, toggleTodo, deleteTodo],
+  );
 
   return (
-    <TodoContext.Provider value={{ todos, addTodo, toggleTodo, deleteTodo }}>
+    <TodoContext.Provider value={value}>
       {children}
     </TodoContext.Provider>
   );
