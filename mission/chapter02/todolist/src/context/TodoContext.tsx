@@ -42,22 +42,20 @@ interface TodoProviderProps {
   children: ReactNode;
 }
 
-// TodoProvider 정의
+// lazy initializer 사용: 컴포넌트 마운트 시 딱 한 번만 localStorage를 읽는다. 이후 렌더에서는 실행되지 않는다.
+const getInitialTodos = (): Todo[] => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? (JSON.parse(stored) as Todo[]) : []; // 저장된 데이터가 있으면 파싱해서 반환, 없으면 빈 배열 반환
+  } catch (error) {
+    // JSON 파싱 실패 시 빈 배열 반환
+    console.error("localStorage 파싱 실패:", error);
+    return [];
+  }
+};
+
 export function TodoProvider({ children }: TodoProviderProps) {
-  /*
-   todos 상태
-   lazy initializer 사용: 컴포넌트 마운트 시 딱 한 번만 localStorage를 읽는다. 이후 렌더에서는 실행되지 않는다.
-  */
-  const [todos, setTodos] = useState<Todo[]>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      // 저장된 값이 있으면 파싱해서 반환, 없으면 빈 배열로 시작
-      return stored ? (JSON.parse(stored) as Todo[]) : [];
-    } catch {
-      // JSON 파싱 실패 시 빈 배열
-      return [];
-    }
-  });
+  const [todos, setTodos] = useState<Todo[]>(getInitialTodos);
 
   // todos가 변경될 때마다 localStorage에 저장 -> 새로고침 후에도 데이터가 유지
   useEffect(() => {
@@ -75,7 +73,7 @@ export function TodoProvider({ children }: TodoProviderProps) {
     const trimmedText = text.trim();
 
     // 공백 입력 리턴
-    if (!text.trim()) return;
+    if (!trimmedText) return;
 
     const newTodo: Todo = {
       id: crypto.randomUUID(),
