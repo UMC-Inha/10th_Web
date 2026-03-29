@@ -16,14 +16,14 @@ const TodoItem = ({ task, isDone }: TodoItemProps) => {
       {isDone ? (
         <button
           className="render-container__item-button"
-          onClick={() => deleteTask(task)}
+          onClick={() => deleteTask(task.id)}
         >
           삭제
         </button>
       ) : (
         <button
           className="render-container__item-button render-container__item-button--complete"
-          onClick={() => completeTask(task)}
+          onClick={() => completeTask(task.id)}
         >
           완료
         </button>

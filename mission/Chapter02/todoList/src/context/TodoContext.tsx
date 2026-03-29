@@ -10,8 +10,8 @@ type TodoContextType = {
   todos: TTodo[];
   doneTasks: TTodo[];
   addTodo: (text: string) => void;
-  completeTask: (task: TTodo) => void;
-  deleteTask: (task: TTodo) => void;
+  completeTask: (id: TTodo['id']) => void;
+  deleteTask: (id: TTodo['id']) => void;
 };
 
 const TodoContext = createContext<TodoContextType | null>(null);
@@ -29,13 +29,21 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
     setTodos((prev) => [...prev, newTodo]);
   };
 
-  const completeTask = (task: TTodo) => {
-    setTodos((prev) => prev.filter((todo) => todo.id !== task.id));
-    setDoneTasks((prev) => [...prev, task]);
+  const completeTask = (id: TTodo['id']) => {
+    setTodos((prevTodos) => {
+      const targetTask = prevTodos.find((todo) => todo.id === id);
+
+      if (!targetTask) {
+        return prevTodos;
+      }
+
+      setDoneTasks((prevDoneTasks) => [...prevDoneTasks, targetTask]);
+      return prevTodos.filter((todo) => todo.id !== id);
+    });
   };
 
-  const deleteTask = (task: TTodo) => {
-    setDoneTasks((prev) => prev.filter((done) => done.id !== task.id));
+  const deleteTask = (id: TTodo['id']) => {
+    setDoneTasks((prev) => prev.filter((done) => done.id !== id));
   };
 
   return (
