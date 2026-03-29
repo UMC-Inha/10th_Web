@@ -21,11 +21,11 @@ export const ThemeProvider = ({children}: PropsWithChildren) => {
     setTheme((prevTheme) => prevTheme === 'LIGHT' ? 'DARK' : 'LIGHT'
     ); 
   }
-  return{
+  return(
     <ThemeContext.Provider value = {{ theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
-  }
+  )
 }
 
 export const useTheme=() => {
