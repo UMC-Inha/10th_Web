@@ -1,13 +1,12 @@
 interface BtnProp{
-    type?: "submit"| "button" | "reset"
     label:string,
     onClick: () => void
     className:string
 }
 
-const Button = ({type = "button", label, onClick, className}:BtnProp) => {
+const Button = ({label, onClick, className}:BtnProp) => {
     return(
-        <button type={type} className={className} onClick={onClick}>{label}</button>
+        <button className={className} onClick={onClick}>{label}</button>
     )
 }
 

@@ -1,13 +1,11 @@
-import { createContext, ReactNode, useState } from 'react';
-import { Dispatch, SetStateAction } from 'react';
+import { createContext, type ReactNode, useState } from 'react';
 interface TodoContextType{
     todos:Todo[],
-    setTodos:Dispatch<SetStateAction<Todo[]>>;
     addTodo:(input:string) => void;
     completeTodo:(id:number) => void;
     deleteTodo:(id:number) => void;
 }
-interface Todo{
+export interface Todo{
   input:string,
   id:number
   isDone:boolean
@@ -32,7 +30,7 @@ export const TodoProvider = ({children}: {children:ReactNode}) => {
         setTodos(prevTodos => [...prevTodos, todo])
     }
     return (
-        <TodoContext.Provider value={{todos, setTodos, addTodo, completeTodo, deleteTodo}}>
+        <TodoContext.Provider value={{todos, addTodo, completeTodo, deleteTodo}}>
             {children}
         </TodoContext.Provider>
     )
