@@ -43,7 +43,7 @@ const loadFromStorage = (): Todo[] => {
 export const TodoProvider = ({ children }: { children: ReactNode }) => {
   const [todos, setTodos] = useState<Todo[]>(loadFromStorage);
 
-  const nextIdRef = useRef(todos.length > 0 ? Math.max(...todos.map((t) => t.id)) + 1 : 1);
+  const nextIdRef = useRef(todos.reduce((max, t) => Math.max(max, t.id), 0) + 1);
 
   const addTodo = (text: string) => {
     const newTodo = {
