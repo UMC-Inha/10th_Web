@@ -1,7 +1,18 @@
+import { useState, type FormEvent } from 'react';
 import { useTodoContext } from '../context/TodoContext';
 
 const TodoForm = () => {
-  const { input, setInput, handleSubmit } = useTodoContext();
+  const [input, setInput] = useState('');
+  const { addTodo } = useTodoContext();
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const trimmedText = input.trim();
+    if (!trimmedText) return;
+
+    addTodo(trimmedText);
+    setInput('');
+  };
 
   return (
     <form className="todo-container__form" onSubmit={handleSubmit}>

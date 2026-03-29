@@ -2,17 +2,14 @@ import {
   createContext,
   useContext,
   useState,
-  type FormEvent,
   type ReactNode,
 } from 'react';
 import type { TTodo } from '../types/todo';
 
 type TodoContextType = {
-  input: string;
-  setInput: React.Dispatch<React.SetStateAction<string>>;
   todos: TTodo[];
   doneTasks: TTodo[];
-  handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  addTodo: (text: string) => void;
   completeTask: (task: TTodo) => void;
   deleteTask: (task: TTodo) => void;
 };
@@ -20,7 +17,6 @@ type TodoContextType = {
 const TodoContext = createContext<TodoContextType | null>(null);
 
 export const TodoProvider = ({ children }: { children: ReactNode }) => {
-  const [input, setInput] = useState('');
   const [todos, setTodos] = useState<TTodo[]>([]);
   const [doneTasks, setDoneTasks] = useState<TTodo[]>([]);
 
@@ -31,7 +27,6 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
     };
 
     setTodos((prev) => [...prev, newTodo]);
-    setInput('');
   };
 
   const completeTask = (task: TTodo) => {
@@ -43,23 +38,12 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
     setDoneTasks((prev) => prev.filter((done) => done.id !== task.id));
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const trimmedText = input.trim();
-    if (!trimmedText) return;
-
-    addTodo(trimmedText);
-  };
-
   return (
     <TodoContext.Provider
       value={{
-        input,
-        setInput,
         todos,
         doneTasks,
-        handleSubmit,
+        addTodo,
         completeTask,
         deleteTask,
       }}
