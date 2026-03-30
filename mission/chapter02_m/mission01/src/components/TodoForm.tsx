@@ -6,7 +6,9 @@ const TodoForm = () => {
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        dispatch({ type: 'ADD_TODO' });
+        // Date.now()는 reducer가 아닌 dispatch 호출 시점(외부)에서 생성합니다.
+        // reducer를 순수 함수로 유지하기 위함입니다.
+        dispatch({ type: 'ADD_TODO', id: Date.now() });
     };
 
     return (

@@ -68,7 +68,8 @@ const Todo = () => {
             </div>
             <div className="render-container__section">
                 <h2 className="render-container__title"> 삭제</h2>
-                <ul id='todo-list' className="render-container__list">
+                {/* id는 페이지 내에서 고유해야 하므로 할 일 목록과 구분되는 id를 사용합니다. */}
+                <ul id='done-list' className="render-container__list">
                     {doneTodos.map((doneTodo) => (
                         <li key={doneTodo.id} className="render-container__item">
                         <span className="render-container__item-text">
