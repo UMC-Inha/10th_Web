@@ -15,7 +15,10 @@ const initialState: TodoState = {
 
 type TodoAction =
     | { type: 'SET_INPUT'; value: string }
-    | { type: 'ADD_TODO' }
+    // id를 액션 외부(dispatch 호출 시점)에서 생성해 넘겨줍니다.
+    // 리듀서는 순수 함수여야 하므로 Date.now() 같이 호출마다 결과가 달라지는
+    // 함수를 내부에서 직접 호출하면 안 됩니다.
+    | { type: 'ADD_TODO'; id: number }
     | { type: 'COMPLETE_TODO'; todo: TTodo }
     | { type: 'DELETE_DONE_TODO'; todo: TTodo };
 
@@ -27,7 +30,8 @@ function todoReducer(state: TodoState, action: TodoAction): TodoState {
         case 'ADD_TODO': {
             const text = state.input.trim();
             if (!text) return state;
-            const newTodo: TTodo = { id: Date.now(), text };
+            // id는 외부에서 주입받으므로 reducer가 순수 함수로 유지됩니다.
+            const newTodo: TTodo = { id: action.id, text };
             return { ...state, todos: [...state.todos, newTodo], input: '' };
         }
 

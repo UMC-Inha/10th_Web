@@ -1,25 +1,16 @@
 import type { TTodo } from '../types/todo';
-import { useTodo } from '../context/TodoContext';
 
+// Context의 state[type]으로 직접 조회하는 대신 todos 배열을 props로 주입받아
+// Context 구조 변경 시 이 컴포넌트를 수정할 필요가 없고, 재사용성도 높아집니다.
 interface TodoListProps {
-    type: 'todos' | 'doneTodos';
     title: string;
+    todos: TTodo[];
     buttonLabel: string;
     buttonColor: string;
+    onAction: (todo: TTodo) => void;
 }
 
-const TodoList = ({ type, title, buttonLabel, buttonColor }: TodoListProps) => {
-    const { state, dispatch } = useTodo();
-    const todos = state[type];
-
-    const handleClick = (todo: TTodo) => {
-        if (type === 'todos') {
-            dispatch({ type: 'COMPLETE_TODO', todo });
-        } else {
-            dispatch({ type: 'DELETE_DONE_TODO', todo });
-        }
-    };
-
+const TodoList = ({ title, todos, buttonLabel, buttonColor, onAction }: TodoListProps) => {
     return (
         <div className="render-container__section">
             <h2 className="render-container__title">{title}</h2>
@@ -30,7 +21,7 @@ const TodoList = ({ type, title, buttonLabel, buttonColor }: TodoListProps) => {
                         <button
                             className="render-container__item-button"
                             style={{ backgroundColor: buttonColor }}
-                            onClick={() => handleClick(todo)}
+                            onClick={() => onAction(todo)}
                         >
                             {buttonLabel}
                         </button>
