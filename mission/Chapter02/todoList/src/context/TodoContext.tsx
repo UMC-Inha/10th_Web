@@ -1,13 +1,14 @@
 import {
   createContext,
   useContext,
+  useMemo,
   useState,
   type ReactNode,
 } from 'react';
 import type { TTodo } from '../types/todo';
 
 type TodoContextType = {
-  todos: TTodo[];
+  pendingTasks: TTodo[];
   doneTasks: TTodo[];
   addTodo: (text: string) => void;
   completeTask: (id: TTodo['id']) => void;
@@ -18,44 +19,57 @@ const TodoContext = createContext<TodoContextType | null>(null);
 
 export const TodoProvider = ({ children }: { children: ReactNode }) => {
   const [todos, setTodos] = useState<TTodo[]>([]);
-  const [doneTasks, setDoneTasks] = useState<TTodo[]>([]);
 
   const addTodo = (text: string) => {
     const newTodo: TTodo = {
       id: crypto.randomUUID(),
       text,
+      isDone: false,
     };
 
     setTodos((prev) => [...prev, newTodo]);
   };
 
   const completeTask = (id: TTodo['id']) => {
-    setTodos((prevTodos) => {
-      const targetTask = prevTodos.find((todo) => todo.id === id);
-
-      if (!targetTask) {
-        return prevTodos;
-      }
-
-      setDoneTasks((prevDoneTasks) => [...prevDoneTasks, targetTask]);
-      return prevTodos.filter((todo) => todo.id !== id);
-    });
+    setTodos((prev) =>
+      prev.map((todo) =>
+        todo.id === id
+          ? {
+              ...todo,
+              isDone: true,
+            }
+          : todo,
+      ),
+    );
   };
 
   const deleteTask = (id: TTodo['id']) => {
-    setDoneTasks((prev) => prev.filter((done) => done.id !== id));
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
   };
 
+  const pendingTasks = useMemo(
+    () => todos.filter((todo) => !todo.isDone),
+    [todos],
+  );
+
+  const doneTasks = useMemo(
+    () => todos.filter((todo) => todo.isDone),
+    [todos],
+  );
+
+  const value = useMemo(
+    () => ({
+      pendingTasks,
+      doneTasks,
+      addTodo,
+      completeTask,
+      deleteTask,
+    }),
+    [pendingTasks, doneTasks],
+  );
+
   return (
-    <TodoContext.Provider
-      value={{
-        todos,
-        doneTasks,
-        addTodo,
-        completeTask,
-        deleteTask,
-      }}
-    >
+    <TodoContext.Provider value={value}>
       {children}
     </TodoContext.Provider>
   );
