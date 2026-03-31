@@ -280,3 +280,52 @@
   클린업이 실행되는 시점은 두 가지예요.
   1. 컴포넌트가 화면에서 사라질 때 (언마운트)
   2. useEffect가 다시 실행되기 직전
+
+추가 학습🍠
+
+- **`fetch`** 정리
+  - `fetch` : 인터넷에서 데이터를 가져오거나 보낼 때 사용
+  ```jsx
+  //예시
+
+  fetch('https://api.example.com/user')
+    .then((response) => response.json()) // 받은 데이터를 읽기 좋게 변환
+    .then((data) => console.log(data)); // 데이터 사용!
+  ```
+
+  - 특징 2가지
+    - `비동기` 여서 데이터가 올 때까지 기다려야 함
+      → `await` 사용
+    ```jsx
+    //예시
+    const response = await fetch('https://api.example.com/user');
+    const data = await response.json();
+    ```
+
+    - 실패해도 에러를 알려주지 않음⚠️
+      → 직접 확인해야 함
+    ```jsx
+    const response = await fetch('https://api.example.com/user');
+    const data = await response.json();
+    ```
+- **`axios`** 정리
+  - `axios` : 인터넷에서 데이터를 가져오거나 보낼 때 사용
+  - 자동으로 변환하므로 코드가 간단해짐
+  ```jsx
+  const { data } = await axios.get(url);
+  ```
+- **`fetch`**와 **`axios`**의 차이
+  - `fetch`
+  - 내장 여부: 브라우저 / Node 내장
+  - HTTP 에러 자동 throw: 자동으로 하지 않아 직접 처리해야 함
+  - 요청 / 응답 인터셉터: 없음
+  - 자동 JSON 변환: 없으므로 `.json()` 필요
+  - 요청 취소: `AbortController`
+  - 진행률 추적: 어려움
+  - `axois`
+  - 내장 여부: 없음 → 별도 설치 필요
+  - HTTP 에러 자동 throw: 자동 처리
+  - 요청 / 응답 인터셉터: 지원
+  - 자동 JSON 변환: 자동
+  - 요청 취소: `CancelToken`
+  - 진행률 추적: 쉬움
