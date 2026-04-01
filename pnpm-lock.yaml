@@ -68,6 +68,8 @@ importers:
 
   mission/chapter02/todo: {}
 
+  mission/chapter03/movie: {}
+
   practice/chapter02: {}
 
   practice/chapter03/router: {}
