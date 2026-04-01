@@ -22,6 +22,10 @@ const router = createBrowserRouter([
       },
       {
         // 3) 부모가 '/'이므로, 'movies'만 써도 '/movies'로 매칭
+        path: 'movies',
+        element: <Movies />,
+      },
+      {
         path: 'movies/:movieId',
         element: <Movies />,
       },
