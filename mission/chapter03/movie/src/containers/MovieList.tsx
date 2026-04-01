@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 import { useAxios } from '../hooks/useAxios';
 import { api } from '../apis/axios';
 import type { MovieResponse } from '../types/movie';
@@ -55,16 +56,18 @@ const MovieList = ({ endpoint, title }: MovieListProps) => {
             key={movie.id}
             className="bg-white rounded-xl overflow-hidden flex items-center justify-center shadow-sm group relative border border-gray-200"
           >
-            <img
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-              alt={movie.title}
-              className="group-hover:blur-sm"
-            />
-            <div className="absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            <div className="absolute inset-0 flex flex-col justify-end p-4 opacity-0 translate-y-3 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-              <h3 className="text-white text-lg font-bold">{movie.title}</h3>
-              <p className="mt-2 text-sm text-white/90 line-clamp-3">{movie.overview}</p>
-            </div>
+            <Link to={`/movies/${movie.id}`} className="relative block w-full">
+              <img
+                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                alt={movie.title}
+                className="group-hover:blur-sm w-full"
+              />
+              <div className="absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <div className="absolute inset-0 flex flex-col justify-end p-4 opacity-0 translate-y-3 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+                <h3 className="text-white text-lg font-bold">{movie.title}</h3>
+                <p className="mt-2 text-sm text-white/90 line-clamp-3">{movie.overview}</p>
+              </div>
+            </Link>
           </li>
         ))}
       </ul>
