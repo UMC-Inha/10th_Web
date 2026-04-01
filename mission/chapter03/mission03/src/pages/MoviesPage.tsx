@@ -68,7 +68,7 @@ const MoviesPage = ({ category }: Props) => {
         {movies?.map((movie) => (
           <div
             key={movie.id}
-            onClick={() => navigate(`/movies/${movie.id}`)}
+            onClick={() => navigate(`/movies/${movie.id}`, { state: { movie } })}
             className="group relative cursor-pointer overflow-hidden rounded-xl"
           >
             <img

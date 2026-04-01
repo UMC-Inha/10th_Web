@@ -1,21 +1,22 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import type { MovieDetail, Credits } from '../types/movie';
+import type { Movie, MovieDetail, Credits } from '../types/movie';
 
 const MovieDetailPage = () => {
   const { movieId } = useParams<{ movieId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const preview = (location.state as { movie?: Movie } | null)?.movie ?? null;
+
   const [movie, setMovie] = useState<MovieDetail | null>(null);
   const [credits, setCredits] = useState<Credits | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!movieId) return;
 
     const fetchData = async () => {
-      setIsLoading(true);
       setError(null);
       try {
         const headers = {
@@ -35,21 +36,11 @@ const MovieDetailPage = () => {
         setCredits(creditsRes.data);
       } catch {
         setError('영화 정보를 불러오는 데 실패했습니다.');
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchData();
   }, [movieId]);
-
-  if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-600 border-t-white" />
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -59,15 +50,53 @@ const MovieDetailPage = () => {
     );
   }
 
-  if (!movie) return null;
+  // 상세 데이터가 없으면 preview(목록에서 넘어온 데이터)로 먼저 렌더링
+  const displayTitle = movie?.title ?? preview?.title;
+  const displayPoster = movie?.poster_path ?? preview?.poster_path;
+  const displayOverview = movie?.overview ?? preview?.overview;
+  const displayVote = movie?.vote_average ?? preview?.vote_average;
+  const displayDate = movie?.release_date ?? preview?.release_date;
+
+  // preview도 없으면 (직접 URL 접근) 스켈레톤
+  if (!displayTitle) {
+    return (
+      <div className="min-h-screen bg-gray-950 text-white animate-pulse">
+        <div className="h-80 w-full bg-gray-800" />
+        <div className="mx-auto max-w-5xl px-6 pb-12">
+          <div className="mb-6 mt-4 h-5 w-20 rounded bg-gray-700" />
+          <div className="flex gap-8">
+            <div className="-mt-32 h-72 w-48 shrink-0 rounded-xl bg-gray-700 shadow-2xl" />
+            <div className="flex flex-col justify-end gap-3 flex-1">
+              <div className="h-8 w-2/3 rounded bg-gray-700" />
+              <div className="h-4 w-1/2 rounded bg-gray-800" />
+              <div className="flex gap-2">
+                <div className="h-7 w-16 rounded-full bg-gray-700" />
+                <div className="h-7 w-16 rounded-full bg-gray-700" />
+              </div>
+              <div className="flex gap-6">
+                <div className="h-4 w-20 rounded bg-gray-700" />
+                <div className="h-4 w-24 rounded bg-gray-700" />
+              </div>
+            </div>
+          </div>
+          <div className="mt-8 space-y-2">
+            <div className="h-6 w-20 rounded bg-gray-700" />
+            <div className="h-4 w-full rounded bg-gray-800" />
+            <div className="h-4 w-full rounded bg-gray-800" />
+            <div className="h-4 w-3/4 rounded bg-gray-800" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const director = credits?.crew.find((c) => c.job === 'Director');
   const topCast = credits?.cast.slice(0, 10) ?? [];
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
-      {/* 배경 이미지 */}
-      {movie.backdrop_path && (
+      {/* 배경 이미지 — 상세 데이터 오면 교체 */}
+      {movie?.backdrop_path ? (
         <div
           className="h-80 w-full bg-cover bg-center"
           style={{
@@ -76,6 +105,8 @@ const MovieDetailPage = () => {
         >
           <div className="h-full w-full bg-gradient-to-t from-gray-950 via-gray-950/60 to-transparent" />
         </div>
+      ) : (
+        <div className="h-80 w-full bg-gray-800 animate-pulse" />
       )}
 
       <div className="mx-auto max-w-5xl px-6 pb-12">
@@ -87,41 +118,51 @@ const MovieDetailPage = () => {
         </button>
 
         <div className="flex gap-8">
-          {/* 포스터 */}
           <img
-            src={`https://image.tmdb.org/t/p/w342${movie.poster_path}`}
-            alt={movie.title}
+            src={`https://image.tmdb.org/t/p/w342${displayPoster}`}
+            alt={displayTitle}
             className="-mt-32 h-72 w-48 shrink-0 rounded-xl object-cover shadow-2xl"
           />
 
-          {/* 기본 정보 */}
           <div className="flex flex-col justify-end">
-            <h1 className="text-3xl font-bold">{movie.title}</h1>
-            {movie.tagline && (
+            <h1 className="text-3xl font-bold">{displayTitle}</h1>
+            {movie?.tagline && (
               <p className="mt-1 text-gray-400 italic">"{movie.tagline}"</p>
             )}
 
+            {/* 장르 — 상세 데이터 오면 표시, 그 전엔 skeleton */}
             <div className="mt-3 flex flex-wrap gap-2">
-              {movie.genres.map((genre) => (
-                <span
-                  key={genre.id}
-                  className="rounded-full bg-gray-800 px-3 py-1 text-sm text-gray-300"
-                >
-                  {genre.name}
-                </span>
-              ))}
+              {movie ? (
+                movie.genres.map((genre) => (
+                  <span
+                    key={genre.id}
+                    className="rounded-full bg-gray-800 px-3 py-1 text-sm text-gray-300"
+                  >
+                    {genre.name}
+                  </span>
+                ))
+              ) : (
+                <>
+                  <div className="h-7 w-16 rounded-full bg-gray-700 animate-pulse" />
+                  <div className="h-7 w-16 rounded-full bg-gray-700 animate-pulse" />
+                </>
+              )}
             </div>
 
             <div className="mt-4 flex gap-6 text-sm text-gray-400">
-              <span>
-                ⭐{' '}
-                <span className="text-yellow-400 font-semibold">
-                  {movie.vote_average.toFixed(1)}
-                </span>{' '}
-                / 10
-              </span>
-              <span>🗓 {movie.release_date}</span>
-              {movie.runtime > 0 && <span>⏱ {movie.runtime}분</span>}
+              {displayVote !== undefined && (
+                <span>
+                  ⭐{' '}
+                  <span className="text-yellow-400 font-semibold">
+                    {displayVote.toFixed(1)}
+                  </span>{' '}
+                  / 10
+                </span>
+              )}
+              {displayDate && <span>🗓 {displayDate}</span>}
+              {movie?.runtime != null && movie.runtime > 0 && (
+                <span>⏱ {movie.runtime}분</span>
+              )}
               {director && <span>🎬 {director.name}</span>}
             </div>
           </div>
@@ -131,14 +172,14 @@ const MovieDetailPage = () => {
         <div className="mt-8">
           <h2 className="mb-2 text-xl font-semibold">줄거리</h2>
           <p className="leading-relaxed text-gray-300">
-            {movie.overview || '줄거리 정보가 없습니다.'}
+            {displayOverview || '줄거리 정보가 없습니다.'}
           </p>
         </div>
 
-        {/* 출연진 */}
-        {topCast.length > 0 && (
-          <div className="mt-10">
-            <h2 className="mb-4 text-xl font-semibold">출연진</h2>
+        {/* 출연진 — 상세 데이터 오면 표시, 그 전엔 skeleton */}
+        <div className="mt-10">
+          <h2 className="mb-4 text-xl font-semibold">출연진</h2>
+          {topCast.length > 0 ? (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
               {topCast.map((actor) => (
                 <div key={actor.id} className="flex flex-col items-center text-center">
@@ -158,8 +199,18 @@ const MovieDetailPage = () => {
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5 animate-pulse">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div key={i} className="flex flex-col items-center gap-2">
+                  <div className="h-28 w-20 rounded-lg bg-gray-700" />
+                  <div className="h-4 w-16 rounded bg-gray-700" />
+                  <div className="h-3 w-12 rounded bg-gray-800" />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
