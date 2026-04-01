@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Movie, MovieResponse } from '../types/movie';
 import axios from 'axios';
 
@@ -11,14 +11,22 @@ const MoviesPage = ({ category }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const prevCategoryRef = useRef(category);
 
   useEffect(() => {
+    let fetchPage = page;
+    if (prevCategoryRef.current !== category) {
+      prevCategoryRef.current = category;
+      fetchPage = 1;
+      setPage(1);
+    }
+
     const fetchMovies = async () => {
       setIsLoading(true);
       setError(null);
       try {
         const { data } = await axios.get<MovieResponse>(
-          `https://api.themoviedb.org/3/movie/${category}?language=ko-KR&page=${page}`,
+          `https://api.themoviedb.org/3/movie/${category}?language=ko-KR&page=${fetchPage}`,
           {
             headers: {
               Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`,
