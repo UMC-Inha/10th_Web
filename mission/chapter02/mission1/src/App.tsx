@@ -1,6 +1,6 @@
 import './App.css'
 import List from "./components/List";
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { TodoContext } from './contexts/TodoContext';
 import InputArea from './components/InputArea';
 

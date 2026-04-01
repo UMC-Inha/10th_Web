@@ -1,6 +1,7 @@
 import { createContext, type ReactNode, useState } from 'react';
 interface TodoContextType{
-    todos:Todo[],
+    todos:Todo[];
+    setTodos:any
     addTodo:(input:string) => void;
     completeTodo:(id:number) => void;
     deleteTodo:(id:number) => void;
@@ -30,7 +31,7 @@ export const TodoProvider = ({children}: {children:ReactNode}) => {
         setTodos(prevTodos => [...prevTodos, todo])
     }
     return (
-        <TodoContext.Provider value={{todos, addTodo, completeTodo, deleteTodo}}>
+        <TodoContext.Provider value={{todos, setTodos, addTodo, completeTodo, deleteTodo}}>
             {children}
         </TodoContext.Provider>
     )
