@@ -19,8 +19,8 @@ const Navbar = () => {
             [
               'rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
               isActive
-                ? 'border-sky-600 bg-sky-600 text-white'
-                : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50',
+                ? 'border-sky-500 bg-sky-600 text-white'
+                : 'border-white/20 bg-slate-900 text-slate-200 hover:bg-slate-800',
             ].join(' ')
           }
         >

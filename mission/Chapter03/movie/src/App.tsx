@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Layout from './layout/Layout'
 import HomePage from './pages/HomePage'
 import MovieListPage from './pages/MovieListPage'
+import MovieDetailPage from './pages/MovieDetailPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 const router = createBrowserRouter([
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: 'now-playing',
         element: <MovieListPage title="현재 상영 중" endpoint="now_playing" />,
+      },
+      {
+        path: 'movies/:movieId',
+        element: <MovieDetailPage />,
       },
       {
         path: '*',
