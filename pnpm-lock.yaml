@@ -61,7 +61,15 @@ importers:
         specifier: ^8.0.1
         version: 8.0.2(@types/node@24.12.0)(jiti@2.6.1)
 
+  mission/chapter02/dark-mode: {}
+
+  mission/chapter02/todo: {}
+
   practice/chapter02: {}
+
+  practice/chapter03/router: {}
+
+  practice/chapter03/spa: {}
 
 packages:
 
