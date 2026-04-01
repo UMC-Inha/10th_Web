@@ -12,7 +12,7 @@ const MoviesPage = () => {
         'https://api.themoviedb.org/3/movie/popular?language=ko-KR&page=1',
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3YzJkZjU3MzA1MTM3N2VlNDgyYWI5MGQ5NGViODgxNCIsIm5iZiI6MTc1OTM5ODI2Ni4wMzQsInN1YiI6IjY4ZGU0OTdhNzBlMzI5YmUxNDk5MWEwYiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.G495ovi2eRP8iefZa3k_6XuFAFkQbAgkDe1VfrxQ0Vw`, // 본인 TMDB 토큰으로 교체
+            Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`,
           },
         }
       );
