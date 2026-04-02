@@ -94,7 +94,7 @@ const MovieDetailPage = () => {
       key: `director-${director.id}`,
       name: director.name,
       role: director.job,
-      profilePath: null,
+      profilePath: director.profile_path,
     }))
 
     const castItems = cast.slice(0, 18).map((actor) => ({

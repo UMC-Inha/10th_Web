@@ -41,6 +41,7 @@ export type CrewMember = {
   id: number
   name: string
   job: string
+  profile_path: string | null
 }
 
 // /credits API 응답
