@@ -108,7 +108,7 @@ const MovieListPage = ({ title, endpoint }: MovieListPageProps) => {
                   <img
                     src={posterUrl}
                     alt={movie.title}
-                    className="aspect-[2/3] h-full w-full object-cover transition duration-300 group-hover:scale-105 group-hover:blur-[1.5px]"
+                    className="aspect-2/3 h-full w-full object-cover transition duration-300 group-hover:scale-105 group-hover:blur-[1.5px]"
                   />
 
                   <div className="absolute inset-0 bg-black/55 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
