@@ -12,6 +12,7 @@ export type MovieListResponse = {
   total_results: number
 }
 
+// 영화 상세 페이지
 export type MovieDetails = {
   id: number
   title: string
@@ -27,6 +28,7 @@ export type MovieDetails = {
   }>
 }
 
+// 출연진 정보
 export type CastMember = {
   id: number
   name: string
@@ -34,12 +36,14 @@ export type CastMember = {
   profile_path: string | null
 }
 
+// 제작진 정보
 export type CrewMember = {
   id: number
   name: string
   job: string
 }
 
+// /credits API 응답
 export type MovieCreditsResponse = {
   id: number
   cast: CastMember[]

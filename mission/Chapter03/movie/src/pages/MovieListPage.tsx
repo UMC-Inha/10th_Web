@@ -11,17 +11,24 @@ const TMDB_TOKEN =
   'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwZmQ2NDAxMTg5NTdjZTc1OWYyNGY2MjM4MWEwYjMwOSIsIm5iZiI6MTc3NTAyMTYwNC40ODUsInN1YiI6IjY5Y2NhZTI0YWU0M2I4MGIzMTU1MGRjMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.TWWBx2Ne_2oV9t72nXONrf08hd7VFD2FOuUNKBG6cgc'
 
 const MovieListPage = ({ title, endpoint }: MovieListPageProps) => {
+  // API에서 받아온 영화 목록
   const [movies, setMovies] = useState<Movie[]>([])
+  // 데이터 요청 로딩 상태
   const [isLoading, setIsLoading] = useState(true)
+  // 요청 실패 시 사용자에게 보여줄 에러 메시지
   const [errorMessage, setErrorMessage] = useState('')
+  // 페이지네이션의 현재 페이지 번호
   const [currentPage, setCurrentPage] = useState(1)
+  // TMDB가 내려주는 전체 페이지 수
   const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
     const fetchMovies = async () => {
+      // 새로운 요청이 시작되면 다시 로딩 상태로 전환
       setIsLoading(true)
 
       try {
+        // endpoint와 currentPage를 조합해서 해당 카테고리/페이지 데이터를 불러옴
         const response = await fetch(
           `https://api.themoviedb.org/3/movie/${endpoint}?language=ko-KR&page=${currentPage}`,
           {
@@ -36,6 +43,7 @@ const MovieListPage = ({ title, endpoint }: MovieListPageProps) => {
         }
 
         const data: MovieListResponse = await response.json()
+        // 현재 카테고리와 페이지의 결과를 확인 (디버깅 로그)
         console.log(`[${endpoint}] page ${currentPage}:`, data.results)
 
         setMovies(data.results)
@@ -53,9 +61,11 @@ const MovieListPage = ({ title, endpoint }: MovieListPageProps) => {
     }
 
     fetchMovies()
+    // endpoint 또는 currentPage가 바뀔 때마다 다시 데이터를 요청
   }, [endpoint, currentPage])
 
   useEffect(() => {
+    // 카테고리가 바뀌면 첫 페이지부터 다시
     setCurrentPage(1)
   }, [endpoint])
 
@@ -89,6 +99,7 @@ const MovieListPage = ({ title, endpoint }: MovieListPageProps) => {
                 : 'https://via.placeholder.com/500x750?text=No+Image'
 
               return (
+                // 카드 전체를 클릭하면 상세 페이지로 이동
                 <Link
                   key={movie.id}
                   to={`/movies/${movie.id}`}

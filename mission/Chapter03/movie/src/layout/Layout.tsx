@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar'
 
 const Layout = () => {
   return (
+    // 공통 레이아웃
     <main className="min-h-screen bg-black px-4 py-8">
       <div className="mx-auto max-w-6xl">
         <header className="mb-4">
