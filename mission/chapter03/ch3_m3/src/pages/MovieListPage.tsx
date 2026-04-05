@@ -3,9 +3,8 @@ import MovieCard from '../components/MovieCard'
 import Spinner from '../components/Spinner'
 import { type Movie, type MovieResponse } from '../types/movie'
 
-const API_KEY = '8f3fb5ced7bad77c121296eca926be47'
-const ACCESS_TOKEN =
-  'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4ZjNmYjVjZWQ3YmFkNzdjMTIxMjk2ZWNhOTI2YmU0NyIsIm5iZiI6MTc3NTA0NDczMC4zMDQ5OTk4LCJzdWIiOiI2OWNkMDg3YWRmMWNkMDhlOTA0OGYwNTEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.GmW1VmAEQBiJGmPrL8edE5tS6Xyg0dVRGIECGMynODE'
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY as string
+const ACCESS_TOKEN = import.meta.env.VITE_TMDB_ACCESS_TOKEN as string
 
 type Props = {
   category: string
@@ -19,38 +18,37 @@ function MovieListPage({ category, title }: Props) {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
-  useEffect(() => {
+  const fetchMovies = async (pageNum: number) => {
     setIsLoading(true)
     setError(null)
-
-    const fetchMovies = async () => {
-      try {
-        const res = await fetch(
-          `https://api.themoviedb.org/3/movie/${category}?api_key=${API_KEY}&language=ko-KR&page=${page}`,
-          {
-            headers: {
-              Authorization: `Bearer ${ACCESS_TOKEN}`,
-            },
-          }
-        )
-        if (!res.ok) throw new Error(`HTTP error: ${res.status}`)
-        const data: MovieResponse = await res.json()
-        setMovies(data.results)
-        setTotalPages(data.total_pages)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.')
-      } finally {
-        setIsLoading(false)
-      }
+    try {
+      const res = await fetch(
+        `https://api.themoviedb.org/3/movie/${category}?api_key=${API_KEY}&language=ko-KR&page=${pageNum}`,
+        {
+          headers: {
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
+          },
+        }
+      )
+      if (!res.ok) throw new Error(`HTTP error: ${res.status}`)
+      const data: MovieResponse = await res.json()
+      setMovies(data.results)
+      setTotalPages(data.total_pages)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.')
+    } finally {
+      setIsLoading(false)
     }
+  }
 
-    fetchMovies()
-  }, [category, page])
-
-  // 카테고리가 바뀌면 페이지를 1로 초기화
   useEffect(() => {
     setPage(1)
+    fetchMovies(1)
   }, [category])
+
+  useEffect(() => {
+    if (page !== 1) fetchMovies(page)
+  }, [page])
 
   if (isLoading) return <Spinner />
 

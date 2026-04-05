@@ -3,9 +3,7 @@ import MovieCard from '../components/MovieCard'
 import Spinner from '../components/Spinner'
 import { type Movie, type MovieResponse } from '../types/movie'
 
-const API_KEY = '8f3fb5ced7bad77c121296eca926be47'
-const ACCESS_TOKEN =
-  'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4ZjNmYjVjZWQ3YmFkNzdjMTIxMjk2ZWNhOTI2YmU0NyIsIm5iZiI6MTc3NTA0NDczMC4zMDQ5OTk4LCJzdWIiOiI2OWNkMDg3YWRmMWNkMDhlOTA0OGYwNTEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.GmW1VmAEQBiJGmPrL8edE5tS6Xyg0dVRGIECGMynODE'
+const ACCESS_TOKEN = import.meta.env.VITE_TMDB_ACCESS_TOKEN
 
 type Props = {
   category: string
@@ -26,8 +24,9 @@ function MovieListPage({ category, title }: Props) {
     const fetchMovies = async () => {
       try {
         const res = await fetch(
-          `https://api.themoviedb.org/3/movie/${category}?api_key=${API_KEY}&language=ko-KR&page=${page}`,
+          `https://api.themoviedb.org/3/movie/${category}?language=ko-KR&page=${page}`,
           {
+            method: 'GET',
             headers: {
               Authorization: `Bearer ${ACCESS_TOKEN}`,
             },

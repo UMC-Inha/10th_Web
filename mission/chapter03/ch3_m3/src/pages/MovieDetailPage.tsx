@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import Spinner from '../components/Spinner'
+import ProfileImage from '../components/ProfileImage'
 import { type MovieDetails, type Credits, type CastMember, type CrewMember } from '../types/movie'
 
-const API_KEY = '8f3fb5ced7bad77c121296eca926be47'
-const ACCESS_TOKEN =
-  'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4ZjNmYjVjZWQ3YmFkNzdjMTIxMjk2ZWNhOTI2YmU0NyIsIm5iZiI6MTc3NTA0NDczMC4zMDQ5OTk4LCJzdWIiOiI2OWNkMDg3YWRmMWNkMDhlOTA0OGYwNTEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.GmW1VmAEQBiJGmPrL8edE5tS6Xyg0dVRGIECGMynODE'
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY as string
+const ACCESS_TOKEN = import.meta.env.VITE_TMDB_ACCESS_TOKEN as string
 
 const HEADERS = { Authorization: `Bearer ${ACCESS_TOKEN}` }
 
@@ -21,26 +21,9 @@ function formatMoney(amount: number): string {
   return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount)
 }
 
-function ProfileImage({ path, name, size = 'md' }: { path: string | null; name: string; size?: 'sm' | 'md' }) {
-  const sizeClass = size === 'sm' ? 'w-12 h-12' : 'w-16 h-24'
-  if (path) {
-    return (
-      <img
-        src={`https://image.tmdb.org/t/p/w185${path}`}
-        alt={name}
-        className={`${sizeClass} object-cover rounded-lg flex-shrink-0`}
-      />
-    )
-  }
-  return (
-    <div className={`${sizeClass} bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0`}>
-      <span className="text-gray-400 text-xs text-center px-1">사진 없음</span>
-    </div>
-  )
-}
-
 function MovieDetailPage() {
   const { movieId } = useParams<{ movieId: string }>()
+  const navigate = useNavigate()
 
   const [movie, setMovie] = useState<MovieDetails | null>(null)
   const [credits, setCredits] = useState<Credits | null>(null)
@@ -255,12 +238,12 @@ function MovieDetailPage() {
 
       {/* 뒤로가기 */}
       <div className="mt-4 mb-6">
-        <Link
-          to={-1 as unknown as string}
+        <button
+          onClick={() => navigate(-1)}
           className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
         >
           ← 목록으로 돌아가기
-        </Link>
+        </button>
       </div>
     </div>
   )

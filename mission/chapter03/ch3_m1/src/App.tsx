@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react'
 import './index.css'
 import MovieCard from './components/MovieCard'
-import { type Movie, type MovieResponse } from './types/movie'
-
-const API_KEY = '8f3fb5ced7bad77c121296eca926be47'
-const ACCESS_TOKEN =
-  'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4ZjNmYjVjZWQ3YmFkNzdjMTIxMjk2ZWNhOTI2YmU0NyIsIm5iZiI6MTc3NTA0NDczMC4zMDQ5OTk4LCJzdWIiOiI2OWNkMDg3YWRmMWNkMDhlOTA0OGYwNTEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.GmW1VmAEQBiJGmPrL8edE5tS6Xyg0dVRGIECGMynODE'
+import { type Movie } from './types/movie'
+import { fetchPopularMovies } from './api/movies'
 
 function App() {
   const [movies, setMovies] = useState<Movie[]>([])
@@ -13,19 +10,8 @@ function App() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch(
-      `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=ko-KR&page=1`,
-      {
-        headers: {
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
-        },
-      }
-    )
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error: ${res.status}`)
-        return res.json()
-      })
-      .then((data: MovieResponse) => {
+    fetchPopularMovies()
+      .then((data) => {
         console.log('영화 데이터:', data.results)
         setMovies(data.results)
         setLoading(false)
