@@ -7,8 +7,7 @@ import type {
   MovieDetails,
 } from '../types/movie'
 
-const TMDB_TOKEN =
-  'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwZmQ2NDAxMTg5NTdjZTc1OWYyNGY2MjM4MWEwYjMwOSIsIm5iZiI6MTc3NTAyMTYwNC40ODUsInN1YiI6IjY5Y2NhZTI0YWU0M2I4MGIzMTU1MGRjMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.TWWBx2Ne_2oV9t72nXONrf08hd7VFD2FOuUNKBG6cgc'
+const TMDB_TOKEN = import.meta.env.VITE_TMDB_TOKEN
 
 const MovieDetailPage = () => {
   // URL의 movieId를 가져와 상세/크레딧 API 요청에 사용
@@ -28,6 +27,12 @@ const MovieDetailPage = () => {
     const fetchDetail = async () => {
       if (!movieId) {
         setErrorMessage('잘못된 경로입니다. 영화 ID가 없습니다.')
+        setIsLoading(false)
+        return
+      }
+
+      if (!TMDB_TOKEN) {
+        setErrorMessage('TMDB 토큰이 설정되지 않았습니다. .env 파일의 VITE_TMDB_TOKEN 값을 확인해주세요.')
         setIsLoading(false)
         return
       }

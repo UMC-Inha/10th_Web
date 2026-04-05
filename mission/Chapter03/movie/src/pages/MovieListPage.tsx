@@ -7,8 +7,7 @@ type MovieListPageProps = {
   endpoint: 'popular' | 'upcoming' | 'top_rated' | 'now_playing'
 }
 
-const TMDB_TOKEN =
-  'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwZmQ2NDAxMTg5NTdjZTc1OWYyNGY2MjM4MWEwYjMwOSIsIm5iZiI6MTc3NTAyMTYwNC40ODUsInN1YiI6IjY5Y2NhZTI0YWU0M2I4MGIzMTU1MGRjMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.TWWBx2Ne_2oV9t72nXONrf08hd7VFD2FOuUNKBG6cgc'
+const TMDB_TOKEN = import.meta.env.VITE_TMDB_TOKEN
 
 const MovieListPage = ({ title, endpoint }: MovieListPageProps) => {
   // API에서 받아온 영화 목록
@@ -26,6 +25,12 @@ const MovieListPage = ({ title, endpoint }: MovieListPageProps) => {
     const fetchMovies = async () => {
       // 새로운 요청이 시작되면 다시 로딩 상태로 전환
       setIsLoading(true)
+
+      if (!TMDB_TOKEN) {
+        setErrorMessage('TMDB 토큰이 설정되지 않았습니다. .env 파일의 VITE_TMDB_TOKEN 값을 확인해주세요.')
+        setIsLoading(false)
+        return
+      }
 
       try {
         // endpoint와 currentPage를 조합해서 해당 카테고리/페이지 데이터를 불러옴
