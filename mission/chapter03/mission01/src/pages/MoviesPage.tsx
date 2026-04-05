@@ -1,25 +1,21 @@
 import { useEffect, useState } from 'react';
-import type { Movie, MovieResponse } from '../types/movie';
-import axios from 'axios';
+import type { Movie } from '../types/movie';
+import { fetchPopularMovies } from '../apis/movieApi';
 
 const MoviesPage = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
-  console.log(movies);
 
   useEffect(() => {
-    const fetchMovies = async () => {
-      const { data } = await axios.get<MovieResponse>(
-        'https://api.themoviedb.org/3/movie/popular?language=ko-KR&page=1',
-        {
-          headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`,
-          },
-        }
-      );
-      setMovies(data.results);
+    const loadMovies = async () => {
+      try {
+        const data = await fetchPopularMovies();
+        setMovies(data.results);
+      } catch (error) {
+        console.error('영화 데이터를 불러오는데 실패했습니다.', error);
+      }
     };
 
-    fetchMovies();
+    loadMovies();
   }, []);
 
   return (
@@ -31,7 +27,8 @@ const MoviesPage = () => {
         >
           <img
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-            alt={movie.title}
+            alt={`${movie.title || '영화'} 영화 포스터`}
+            loading="lazy"
             className="w-full object-cover transition-all duration-300 group-hover:blur-sm group-hover:brightness-50"
           />
           <div className="absolute inset-0 flex flex-col items-center justify-center p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
