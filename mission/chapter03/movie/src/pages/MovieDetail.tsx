@@ -13,13 +13,15 @@ const profileUrl = (path: string | null) =>
 
 function MovieDetailInner({ movieId }: { movieId: number }) {
   const { data, isLoading, error, fetchData } = useAxios<MovieDetailBundle>(
-    async () => {
+    async (signal) => {
       const [movieRes, creditsRes] = await Promise.all([
         api.get<MovieDetails>(`/movie/${movieId}`, {
           params: { language: 'ko-KR' },
+          signal,
         }),
         api.get<MovieCredits>(`/movie/${movieId}/credits`, {
           params: { language: 'ko-KR' },
+          signal,
         }),
       ]);
       return { movie: movieRes.data, credits: creditsRes.data };

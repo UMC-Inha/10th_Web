@@ -15,16 +15,17 @@ const MovieList = ({ endpoint, title }: MovieListProps) => {
   const [page, setPage] = useState(1);
 
   const { data, isLoading, error, fetchData } = useAxios<MovieResponse>(
-    () =>
+    (signal) =>
       api
         .get<MovieResponse>(endpoint, {
           params: {
             language: 'ko-KR',
             page,
           },
+          signal,
         })
         .then((res) => res.data),
-    [page]
+    [page, endpoint]
   );
 
   const totalPages = data?.total_pages ?? 1;
