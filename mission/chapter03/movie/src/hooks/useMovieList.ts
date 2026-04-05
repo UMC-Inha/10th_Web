@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { TMDB_BASE_URL } from "../constants/tmdb";
-import type { Movie, MovieResponse } from "../types/movie";
+import type { Movie } from "../types/movie";
+import { getMovieList } from "../apis/movieApi";
 
 // 영화 목록을 가져오는 커스텀 훅
 const useMovieList = (categoryId: string, page: number = 1) => {
@@ -15,14 +15,7 @@ const useMovieList = (categoryId: string, page: number = 1) => {
     const fetchMovies = async () => {
       setLoading(true);
       try {
-        const { data } = await axios.get<MovieResponse>(
-          `${TMDB_BASE_URL}/movie/${categoryId}?language=ko-KR&page=${page}`,
-          {
-            headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_TMDB_ACCESS_TOKEN}`,
-            },
-          },
-        );
+        const { data } = await getMovieList(categoryId, page);
         setMovies(data.results);
         setTotalPages(data.total_pages);
         setError(null);

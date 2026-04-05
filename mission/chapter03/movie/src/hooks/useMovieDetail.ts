@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { TMDB_BASE_URL } from "../constants/tmdb";
 import type { MovieCredit, MovieDetail } from "../types/movie";
-
-const headers = {
-  Authorization: `Bearer ${import.meta.env.VITE_TMDB_ACCESS_TOKEN}`,
-};
+import { getMovieDetail, getMovieCredits } from "../apis/movieApi";
 
 // 영화 상세 정보를 가져오는 커스텀 훅
 const useMovieDetail = (movieId: string | undefined) => {
@@ -22,14 +18,8 @@ const useMovieDetail = (movieId: string | undefined) => {
       setLoading(true);
       try {
         const [{ data: detail }, { data: credit }] = await Promise.all([
-          axios.get<MovieDetail>(
-            `${TMDB_BASE_URL}/movie/${movieId}?language=ko-KR`,
-            { headers },
-          ),
-          axios.get<MovieCredit>(
-            `${TMDB_BASE_URL}/movie/${movieId}/credits?language=ko-KR`,
-            { headers },
-          ),
+          getMovieDetail(movieId),
+          getMovieCredits(movieId),
         ]);
         setMovieDetail(detail);
         setMovieCredit(credit);
