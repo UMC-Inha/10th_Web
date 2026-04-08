@@ -1,0 +1,155 @@
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import type { Movie, MovieListResponse } from '../types/movie'
+
+type MovieListPageProps = {
+  title: string
+  endpoint: 'popular' | 'upcoming' | 'top_rated' | 'now_playing'
+}
+
+const TMDB_TOKEN = import.meta.env.VITE_TMDB_TOKEN
+
+const MovieListPage = ({ title, endpoint }: MovieListPageProps) => {
+  // API에서 받아온 영화 목록
+  const [movies, setMovies] = useState<Movie[]>([])
+  // 데이터 요청 로딩 상태
+  const [isLoading, setIsLoading] = useState(true)
+  // 요청 실패 시 사용자에게 보여줄 에러 메시지
+  const [errorMessage, setErrorMessage] = useState('')
+  // 페이지네이션의 현재 페이지 번호
+  const [currentPage, setCurrentPage] = useState(1)
+  // TMDB가 내려주는 전체 페이지 수
+  const [totalPages, setTotalPages] = useState(1)
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      // 새로운 요청이 시작되면 다시 로딩 상태로 전환
+      setIsLoading(true)
+
+      if (!TMDB_TOKEN) {
+        setErrorMessage('TMDB 토큰이 설정되지 않았습니다. .env 파일의 VITE_TMDB_TOKEN 값을 확인해주세요.')
+        setIsLoading(false)
+        return
+      }
+
+      try {
+        // endpoint와 currentPage를 조합해서 해당 카테고리/페이지 데이터를 불러옴
+        const response = await fetch(
+          `https://api.themoviedb.org/3/movie/${endpoint}?language=ko-KR&page=${currentPage}`,
+          {
+            headers: {
+              Authorization: `Bearer ${TMDB_TOKEN}`,
+            },
+          },
+        )
+
+        if (!response.ok) {
+          throw new Error(`API 요청 실패: ${response.status}`)
+        }
+
+        const data: MovieListResponse = await response.json()
+        // 현재 카테고리와 페이지의 결과를 확인 (디버깅 로그)
+        console.log(`[${endpoint}] page ${currentPage}:`, data.results)
+
+        setMovies(data.results)
+        setTotalPages(data.total_pages)
+        setErrorMessage('')
+      } catch (error) {
+        if (error instanceof Error) {
+          setErrorMessage(error.message)
+        } else {
+          setErrorMessage('알 수 없는 오류가 발생했습니다.')
+        }
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchMovies()
+    // endpoint 또는 currentPage가 바뀔 때마다 다시 데이터를 요청
+  }, [endpoint, currentPage])
+
+  useEffect(() => {
+    // 카테고리가 바뀌면 첫 페이지부터 다시
+    setCurrentPage(1)
+  }, [endpoint])
+
+  const canGoPrev = currentPage > 1
+  const canGoNext = currentPage < totalPages
+
+  return (
+    <section>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-slate-100">{title}</h2>
+        <p className="text-sm text-slate-200">현재 페이지: {currentPage}</p>
+      </div>
+
+      {isLoading && (
+        <div className="flex items-center gap-3 rounded-xl border border-white/20 bg-slate-900 p-4 shadow-sm">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-500 border-t-sky-400" />
+          <p className="text-slate-200">영화 목록을 불러오는 중...</p>
+        </div>
+      )}
+
+      {!isLoading && errorMessage && (
+        <div className="rounded-xl border border-red-400/40 bg-red-950/60 p-4 text-red-200">{errorMessage}</div>
+      )}
+
+      {!isLoading && !errorMessage && (
+        <>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+            {movies.map((movie) => {
+              const posterUrl = movie.poster_path
+                ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                : 'https://via.placeholder.com/500x750?text=No+Image'
+
+              return (
+                // 카드 전체를 클릭하면 상세 페이지로 이동
+                <Link
+                  key={movie.id}
+                  to={`/movies/${movie.id}`}
+                  className="group relative block overflow-hidden rounded-xl border border-white/20 bg-slate-900 shadow-sm"
+                >
+                  <img
+                    src={posterUrl}
+                    alt={movie.title}
+                    className="aspect-2/3 h-full w-full object-cover transition duration-300 group-hover:scale-105 group-hover:blur-[1.5px]"
+                  />
+
+                  <div className="absolute inset-0 bg-black/55 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                  <div className="absolute inset-x-0 bottom-0 p-3 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <h3 className="text-sm font-semibold">{movie.title}</h3>
+                    <p className="mt-1 text-xs text-neutral-200">{movie.overview || '줄거리 정보가 없습니다.'}</p>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+              disabled={!canGoPrev}
+              className="rounded-md border border-white/20 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              이전 페이지
+            </button>
+            <span className="text-sm text-slate-200">{currentPage} / {totalPages}</span>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+              disabled={!canGoNext}
+              className="rounded-md border border-white/20 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              다음 페이지
+            </button>
+          </div>
+        </>
+      )}
+    </section>
+  )
+}
+
+export default MovieListPage

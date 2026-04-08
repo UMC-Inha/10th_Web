@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useMemo,
   useState,
@@ -20,7 +21,7 @@ const TodoContext = createContext<TodoContextType | null>(null);
 export const TodoProvider = ({ children }: { children: ReactNode }) => {
   const [todos, setTodos] = useState<TTodo[]>([]);
 
-  const addTodo = (text: string) => {
+  const addTodo = useCallback((text: string) => {
     const newTodo: TTodo = {
       id: crypto.randomUUID(),
       text,
@@ -28,9 +29,9 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
     };
 
     setTodos((prev) => [...prev, newTodo]);
-  };
+  }, []);
 
-  const completeTask = (id: TTodo['id']) => {
+  const completeTask = useCallback((id: TTodo['id']) => {
     setTodos((prev) =>
       prev.map((todo) =>
         todo.id === id
@@ -41,11 +42,11 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
           : todo,
       ),
     );
-  };
+  }, []);
 
-  const deleteTask = (id: TTodo['id']) => {
+  const deleteTask = useCallback((id: TTodo['id']) => {
     setTodos((prev) => prev.filter((todo) => todo.id !== id));
-  };
+  }, []);
 
   const pendingTasks = useMemo(
     () => todos.filter((todo) => !todo.isDone),
@@ -65,7 +66,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
       completeTask,
       deleteTask,
     }),
-    [pendingTasks, doneTasks],
+    [pendingTasks, doneTasks, addTodo, completeTask, deleteTask],
   );
 
   return (
