@@ -88,6 +88,24 @@
 
 ---
 
+## 하이브리드(JWT + 저장소 메타데이터)
+
+JWT만으로 검증하는 방식과, 세션처럼 서버가 상태를 두는 방식을 **합친** 설계임 — 규격상 JWT는 <a href="https://datatracker.ietf.org/doc/html/rfc7519">RFC 7519</a>의 **jti**(JWT ID) 등으로 개별 토큰을 구분할 수 있음
+
+### 동작 원리(요약)
+
+1. 로그인 시 서버가 JWT를 내주면서, Redis·DB 등에 <strong>세션 레코드</strong>를 둠 — 저장소에는 **jti**·**sub**·커스텀 **sid**(세션 ID)·권한 스냅샷·발급 시각 등 <strong>서버가 신뢰하는 메타데이터</strong>를 JWT 클레임과 맞춰 저장함
+2. 이후 요청은 기존과 같이 <code>Authorization: Bearer</code> 로 JWT를 보냄
+3. 서버는 <strong>서명과 만료</strong>를 검증한 뒤, 토큰에서 꺼낸 식별자로 저장소를 조회함 — <strong>레코드가 없거나</strong> **폐기·차단 플래그**가 있으면 401 등으로 거부함
+4. 로그아웃·권한 변경·강제 종료 시에는 <strong>클라이언트 토큰 삭제만으로는 부족할 수 있으므로</strong>, 저장소에서 해당 세션·**jti**를 지우거나 무효로 표시함 — 그러면 서명이 유효해도 다음 API 호출부터 막을 수 있음
+
+### 트레이드오프
+
+- 요청마다 저장소 조회(또는 캐시)가 생겨 <strong>순수 무상태 JWT</strong>보다 비용이 늘 수 있음
+- 대신 <strong>즉시 무효화</strong>와 <strong>서버 주도 정책</strong>(역할 변경 반영 등)을 같이 가져가기 쉬움
+
+---
+
 ## 참고 자료
 
 - <a href="https://datatracker.ietf.org/doc/html/rfc7519">RFC 7519 — JSON Web Token (JWT)</a>

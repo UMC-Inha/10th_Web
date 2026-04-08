@@ -1,4 +1,4 @@
-# 인증(Authentication)과 인가(Authorization)
+# <strong>인증(Authentication)</strong>과 <strong>인가(Authorization)</strong>
 
 ## 두 용어의 차이
 
