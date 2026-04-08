@@ -1,0 +1,26 @@
+//movie의 타입 정의
+
+export type Movie = {
+  adult: boolean;
+  backdrop_path: string;
+  genre_ids: number[];
+  id: number;
+  original_language: string;
+  original_title: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  release_date: string;
+  title: string;
+  video: boolean;
+  vote_average: number;
+  vote_count: number;
+};
+
+//anxois에 대한 타입 정의
+export type MovieResponse = {
+  page: number,
+  results: Movie[],
+  total_pages: number,
+  total_results: number
+}
