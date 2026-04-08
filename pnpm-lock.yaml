@@ -76,6 +76,8 @@ importers:
 
   practice/chapter03/spa: {}
 
+  practice/chapter04: {}
+
 packages:
 
   '@babel/code-frame@7.29.0':
