@@ -1,9 +1,9 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv{
-    readonly VITE_TMDB_KEY: string
+    readonly VITE_SEVER_API_URL: string
 }
 
 interface ImportMeta{
-    readonly env: VITE_TMDB_KEY
+    readonly env: VITE_SEVER_API_URL
 }

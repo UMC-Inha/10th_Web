@@ -1,8 +1,9 @@
-
 import useForm from "../hooks/useForm"
 import { validateSignIn, type UserSignIninformation } from "../utils/validate"
+import { useNavigate } from "react-router-dom"
 
 const LogInPage = () => {
+    const navigate = useNavigate();
     const {values, errors, touched, getInputProps} = useForm<UserSignIninformation>({
         initialValue:{
             email:"",
@@ -10,13 +11,19 @@ const LogInPage = () => {
         },
         validate: validateSignIn,
     })
-    const handleSubmit = () => {
-        console.log(values)
+    const handleSubmit = async() => {
+       console.log(values)
     }
     const isdisabled = Object.values(errors || {}).some((error) => error.length > 0) || 
     Object.values(values).some((value) => value === "")!
     return (  
         <div className="flex flex-col items-center justify-center h-full gap-4">
+            <button
+            onClick ={() => navigate("/")}
+            className="mb-8 flex items-center gap-2 text-sm text-black-400 transition hover:text-white">
+            ← 뒤로가기
+            </button>
+
             <div className="flex flex-col gap-3">
                 <input 
                 {...getInputProps("email")}
