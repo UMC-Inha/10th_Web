@@ -1,34 +1,18 @@
 import { useState, useEffect } from "react";
 import { loadMovieData } from "../apis/movie";
-import type { Movies } from "../types/Movies";
+import { useCustomFetch } from "./useCustomFetch";
 
 export const useMovieData = (category: string | undefined) => {
-    const [movies, setMovies] = useState<Movies[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isError, setIsError] = useState<boolean>(false);
     const [page, setPage] = useState<number>(1);
-    const [maxPage, setMaxPage] = useState<number>(0);
+    const stringCategory = JSON.stringify(category)
 
     useEffect(() => {
         setPage(1);
-    }, [category]);
+    }, [stringCategory]);
 
-    useEffect(() => {
-        const fetchMovie = async () => {
-            setIsLoading(true);
-            try {
-                const data = await loadMovieData(category, page);
-                setMaxPage(data.total_pages);
-                setMovies(data.results);
-                setIsError(false);
-            } catch {
-                setIsError(true);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchMovie();
-    }, [page, category]);
+    const {data, isError, isLoading} = useCustomFetch(loadMovieData, [category, page])
+    const movies = data?.results || [];
+    const maxPage = data?.total_pages || 0;
 
     const nextPage = () => {
         if (page < maxPage) setPage(prev => prev + 1);

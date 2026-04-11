@@ -36,7 +36,6 @@ const SignUpPage = () => {
         mode: "onBlur",
     });
 
-
     const nextStep = async (fields: Array<keyof FormFields>) => {
         const isValid = await trigger(fields);
         if (isValid) setStep((prev) => prev + 1);
