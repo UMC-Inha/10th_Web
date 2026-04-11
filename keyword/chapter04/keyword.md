@@ -459,3 +459,49 @@
         **이유: 리프레시 토큰이 만료되어 액세스 토큰을 발급받아 통한 자동 로그인이 불가하기에 재 로그인을 통해 액세스 토큰과 새로운 리프레시 토큰을 발급 받아야함** 
         
         </aside>
+- **Zod** 학습 내용 정리
+    
+    ### Zod를 쓰는이유
+    
+    Zod는 데이터를 받아서 "검문소" 역할을 수행하며 데이터가 들어오면 스키마라는 기준에 맞춰 검사하고, 결과(성공/실패)를 반환함.
+    
+    TypeScript는 컴파일 타임(코드 작성 중)에만 타입을 체크 하지만 서버에서 받아온 데이터나 사용자가 입력한 값은 런타임(프로그램 실행 중)에 들어오게됨
+    
+    Zod는 이 간극을 메워 실행 시점에 데이터를 검사하고, 통과하면 그 데이터를 안전하게 사용할 수 있게 도와줌.
+    
+    ---
+    
+    ### 핵심 기능
+    
+    ### **스키마 정의 (Blueprint)**
+    
+    데이터의 모든 성질과 제약 조건(string이여야 한다 함수여야한다 등)을 선언적으로 기술
+    
+    TypeScript
+    
+    `import { z } from "zod";
+    
+    const UserSchema = z.object({
+      username: z.string().min(3),
+      age: z.number().optional(),
+      email: z.string().email(),
+    });`
+    
+    ### **타입 추론 (Type Inference)**
+    
+    스키마를 만들면 따로 `interface`를 정의할 필요 없이 타입을 뽑아낼 수 있으며. 스키마가 수정되면 타입도 자동으로 수정됨.
+    
+    TypeScript
+    
+    `type User = z.infer<typeof UserSchema>;
+    // 자동으로 { username: string; age?: number; email: string; } 타입이 생성됨`
+    
+    ### **유효성 검사 및 정제 (Validation & Refine)**
+    
+    단순히 타입만 체크하는 게 아니라, 복잡한 조건(비밀번호 일치 여부 등)을 검사할 수 있습니다.
+    
+    TypeScript
+    
+    `const loginSchema = z.string().refine((val) => val !== "admin", {
+      message: "admin은 아이디로 사용할 수 없습니다.",
+    });`
