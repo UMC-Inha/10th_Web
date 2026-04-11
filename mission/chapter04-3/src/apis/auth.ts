@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { type RequestSignIn, type RequestSignUpUser, type ResponseSignIn, type ResponseSignUp } from '../../../chapter04-2/src/types/authType';
+import { type RequestSignIn, type RequestSignUpUser, type ResponseSignIn, type ResponseSignUp } from '../../../chapter04-3/src/types/authType';
 
 
 export const signup = async (body: RequestSignUpUser):Promise<ResponseSignUp> => {
