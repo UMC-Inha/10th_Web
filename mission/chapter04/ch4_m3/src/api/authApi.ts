@@ -1,23 +1,6 @@
-const BASE_URL = 'http://localhost:8000';
+import type { SignInRequest, SignInResponse, SignUpRequest } from '../types/auth';
 
-export interface SignInRequest {
-  email: string;
-  password: string;
-}
-
-export interface SignInResponse {
-  id: number;
-  name: string;
-  accessToken: string;
-  refreshToken: string;
-}
-
-export interface SignUpRequest {
-  email: string;
-  password: string;
-  passwordCheck: string;
-  name: string;
-}
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export async function signUp(body: SignUpRequest): Promise<SignInResponse> {
   const res = await fetch(`${BASE_URL}/v1/auth/signup`, {

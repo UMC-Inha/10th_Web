@@ -6,6 +6,7 @@ import { type MovieDetails, type Credits, type CastMember, type CrewMember } fro
 
 const BASE_URL = 'https://api.themoviedb.org/3/movie'
 const LANG = { language: 'ko-KR' }
+const KEY_CREW_JOBS = ['Director', 'Producer', 'Screenplay', 'Original Music Composer', 'Director of Photography']
 
 function formatRuntime(minutes: number | null): string {
   if (!minutes) return '정보 없음'
@@ -72,8 +73,6 @@ function MovieDetailPage() {
 
   const directors: CrewMember[] = credits.crew.filter((c) => c.job === 'Director')
   const topCast: CastMember[] = credits.cast.slice(0, 12)
-
-  const KEY_CREW_JOBS = ['Director', 'Producer', 'Screenplay', 'Original Music Composer', 'Director of Photography']
 
   return (
     <div className="text-white">
