@@ -74,13 +74,20 @@ const UserPlaceholderIcon = () => (
 );
 
 // Step 1: Email 입력하기
-const Step1 = ({ onNext }: { onNext: (email: string) => void }) => {
+const Step1 = ({
+  defaultEmail,
+  onNext,
+}: {
+  defaultEmail: string;
+  onNext: (email: string) => void;
+}) => {
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<Step1Values>({
     resolver: zodResolver(step1Schema),
+    defaultValues: { email: defaultEmail },
     mode: "onBlur",
   });
 
@@ -275,7 +282,7 @@ const SignUpPage = () => {
           </h2>
         </div>
 
-        {step === 1 && <Step1 onNext={handleStep1} />}
+        {step === 1 && <Step1 defaultEmail={email} onNext={handleStep1} />}
         {step === 2 && <Step2 email={email} onNext={handleStep2} />}
         {step === 3 && (
           <Step3 isSubmitting={isSubmitting} onSubmit={handleStep3} />
