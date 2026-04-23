@@ -1,9 +1,7 @@
-import axios from "axios";
 import { refresh } from "./auth";
+import baseAxios from "./baseAxios";
 
-const axiosInstance = axios.create({
-  baseURL: "http://localhost:8000",
-});
+const axiosInstance = baseAxios;
 
 // accessToken 만료 시 재발급 인터셉터 등록
 axiosInstance.interceptors.request.use((config) => {
@@ -20,8 +18,16 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const status = error.response?.status;
     if (status === 401) {
-      const isLoginRequest = error.config?.url?.includes("signin");
-      if (isLoginRequest) return Promise.reject(error);
+      const isAuthRequest =
+        error.config?.url?.includes("signin") ||
+        error.config?.url?.includes("refresh");
+
+      if (isAuthRequest) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+        return Promise.reject(error);
+      }
 
       const refreshToken = localStorage.getItem("refreshToken");
       if (refreshToken) {
@@ -30,6 +36,7 @@ axiosInstance.interceptors.response.use(
         localStorage.setItem("refreshToken", response.data.refreshToken);
         return axiosInstance(error.config);
       }
+
       window.location.href = "/login";
     } else if (status === 500) {
       // 서버 에러

@@ -6,10 +6,10 @@ import type {
   SignUpRequest,
   SignUpResponse,
 } from "../types/auth";
-import axiosInstance from "./axiosInstance";
+import baseAxios from "./baseAxios";
 
 export const signIn = async (body: SignInRequest): Promise<SignInResponse> => {
-  const response = await axiosInstance.post<SignInResponse>(
+  const response = await baseAxios.post<SignInResponse>(
     "v1/auth/signin",
     body,
   );
@@ -19,7 +19,7 @@ export const signIn = async (body: SignInRequest): Promise<SignInResponse> => {
 export const refresh = async (
   body: RefreshRequest,
 ): Promise<SignInResponse> => {
-  const response = await axiosInstance.post<SignInResponse>(
+  const response = await baseAxios.post<SignInResponse>(
     "/v1/auth/refresh",
     body,
   );
@@ -28,12 +28,12 @@ export const refresh = async (
 
 export const signOut = async (): Promise<SignOutResponse> => {
   const response =
-    await axiosInstance.post<SignOutResponse>("/v1/auth/signout");
+    await baseAxios.post<SignOutResponse>("/v1/auth/signout");
   return response.data;
 };
 
 export const signUp = async (body: SignUpRequest): Promise<SignUpResponse> => {
-  const response = await axiosInstance.post<SignUpResponse>(
+  const response = await baseAxios.post<SignUpResponse>(
     "/v1/auth/signup",
     body,
   );
