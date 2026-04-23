@@ -61,34 +61,41 @@ const useForm = <T extends Record<string, string>>({
   };
 
   const isValid =
-    Object.keys(touched).length > 0 &&
-    Object.keys(touched).every(
-      (name) => touched[name as keyof T] && !errors[name as keyof T],
-    );
-
-  const handleSubmit = (onSubmit: (values: T) => void) => (e: FormEvent) => {
-    e.preventDefault();
-
-    // 모든 필드 검사하면서 newErrors 만들기
-    const newErrors: Partial<Record<keyof T, string>> = {};
-    Object.entries(rulesRef.current).forEach(([name, rules]) => {
-      if (rules) {
-        const error = validate(values[name as keyof T], rules);
-        if (error) newErrors[name as keyof T] = error;
-      }
+    Object.keys(rulesRef.current).length > 0 &&
+    Object.keys(rulesRef.current).every((name) => {
+      const rules = rulesRef.current[name as keyof T];
+      if (!rules) return true;
+      const error = validate(values[name as keyof T], rules);
+      return !error;
     });
 
-    // 에러 있으면 중단
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
+  const handleSubmit =
+    (onSubmit: (values: T) => Promise<void> | void) => async (e: FormEvent) => {
+      e.preventDefault();
 
-    // 에러 없으면 제출
-    setIsSubmitting(true);
-    onSubmit(values);
-    setIsSubmitting(false);
-  };
+      // 모든 필드 검사하면서 newErrors 만들기
+      const newErrors: Partial<Record<keyof T, string>> = {};
+      Object.entries(rulesRef.current).forEach(([name, rules]) => {
+        if (rules) {
+          const error = validate(values[name as keyof T], rules);
+          if (error) newErrors[name as keyof T] = error;
+        }
+      });
+
+      // 에러 있으면 중단
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+        return;
+      }
+
+      // 에러 없으면 제출
+      setIsSubmitting(true);
+      try {
+        await onSubmit(values);
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
   return {
     register,
     handleSubmit,
