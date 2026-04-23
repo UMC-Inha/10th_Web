@@ -20,8 +20,10 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const status = error.response?.status;
     if (status === 401) {
-      const isLoginRequest = error.config?.url?.includes("signin");
-      if (isLoginRequest) return Promise.reject(error);
+      const isAuthRequest =
+        error.config?.url?.includes("signin") ||
+        error.config?.url?.includes("refresh");
+      if (isAuthRequest) return Promise.reject(error);
 
       const refreshToken = localStorage.getItem("refreshToken");
       if (refreshToken) {
