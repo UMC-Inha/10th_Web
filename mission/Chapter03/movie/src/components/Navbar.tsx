@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 
 const navItems = [
   { to: '/', label: '홈' },
+  { to: '/all', label: '전체' },
   { to: '/popular', label: '인기 영화' },
   { to: '/upcoming', label: '개봉 예정' },
   { to: '/top-rated', label: '평점 높은' },

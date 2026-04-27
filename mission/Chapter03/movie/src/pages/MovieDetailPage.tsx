@@ -1,100 +1,31 @@
 import { Link, useParams } from 'react-router-dom'
-import { useEffect, useMemo, useState } from 'react'
-import type {
-  CastMember,
-  CrewMember,
-  MovieCreditsResponse,
-  MovieDetails,
-} from '../types/movie'
-
-const TMDB_TOKEN = import.meta.env.VITE_TMDB_TOKEN
+import { useMemo } from 'react'
+import type { MovieCreditsResponse, MovieDetails } from '../types/movie'
+import useCustomFetch from '../hooks/useCustomFetch'
 
 const MovieDetailPage = () => {
-  // URL의 movieId를 가져와 상세/크레딧 API 요청에 사용
   const { movieId } = useParams()
 
-  // 영화 상세 정보 상태
-  const [movie, setMovie] = useState<MovieDetails | null>(null)
-  // 출연진과 제작진을 각각 분리해서 저장
-  const [cast, setCast] = useState<CastMember[]>([])
-  const [crew, setCrew] = useState<CrewMember[]>([])
-  // 상세 페이지 로딩 상태
-  const [isLoading, setIsLoading] = useState(true)
-  // 상세 페이지 에러 상태
-  const [errorMessage, setErrorMessage] = useState('')
+  const detailUrl = movieId ? `https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR` : ''
+  const creditsUrl = movieId ? `https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR` : ''
 
-  useEffect(() => {
-    const fetchDetail = async () => {
-      if (!movieId) {
-        setErrorMessage('잘못된 경로입니다. 영화 ID가 없습니다.')
-        setIsLoading(false)
-        return
-      }
+  const { data: movie, isLoading: isMovieLoading, errorMessage: movieError } = useCustomFetch<MovieDetails>(detailUrl)
+  const { data: credits, isLoading: isCreditsLoading, errorMessage: creditsError } = useCustomFetch<MovieCreditsResponse>(creditsUrl)
 
-      if (!TMDB_TOKEN) {
-        setErrorMessage('TMDB 토큰이 설정되지 않았습니다. .env 파일의 VITE_TMDB_TOKEN 값을 확인해주세요.')
-        setIsLoading(false)
-        return
-      }
+  const isLoading = isMovieLoading || isCreditsLoading
+  const errorMessage = !movieId
+    ? '잘못된 경로입니다. 영화 ID가 없습니다.'
+    : movieError || creditsError
 
-      setIsLoading(true)
-
-      try {
-        // 상세 정보와 크레딧 정보를 동시에 요청
-        const [detailResponse, creditsResponse] = await Promise.all([
-          fetch(`https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR`, {
-            headers: {
-              Authorization: `Bearer ${TMDB_TOKEN}`,
-            },
-          }),
-          fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR`, {
-            headers: {
-              Authorization: `Bearer ${TMDB_TOKEN}`,
-            },
-          }),
-        ])
-
-        if (!detailResponse.ok) {
-          throw new Error(`상세 정보 요청 실패: ${detailResponse.status}`)
-        }
-
-        if (!creditsResponse.ok) {
-          throw new Error(`크레딧 요청 실패: ${creditsResponse.status}`)
-        }
-
-        const detailData: MovieDetails = await detailResponse.json()
-        const creditsData: MovieCreditsResponse = await creditsResponse.json()
-
-        console.log('movie detail:', detailData)
-        console.log('movie credits:', creditsData)
-
-        setMovie(detailData)
-        setCast(creditsData.cast)
-        setCrew(creditsData.crew)
-        setErrorMessage('')
-      } catch (error) {
-        if (error instanceof Error) {
-          setErrorMessage(error.message)
-        } else {
-          setErrorMessage('알 수 없는 오류가 발생했습니다.')
-        }
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchDetail()
-    // movieId가 변경되면 다른 영화 상세 정보를 다시 불러옴
-  }, [movieId])
+  const cast = credits?.cast ?? []
+  const crew = credits?.crew ?? []
 
   const directors = useMemo(
-    // 제작진 중 감독만 추려서 상단에 함께 보여줌
     () => crew.filter((member) => member.job === 'Director').slice(0, 3),
     [crew],
   )
 
   const featuredPeople = useMemo(() => {
-    // 감독과 출연진을 같은 그리드 UI에서 보여주기 위해 하나의 리스트 합침
     const directorItems = directors.map((director) => ({
       key: `director-${director.id}`,
       name: director.name,
@@ -114,7 +45,6 @@ const MovieDetailPage = () => {
 
   if (isLoading) {
     return (
-      // 데이터가 준비되기 전 - 로딩 스피너
       <div className="flex items-center gap-3 rounded-xl border border-white/20 bg-black/80 p-4 shadow-sm">
         <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-500 border-t-slate-100" />
         <p className="text-slate-200">영화 상세 정보를 불러오는 중...</p>
@@ -124,7 +54,6 @@ const MovieDetailPage = () => {
 
   if (errorMessage || !movie) {
     return (
-      // API 실패 또는 잘못된 ID일 때 - 안내 화면
       <section className="rounded-xl border border-red-400/40 bg-red-950/60 p-5">
         <p className="text-red-200">{errorMessage || '영화 정보를 찾을 수 없습니다.'}</p>
         <Link
@@ -145,7 +74,6 @@ const MovieDetailPage = () => {
     ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`
     : null
 
-  // 개봉일에서 연도만 추출
   const releaseYear = movie.release_date ? movie.release_date.slice(0, 4) : '-'
 
   return (
@@ -192,7 +120,6 @@ const MovieDetailPage = () => {
         </div>
       </article>
 
-      {/* 감독과 출연진을 원형 카드 그리드로 보여주는 섹션 */}
       <section className="rounded-2xl p-5">
         <h3 className="mb-5 text-4xl font-bold">감독/출연</h3>
 
@@ -228,10 +155,6 @@ const MovieDetailPage = () => {
           </ul>
         )}
       </section>
-
-      {/* <div className="rounded-xl p-4 text-sm text-slate-300">
-        <p>감독 {directors.length}명 · 출연진 {cast.length}명</p>
-      </div> */}
     </section>
   )
 }

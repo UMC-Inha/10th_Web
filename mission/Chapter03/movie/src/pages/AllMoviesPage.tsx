@@ -1,22 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { MovieListResponse } from '../types/movie'
 import useCustomFetch from '../hooks/useCustomFetch'
 
-type MovieListPageProps = {
-  title: string
-  endpoint: 'popular' | 'upcoming' | 'top_rated' | 'now_playing'
-}
-
-const MovieListPage = ({ title, endpoint }: MovieListPageProps) => {
+const AllMoviesPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
 
-  // 카테고리가 바뀌면 첫 페이지부터 다시
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [endpoint])
-
-  const url = `https://api.themoviedb.org/3/movie/${endpoint}?language=ko-KR&page=${currentPage}`
+  const url = `https://api.themoviedb.org/3/discover/movie?language=ko-KR&sort_by=popularity.desc&page=${currentPage}`
   const { data, isLoading, errorMessage } = useCustomFetch<MovieListResponse>(url)
 
   const movies = data?.results ?? []
@@ -28,7 +18,7 @@ const MovieListPage = ({ title, endpoint }: MovieListPageProps) => {
   return (
     <section>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-slate-100">{title}</h2>
+        <h2 className="text-xl font-semibold text-slate-100">전체 영화</h2>
         <p className="text-sm text-slate-200">현재 페이지: {currentPage}</p>
       </div>
 
@@ -99,4 +89,4 @@ const MovieListPage = ({ title, endpoint }: MovieListPageProps) => {
   )
 }
 
-export default MovieListPage
+export default AllMoviesPage
