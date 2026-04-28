@@ -4,12 +4,16 @@ import HomePage from './pages/HomePage'
 import MovieListPage from './pages/MovieListPage'
 import AllMoviesPage from './pages/AllMoviesPage'
 import MovieDetailPage from './pages/MovieDetailPage'
+import LoginPage from './pages/LoginPage'
+import SignupPage from './pages/SignupPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="login" element={<LoginPage />} />
+        <Route path="signup" element={<SignupPage />} />
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="all" element={<AllMoviesPage />} />
