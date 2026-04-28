@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router';
-import LoginCredentialsForm from '../containers/LoginCredentialsForm';
+import SignupWizardForm from '../containers/SignupWizardForm';
 import * as styles from '../styles/ui.css';
 
-function LoginPage() {
+function SignupPage() {
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -18,12 +18,10 @@ function LoginPage() {
       </header>
 
       <main className={styles.loginMain}>
-        <h1 className={styles.loginHeading}>로그인</h1>
-        <p className={styles.loginSubtitle}>계정 정보를 입력해 주세요</p>
-        <LoginCredentialsForm />
+        <SignupWizardForm onComplete={() => navigate('/')} />
       </main>
     </div>
   );
 }
 
-export default LoginPage;
+export default SignupPage;

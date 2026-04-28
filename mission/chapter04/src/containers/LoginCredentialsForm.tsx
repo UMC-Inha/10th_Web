@@ -1,19 +1,20 @@
 import type { FormEvent } from 'react';
-import FormTextField from '../components/FormTextField';
-import SubmitButton from '../components/SubmitButton';
+import AuthSubmitButton from '../components/AuthSubmitButton';
+import AuthTextField from '../components/AuthTextField';
 import { useLoginForm } from '../hooks/useLoginForm';
+import * as styles from '../styles/ui.css';
 
-function LoginForm() {
+function LoginCredentialsForm() {
   const { values, errors, handleChange, handleBlur, canSubmit } = useLoginForm();
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  const handleLoginSubmit = (event: FormEvent) => {
+    event.preventDefault();
     if (!canSubmit) return;
   };
 
   return (
-    <form className="login__form" onSubmit={handleSubmit} noValidate>
-      <FormTextField
+    <form className={styles.loginForm} onSubmit={handleLoginSubmit} noValidate>
+      <AuthTextField
         id="login-email"
         label="이메일"
         type="email"
@@ -25,7 +26,7 @@ function LoginForm() {
         onChange={handleChange('email')}
         onBlur={() => handleBlur('email')}
       />
-      <FormTextField
+      <AuthTextField
         id="login-password"
         label="비밀번호"
         type="password"
@@ -37,9 +38,9 @@ function LoginForm() {
         onChange={handleChange('password')}
         onBlur={() => handleBlur('password')}
       />
-      <SubmitButton disabled={!canSubmit}>로그인</SubmitButton>
+      <AuthSubmitButton disabled={!canSubmit}>로그인</AuthSubmitButton>
     </form>
   );
 }
 
-export default LoginForm;
+export default LoginCredentialsForm;
