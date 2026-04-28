@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { loginSchema, type LoginFormData, type UserToken } from '../lib/schemas'
+import { loginSchema, type LoginFormData } from '../lib/schemas'
+import type { UserToken } from '../types/auth'
 import useLocalStorage from '../hooks/useLocalStorage'
 
 const LoginPage = () => {

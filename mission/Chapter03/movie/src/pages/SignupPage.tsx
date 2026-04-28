@@ -9,8 +9,8 @@ import {
   type SignupEmailData,
   type SignupPasswordData,
   type SignupNicknameData,
-  type UserToken,
 } from '../lib/schemas'
+import type { UserToken } from '../types/auth'
 import useLocalStorage from '../hooks/useLocalStorage'
 
 const SignupPage = () => {
