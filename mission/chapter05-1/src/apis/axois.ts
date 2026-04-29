@@ -8,4 +8,3 @@ export const axiosInstance = axios.create({
     }
     
 })
-console.log("현재 axiosInstance에 박힌 헤더:", axiosInstance.defaults.headers.Authorization);
