@@ -1,13 +1,16 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginFormData } from '../lib/schemas'
 import type { UserToken } from '../types/auth'
 import useLocalStorage from '../hooks/useLocalStorage'
+import api from '../lib/api'
 
 const LoginPage = () => {
   const navigate = useNavigate()
   const [, setToken] = useLocalStorage<UserToken | null>('token', null)
+  const [serverError, setServerError] = useState('')
 
   const {
     register,
@@ -18,10 +21,22 @@ const LoginPage = () => {
     mode: 'onTouched',
   })
 
-  const onSubmit = (data: LoginFormData) => {
-    setToken({ accessToken: 'mock-access-token', email: data.email })
-    console.log('로그인 시도:', data)
-    navigate('/')
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      setServerError('')
+      const response = await api.post<{ accessToken: string; refreshToken: string }>(
+        '/v1/auth/login',
+        { email: data.email, password: data.password },
+      )
+      setToken({
+        accessToken: response.data.accessToken,
+        refreshToken: response.data.refreshToken,
+        email: data.email,
+      })
+      navigate('/')
+    } catch {
+      setServerError('이메일 또는 비밀번호가 올바르지 않습니다.')
+    }
   }
 
   return (
@@ -81,6 +96,10 @@ const LoginPage = () => {
               <p className="mt-1.5 text-xs text-red-400">{errors.password.message}</p>
             )}
           </div>
+
+          {serverError && (
+            <p className="text-xs text-red-400">{serverError}</p>
+          )}
 
           <button
             type="submit"

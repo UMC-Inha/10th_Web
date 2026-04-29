@@ -12,6 +12,7 @@ import {
 } from '../lib/schemas'
 import type { UserToken } from '../types/auth'
 import useLocalStorage from '../hooks/useLocalStorage'
+import api from '../lib/api'
 
 const SignupPage = () => {
   const navigate = useNavigate()
@@ -20,6 +21,7 @@ const SignupPage = () => {
   const [savedPassword, setSavedPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [serverError, setServerError] = useState('')
   const [, setToken] = useLocalStorage<UserToken | null>('token', null)
 
   const emailForm = useForm<SignupEmailData>({
@@ -47,14 +49,22 @@ const SignupPage = () => {
     setStep(3)
   })
 
-  const handleSignupComplete = nicknameForm.handleSubmit((data) => {
-    setToken({ accessToken: 'mock-access-token', email: savedEmail })
-    console.log('회원가입 완료:', {
-      email: savedEmail,
-      password: savedPassword,
-      nickname: data.nickname,
-    })
-    navigate('/')
+  const handleSignupComplete = nicknameForm.handleSubmit(async (data) => {
+    try {
+      setServerError('')
+      const response = await api.post<{ accessToken: string; refreshToken: string }>(
+        '/v1/auth/register',
+        { email: savedEmail, password: savedPassword, nickname: data.nickname },
+      )
+      setToken({
+        accessToken: response.data.accessToken,
+        refreshToken: response.data.refreshToken,
+        email: savedEmail,
+      })
+      navigate('/')
+    } catch {
+      setServerError('회원가입에 실패했습니다. 다시 시도해주세요.')
+    }
   })
 
   const handleBack = () => {
@@ -212,6 +222,10 @@ const SignupPage = () => {
                 </p>
               )}
             </div>
+
+            {serverError && (
+              <p className="text-xs text-red-400">{serverError}</p>
+            )}
 
             <button
               type="submit"
