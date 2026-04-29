@@ -1,15 +1,35 @@
 import AuthPasswordField from '../components/AuthPasswordField';
 import AuthSubmitButton from '../components/AuthSubmitButton';
 import AuthTextField from '../components/AuthTextField';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useSignupWizardForm } from '../hooks/useSignupWizardForm';
 import * as styles from '../styles/ui.css';
+import type { AuthSession } from '../types/authStorage';
 
 export type SignupWizardFormProps = {
   onComplete: () => void;
 };
 
+const AUTH_SESSION_KEY = 'chapter04-auth-session';
+
 function SignupWizardForm({ onComplete }: SignupWizardFormProps) {
-  const form = useSignupWizardForm({ onComplete });
+  const { setValue: setAuthSession } = useLocalStorage<AuthSession | null>(AUTH_SESSION_KEY, null);
+  const form = useSignupWizardForm({
+    onSubmitSuccess: (values) => {
+      setAuthSession({
+        email: values.email,
+        nickname: values.nickname,
+        token: `mock-token-${Date.now()}`,
+        loggedInAt: new Date().toISOString(),
+      });
+      onComplete();
+    },
+  });
+
+  const emailRegistration = form.register('email');
+  const passwordRegistration = form.register('password');
+  const passwordConfirmRegistration = form.register('passwordConfirm');
+  const nicknameRegistration = form.register('nickname');
 
   if (form.step === 'email') {
     return (
@@ -21,13 +41,10 @@ function SignupWizardForm({ onComplete }: SignupWizardFormProps) {
             id="signup-email"
             label="이메일"
             type="email"
-            name="email"
             autoComplete="email"
             placeholder="example@email.com"
-            value={form.values.email}
-            error={form.emailError}
-            onChange={(event) => form.setField('email', event.target.value)}
-            onBlur={() => form.touchField('email')}
+            error={typeof form.emailError === 'string' ? form.emailError : undefined}
+            registration={emailRegistration}
           />
           <AuthSubmitButton disabled={!form.canGoPasswordStep}>다음</AuthSubmitButton>
         </form>
@@ -46,28 +63,22 @@ function SignupWizardForm({ onComplete }: SignupWizardFormProps) {
           <AuthPasswordField
             id="signup-password"
             label="비밀번호"
-            name="password"
             autoComplete="new-password"
             placeholder="비밀번호를 입력하세요"
-            value={form.values.password}
-            error={form.passwordError}
+            error={typeof form.passwordError === 'string' ? form.passwordError : undefined}
             visible={form.isPasswordVisible}
             onToggleVisible={() => form.setPasswordVisible((prev) => !prev)}
-            onChange={(event) => form.setField('password', event.target.value)}
-            onBlur={() => form.touchField('password')}
+            registration={passwordRegistration}
           />
           <AuthPasswordField
             id="signup-password-confirm"
             label="비밀번호 재확인"
-            name="passwordConfirm"
             autoComplete="new-password"
             placeholder="비밀번호를 다시 입력하세요"
-            value={form.values.passwordConfirm}
-            error={form.passwordConfirmError}
+            error={typeof form.passwordConfirmError === 'string' ? form.passwordConfirmError : undefined}
             visible={form.isPasswordConfirmVisible}
             onToggleVisible={() => form.setPasswordConfirmVisible((prev) => !prev)}
-            onChange={(event) => form.setField('passwordConfirm', event.target.value)}
-            onBlur={() => form.touchField('passwordConfirm')}
+            registration={passwordConfirmRegistration}
           />
           <AuthSubmitButton disabled={!form.canGoProfileStep}>다음</AuthSubmitButton>
         </form>
@@ -90,13 +101,10 @@ function SignupWizardForm({ onComplete }: SignupWizardFormProps) {
           id="signup-nickname"
           label="닉네임"
           type="text"
-          name="nickname"
           autoComplete="nickname"
           placeholder="닉네임을 입력하세요"
-          value={form.values.nickname}
-          error={form.nicknameError}
-          onChange={(event) => form.setField('nickname', event.target.value)}
-          onBlur={() => form.touchField('nickname')}
+          error={typeof form.nicknameError === 'string' ? form.nicknameError : undefined}
+          registration={nicknameRegistration}
         />
         <AuthSubmitButton disabled={!form.canSubmit}>회원가입 완료</AuthSubmitButton>
       </form>
