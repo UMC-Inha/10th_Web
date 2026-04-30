@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import ProtectedRoute from './components/ProtectedRoute';
 import AuthPage from './pages/auth/AuthPage';
+import GoogleCallbackPage from './pages/auth/GoogleCallbackPage';
 import HomePage from './pages/HomePage';
 import LpsPage from './pages/lps/LpsPage';
 import TagsPage from './pages/tags/TagsPage';
@@ -16,6 +17,7 @@ const PUBLIC_ROUTES: AppRoute[] = [
   { path: '/', element: <HomePage /> },
   { path: '/auth/signup', element: <AuthPage /> },
   { path: '/auth/signin', element: <AuthPage /> },
+  { path: '/auth/google/callback', element: <GoogleCallbackPage /> },
   { path: '/lps', element: <LpsPage /> },
   { path: '/lps/user/:userId', element: <LpsPage /> },
   { path: '/lps/:lpId', element: <LpsPage /> },

@@ -37,3 +37,7 @@ export function signup(payload: SignupRequest) {
 export function signin(payload: SigninRequest) {
   return postJson<SigninResponseData>('/auth/signin', payload);
 }
+
+export function signout() {
+  return postJson<null>('/auth/signout', {});
+}

@@ -91,9 +91,24 @@ importers:
 
   mission/chapter05:
     dependencies:
+      '@hookform/resolvers':
+        specifier: ^5.2.2
+        version: 5.2.2(react-hook-form@7.74.0(react@19.2.4))
+      '@tailwindcss/vite':
+        specifier: ^4.2.2
+        version: 4.2.2(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1))
       axios:
         specifier: ^1.14.0
         version: 1.14.0
+      react-hook-form:
+        specifier: ^7.74.0
+        version: 7.74.0(react@19.2.4)
+      tailwindcss:
+        specifier: ^4.2.2
+        version: 4.2.2
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
 
   practice/chapter02: {}
 

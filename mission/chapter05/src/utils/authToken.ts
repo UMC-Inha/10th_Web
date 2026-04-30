@@ -32,3 +32,10 @@ export function clearAuthTokens() {
   clearAccessToken();
   clearRefreshToken();
 }
+
+export function setAuthTokens(accessToken: string, refreshToken?: string | null) {
+  setAccessToken(accessToken);
+  if (refreshToken) {
+    setRefreshToken(refreshToken);
+  }
+}
