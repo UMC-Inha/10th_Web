@@ -89,6 +89,12 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2(@types/node@24.12.0)(jiti@2.6.1)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1))
 
+  mission/chapter05:
+    dependencies:
+      axios:
+        specifier: ^1.14.0
+        version: 1.14.0
+
   practice/chapter02: {}
 
   practice/chapter03/router: {}
