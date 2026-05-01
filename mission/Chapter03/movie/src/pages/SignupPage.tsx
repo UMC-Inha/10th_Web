@@ -12,7 +12,7 @@ import {
 } from '../lib/schemas'
 import type { UserToken } from '../types/auth'
 import useLocalStorage from '../hooks/useLocalStorage'
-import api from '../lib/api'
+import api, { BASE_URL } from '../lib/api'
 
 const SignupPage = () => {
   const navigate = useNavigate()
@@ -52,20 +52,24 @@ const SignupPage = () => {
   const handleSignupComplete = nicknameForm.handleSubmit(async (data) => {
     try {
       setServerError('')
-      const response = await api.post<{ accessToken: string; refreshToken: string }>(
-        '/v1/auth/register',
-        { email: savedEmail, password: savedPassword, nickname: data.nickname },
+      const response = await api.post<{ name: string; accessToken: string; refreshToken: string }>(
+        '/v1/auth/signup',
+        { name: data.nickname, email: savedEmail, password: savedPassword },
       )
       setToken({
         accessToken: response.data.accessToken,
         refreshToken: response.data.refreshToken,
-        email: savedEmail,
+        name: response.data.name,
       })
       navigate('/')
     } catch {
       setServerError('회원가입에 실패했습니다. 다시 시도해주세요.')
     }
   })
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${BASE_URL}/v1/auth/google/login`
+  }
 
   const handleBack = () => {
     if (step === 3) setStep(2)
@@ -95,6 +99,7 @@ const SignupPage = () => {
           <>
             <button
               type="button"
+              onClick={handleGoogleLogin}
               className="flex w-full items-center justify-center gap-3 rounded-lg border border-white/40 bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-white/5"
             >
               <GoogleIcon />

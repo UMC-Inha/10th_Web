@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginFormData } from '../lib/schemas'
 import type { UserToken } from '../types/auth'
 import useLocalStorage from '../hooks/useLocalStorage'
-import api from '../lib/api'
+import api, { BASE_URL } from '../lib/api'
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -24,19 +24,23 @@ const LoginPage = () => {
   const onSubmit = async (data: LoginFormData) => {
     try {
       setServerError('')
-      const response = await api.post<{ accessToken: string; refreshToken: string }>(
-        '/v1/auth/login',
+      const response = await api.post<{ name: string; accessToken: string; refreshToken: string }>(
+        '/v1/auth/signin',
         { email: data.email, password: data.password },
       )
       setToken({
         accessToken: response.data.accessToken,
         refreshToken: response.data.refreshToken,
-        email: data.email,
+        name: response.data.name,
       })
       navigate('/')
     } catch {
       setServerError('이메일 또는 비밀번호가 올바르지 않습니다.')
     }
+  }
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${BASE_URL}/v1/auth/google/login`
   }
 
   return (
@@ -58,6 +62,7 @@ const LoginPage = () => {
         {/* 구글 로그인 */}
         <button
           type="button"
+          onClick={handleGoogleLogin}
           className="flex w-full items-center justify-center gap-3 rounded-lg border border-white/40 bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-white/5"
         >
           <GoogleIcon />

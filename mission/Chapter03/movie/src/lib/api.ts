@@ -2,10 +2,17 @@ import axios from 'axios'
 import type { InternalAxiosRequestConfig } from 'axios'
 import type { UserToken } from '../types/auth'
 
-const BASE_URL = import.meta.env.VITE_SERVER_URL ?? 'http://localhost:8000'
+export const BASE_URL = import.meta.env.VITE_SERVER_URL ?? 'http://localhost:8000'
 
 interface RetryableConfig extends InternalAxiosRequestConfig {
   _retry?: boolean
+}
+
+interface LoginResponse {
+  id: number
+  name: string
+  accessToken: string
+  refreshToken: string
 }
 
 const api = axios.create({
@@ -38,12 +45,16 @@ api.interceptors.response.use(
         const token = JSON.parse(stored) as UserToken
 
         // base axios 사용 — api 인스턴스를 쓰면 인터셉터가 다시 돌아 무한 루프 발생
-        const { data } = await axios.post<{ accessToken: string }>(
+        const { data } = await axios.post<LoginResponse>(
           `${BASE_URL}/v1/auth/refresh`,
-          { refreshToken: token.refreshToken },
+          { refresh: token.refreshToken },
         )
 
-        const updated: UserToken = { ...token, accessToken: data.accessToken }
+        const updated: UserToken = {
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+          name: data.name,
+        }
         localStorage.setItem('token', JSON.stringify(updated))
 
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`
