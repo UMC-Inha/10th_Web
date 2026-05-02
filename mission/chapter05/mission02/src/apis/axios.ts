@@ -1,8 +1,6 @@
 // src/apis/axios.ts
 
 import axios, { type InternalAxiosRequestConfig } from "axios";
-
-import { useLocalStorage } from "../hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 
 interface CustominternalAxiosRequestConfig extends InternalAxiosRequestConfig{
@@ -18,12 +16,10 @@ export const axiosInstance = axios.create({
 
 // 요청 인터셉터 : 모든 요청 전에 accessToken을 Authorization 헤더에 추가한다
 axiosInstance.interceptors.request.use((config) => {
-  const {getItem} = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
-  const accessToken = getItem(); //localStorage에서 accessToken을 가져온다
-
-  if (accessToken) {
-    config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${accessToken}`; // Authorization 헤더에 accessToken을 추가한다
+  const accessToken = localStorage.getItem(LOCAL_STORAGE_KEY.accessToken); // 로컬 스토리지에서 accessToken을 가져온다
+  const parsed = accessToken ? JSON.parse(accessToken) : null; // accessToken이 존재하면 JSON 파싱을 한다
+  if (parsed) {
+    config.headers.Authorization = `Bearer ${parsed}`; // Authorization 헤더에 accessToken을 추가한다
   }
   // 수정된 요청 설정을 반환한다.
   return config;
@@ -49,13 +45,9 @@ axiosInstance.interceptors.request.use((config) => {
       ) { 
         // refresh 엔드포인트 401 에러가 발생한 경우 (Unauthorized), 중복 재시도 방지를 위해 로그아웃 처리
         if (originalRequest.url === '/v1/auth/refresh') {
-
-          // 바로 로그아웃 처리하기 위해서는 로컬 스토리지의 모든것을 뺴줘야함
-          const { removeItem : removeAccessToken } = useLocalStorage(LOCAL_STORAGE_KEY.accessToken,);
-          const { removeItem : removeRefreshToken } = useLocalStorage(LOCAL_STORAGE_KEY.refreshToken,);
-
-          removeAccessToken();
-          removeRefreshToken();
+          // useLocalStorage 훅 대신 localStorage 직접 사용하여 토큰 삭제 
+          localStorage.removeItem(LOCAL_STORAGE_KEY.accessToken);
+          localStorage.removeItem(LOCAL_STORAGE_KEY.refreshToken);
           window.location.href = '/login';
           return Promise.reject(error);
         }
@@ -68,28 +60,21 @@ axiosInstance.interceptors.request.use((config) => {
         // refresh 요청 실행 후, Promise를 전역 변수에 할당
         refreshPromise = (async () => {
           try {
-            const { getItem: getRefreshToken } = useLocalStorage(LOCAL_STORAGE_KEY.refreshToken);
-            const refreshToken = getRefreshToken();
-
+            const refreshToken = localStorage.getItem(LOCAL_STORAGE_KEY.refreshToken);
+            const parsed = refreshToken ? JSON.parse(refreshToken) : null;
             const { data } = await axiosInstance.post('/v1/auth/refresh', {
-              refresh: refreshToken,
+              refresh: parsed,
             });
 
             // 새 토큰 저장
-            const { setItem: setAccessToken } = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
-            const { setItem: setRefreshToken } = useLocalStorage(LOCAL_STORAGE_KEY.refreshToken);
-
-            setAccessToken(data.data.accessToken);
-            setRefreshToken(data.data.refreshToken);
+            localStorage.setItem(LOCAL_STORAGE_KEY.accessToken, JSON.stringify(data.data.accessToken));
+            localStorage.setItem(LOCAL_STORAGE_KEY.refreshToken, JSON.stringify(data.data.refreshToken));
 
             return data.data.accessToken;
           } catch (error) {
-            const { removeItem: removeAccessToken } = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
-            const { removeItem: removeRefreshToken } = useLocalStorage(LOCAL_STORAGE_KEY.refreshToken);
+            localStorage.removeItem(LOCAL_STORAGE_KEY.accessToken);
+            localStorage.removeItem(LOCAL_STORAGE_KEY.refreshToken);
 
-            removeAccessToken();
-            removeRefreshToken();
-            
             // 에러 발생 시 Promise를 실패 상태로 만듭니다.
             return Promise.reject(error);
           } finally {

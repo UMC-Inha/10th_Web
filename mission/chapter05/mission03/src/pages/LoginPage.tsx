@@ -12,7 +12,7 @@ const LoginPage = () => {
 
     useEffect(()=>{
         if(accessToken){
-            navigate("/");
+            navigate("/my");
         }
     },[navigate,accessToken]);
 

@@ -5,6 +5,7 @@ import { postLogout, postSignin } from "../apis/auth";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import type { RequestSigninDto } from "../types/auth";
+import { useNavigate } from "react-router-dom";
 import { createContext, type PropsWithChildren, useContext, useState } from "react";
 
 interface AuthContextType {
@@ -23,6 +24,7 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({children}:PropsWithChildren) => {
+    const navigate = useNavigate();
     const{getItem : getAccessTokenFromStorage,
           setItem : setAccessTokenInStorage, 
           removeItem : removeAccessTokenFromStorage
@@ -60,7 +62,8 @@ export const AuthProvider = ({children}:PropsWithChildren) => {
                 setAccessToken(newAccessToken);
                 setRefreshToken(newRefreshToken);
                 toast.success("로그인 성공");
-                window.location.href="/my";
+                //window.location.href="/my";
+                navigate("/my");
             }
         } catch (error) {
             console.log("로그인 오류", error)
@@ -79,7 +82,8 @@ export const AuthProvider = ({children}:PropsWithChildren) => {
             setRefreshToken(null);
 
             alert("로그아웃 성공")
-            window.location.href = "/my";
+            navigate("/"); // SPA 방식으로 새로고침없이 이동 가능
+            //window.location.href = "/my"; //-> 기존 방식은 새로고침이 발생함
             //localStorage.clear()를 안하는 이유는? 다른 정보들을 localStorage에 담는다면 해당 정보도 다 사라짐~ 로그인 유무에 관계 없이
         } catch (error){
             console.log("로그아웃 오류", error);

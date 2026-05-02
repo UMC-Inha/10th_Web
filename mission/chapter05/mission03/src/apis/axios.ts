@@ -71,7 +71,7 @@ axiosInstance.interceptors.request.use((config) => {
             const { getItem: getRefreshToken } = useLocalStorage(LOCAL_STORAGE_KEY.refreshToken);
             const refreshToken = getRefreshToken();
 
-            const { data } = await axiosInstance.post('/v1/auth/refresh', {
+            const { data } = await axios.post(`${import.meta.env.VITE_SERVER_API_URL}/v1/auth/refresh`, {
               refresh: refreshToken,
             });
 
