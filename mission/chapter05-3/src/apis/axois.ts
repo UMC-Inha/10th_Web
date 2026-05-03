@@ -60,6 +60,7 @@ axiosInstance.interceptors.response.use(
                     const{removeItem:removeRefreshToken} = useLocalStorage(LOCAL_STORAGE_KEY.refreshToken)
                     removeAccessToken()
                     removeRefreshToken()
+                    return Promise.reject(error)
                 }).finally(() => {
                     refreshPromise = null
                 })

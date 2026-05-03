@@ -20,6 +20,13 @@ const LogInPage = () => {
         },
         validate: validateSignIn,
     })
+
+    useEffect(() => {
+        if (accessToken) {
+            navigate("/me", { replace: true });
+        }
+    }, [accessToken, navigate]);
+    
     const handleSubmit = async() => {
         await login(values)
     }

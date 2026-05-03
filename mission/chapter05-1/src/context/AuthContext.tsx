@@ -1,14 +1,16 @@
-import { createContext, useState, type PropsWithChildren ,useContext} from "react";
+import { createContext, type PropsWithChildren ,useContext, useEffect, useState} from "react";
 import type { RequestSignIn } from "../types/authType";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 import { postLogout, signin } from "../apis/auth";
+
 
 interface AuthContextType{
     accessToken:string | null;
     refreshToken: string | null;
     login: (signInData: RequestSignIn) => Promise<void>;
     logout: () => Promise<void>;
+    isLoading: boolean
 }
 
 export const AuthContext :React.Context<AuthContextType> = createContext<AuthContextType>({
@@ -16,68 +18,66 @@ export const AuthContext :React.Context<AuthContextType> = createContext<AuthCon
     refreshToken:null,
     login: async() => {},
     logout: async() => {},
+    isLoading: true
 })
 
 
-export const AuthProvider = ({children}:PropsWithChildren) => {
-    const {
-        setItem:setAccessTokeninStorage,
-        getItem:getAccessTokeninStorage,
-        removeItem:removeAccessTokeninStorage
-    } = useLocalStorage(LOCAL_STORAGE_KEY.accessToken)
-    const {
-        setItem:setRefreshTokeninStorage,
-        getItem:getRefreshTokeninStorage,
-        removeItem:removeRefreshTokeninStorage
-    } = useLocalStorage(LOCAL_STORAGE_KEY.refreshToken)
+export const AuthProvider = ({ children }: PropsWithChildren) => {
+    const [isLoading, setIsLoading] = useState<boolean>(true)
 
-    const [accessToken, setAccessToken] = useState<string|null>(
-        getAccessTokeninStorage(),
-    )
-    const [refreshToken, setRefreshToken] = useState<string|null>(
-        getRefreshTokeninStorage(),
-    )
-    const login = async (signinData:RequestSignIn) => {
-        console.log(signinData)
-        try{
-            const {data}  = await signin(signinData)
-            if(data){
-                const newAccessToken = data.accessToken
-                const newRefreshToken = data.refreshToken
-
-                setAccessTokeninStorage(newAccessToken)
-                setRefreshTokeninStorage(newRefreshToken)
-
-                setAccessToken(newAccessToken)
-                setRefreshToken(newRefreshToken)
-            }
-            alert("로그인 성공")
-            window.location.href = "/me"
-        }catch(error){
-            console.error("로그인 에러",error)
-            alert("로그인에 실패")
-        }
-    }
+    const { 
+        value: accessToken, 
+        setItem: setAccessToken, 
+        removeItem: removeAccessToken,
+        getItem: getAccessToken
+    } = useLocalStorage<string>(LOCAL_STORAGE_KEY.accessToken);
     
+    useEffect(
+        () => {
+            const token = getAccessToken()
+            if(token){
+                setAccessToken(token)
+            }
+            setIsLoading(false)
+        },[])
+
+    const { 
+        value: refreshToken, 
+        setItem: setRefreshToken, 
+        removeItem: removeRefreshToken 
+    } = useLocalStorage<string>(LOCAL_STORAGE_KEY.refreshToken);
+
+    const login = async (signinData: RequestSignIn) => {
+        try {
+            const { data } = await signin(signinData);
+            if (data) {
+                setAccessToken(data.accessToken);
+                setRefreshToken(data.refreshToken);
+            }
+            alert("로그인 성공");
+        } catch (error) {
+            console.error("로그인 에러", error);
+            alert("로그인에 실패");
+        }
+    };
+
     const logout = async () => {
         try {
-            await postLogout()
-            removeAccessTokeninStorage()
-            removeRefreshTokeninStorage()
-            setAccessToken(null)
-            setRefreshToken(null)
+            await postLogout();
+            removeAccessToken();
+            removeRefreshToken();
+        } catch (error) {
+            console.error("로그 아웃 에러", error);
+            alert("로그아웃 실패");
         }
-        catch(error){
-            console.error("로그 아웃 에러",error)
-            alert("로그아웃 실패")
-        }
-    }
+    };
+
     return (
-        <AuthContext.Provider value={{accessToken, refreshToken, login, logout}}>
+        <AuthContext.Provider value={{ accessToken, refreshToken, login, logout, isLoading }}>
             {children}
         </AuthContext.Provider>
-    )
-}
+    );
+};
 
 export const useAuth = () => {
     const context = useContext(AuthContext)
