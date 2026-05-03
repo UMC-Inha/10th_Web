@@ -6,6 +6,8 @@ const axiosInstance = axios.create({
   baseURL: BASE_URL,
 });
 
+let refreshPromise: Promise<string> | null = null;
+
 // 요청 인터셉터: accessToken을 Authorization 헤더에 자동 첨부
 axiosInstance.interceptors.request.use((config) => {
   const stored = localStorage.getItem('accessToken');
@@ -26,21 +28,28 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const stored = localStorage.getItem('refreshToken');
-        const refreshToken = stored ? (JSON.parse(stored) as string) : null;
-        if (!refreshToken) throw new Error('No refresh token');
+        if (!refreshPromise) {
+          const stored = localStorage.getItem('refreshToken');
+          const refreshToken = stored ? (JSON.parse(stored) as string) : null;
+          if (!refreshToken) throw new Error('No refresh token');
 
-        const { data } = await axios.post<{ data: { accessToken: string; refreshToken: string } }>(
-          `${BASE_URL}/auth/refresh`,
-          { refresh: refreshToken }
-        );
+          refreshPromise = axios
+            .post<{ data: { accessToken: string; refreshToken: string } }>(
+              `${BASE_URL}/auth/refresh`,
+              { refresh: refreshToken }
+            )
+            .then(({ data }) => {
+              localStorage.setItem('accessToken', JSON.stringify(data.data.accessToken));
+              localStorage.setItem('refreshToken', JSON.stringify(data.data.refreshToken));
+              return data.data.accessToken;
+            })
+            .finally(() => {
+              refreshPromise = null;
+            });
+        }
 
-        const newAccessToken = data.data.accessToken;
-        const newRefreshToken = data.data.refreshToken;
-        localStorage.setItem('accessToken', JSON.stringify(newAccessToken));
-        localStorage.setItem('refreshToken', JSON.stringify(newRefreshToken));
+        const newAccessToken = await refreshPromise;
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-
         return axiosInstance(originalRequest);
       } catch {
         localStorage.removeItem('accessToken');
