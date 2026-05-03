@@ -1,17 +1,18 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const GoogleCallbackPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const accessToken = params.get('accessToken');
-    const refreshToken = params.get('refreshToken');
-    const name = params.get('name') || '';
-    const userId = params.get('userId') || '';
+    // window.location.search 대신 useSearchParams 사용
+    const accessToken = searchParams.get('accessToken');
+    const refreshToken = searchParams.get('refreshToken');
+    const name = searchParams.get('name') || '';
+    const userId = searchParams.get('userId') || '';
 
     if (accessToken && refreshToken) {
       login({ email: userId, nickname: name }, accessToken, refreshToken);
