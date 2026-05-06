@@ -1,6 +1,7 @@
 import axios from 'axios'
 import type { InternalAxiosRequestConfig } from 'axios'
 import type { UserToken } from '../types/auth'
+import { navigateTo } from './navigation'
 
 export const BASE_URL = import.meta.env.VITE_SERVER_URL ?? 'http://localhost:8000'
 
@@ -87,7 +88,7 @@ api.interceptors.response.use(
     } catch {
       notifySubscribers(null)
       localStorage.removeItem('token')
-      window.location.href = '/login'
+      navigateTo('/login')
       return Promise.reject(error)
     } finally {
       isRefreshing = false
