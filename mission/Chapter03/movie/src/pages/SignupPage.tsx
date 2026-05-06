@@ -13,6 +13,7 @@ import {
 import type { UserToken } from '../types/auth'
 import useLocalStorage from '../hooks/useLocalStorage'
 import api, { BASE_URL } from '../lib/api'
+import axios from 'axios'
 
 const SignupPage = () => {
   const navigate = useNavigate()
@@ -50,8 +51,8 @@ const SignupPage = () => {
   })
 
   const handleSignupComplete = nicknameForm.handleSubmit(async (data) => {
+    setServerError('')
     try {
-      setServerError('')
       const response = await api.post<{ name: string; accessToken: string; refreshToken: string }>(
         '/v1/auth/signup',
         { name: data.nickname, email: savedEmail, password: savedPassword },
@@ -62,8 +63,11 @@ const SignupPage = () => {
         name: response.data.name,
       })
       navigate('/')
-    } catch {
-      setServerError('회원가입에 실패했습니다. 다시 시도해주세요.')
+    } catch (error) {
+      const message = axios.isAxiosError(error)
+        ? error.response?.data?.message
+        : undefined
+      setServerError(message ?? '회원가입에 실패했습니다. 다시 시도해주세요.')
     }
   })
 

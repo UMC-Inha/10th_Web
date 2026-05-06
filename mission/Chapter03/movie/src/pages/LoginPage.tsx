@@ -6,6 +6,7 @@ import { loginSchema, type LoginFormData } from '../lib/schemas'
 import type { UserToken } from '../types/auth'
 import useLocalStorage from '../hooks/useLocalStorage'
 import api, { BASE_URL } from '../lib/api'
+import axios from 'axios'
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -22,8 +23,8 @@ const LoginPage = () => {
   })
 
   const onSubmit = async (data: LoginFormData) => {
+    setServerError('')
     try {
-      setServerError('')
       const response = await api.post<{ name: string; accessToken: string; refreshToken: string }>(
         '/v1/auth/signin',
         { email: data.email, password: data.password },
@@ -34,8 +35,11 @@ const LoginPage = () => {
         name: response.data.name,
       })
       navigate('/')
-    } catch {
-      setServerError('이메일 또는 비밀번호가 올바르지 않습니다.')
+    } catch (error) {
+      const message = axios.isAxiosError(error)
+        ? error.response?.data?.message
+        : undefined
+      setServerError(message ?? '이메일 또는 비밀번호가 올바르지 않습니다.')
     }
   }
 
