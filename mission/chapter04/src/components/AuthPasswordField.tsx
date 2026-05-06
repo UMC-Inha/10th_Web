@@ -1,18 +1,15 @@
-import type { ChangeEventHandler } from 'react';
+import type { UseFormRegisterReturn } from 'react-hook-form';
 import * as styles from '../styles/ui.css';
 
 export type AuthPasswordFieldProps = {
   id: string;
   label: string;
-  name?: string;
   autoComplete?: string;
   placeholder?: string;
-  value: string;
   error?: string;
   visible: boolean;
   onToggleVisible: () => void;
-  onChange: ChangeEventHandler<HTMLInputElement>;
-  onBlur: () => void;
+  registration: UseFormRegisterReturn;
 };
 
 function cn(...classNames: Array<string | false | undefined>) {
@@ -39,15 +36,12 @@ function EyeClosedIcon() {
 function AuthPasswordField({
   id,
   label,
-  name,
   autoComplete,
   placeholder,
-  value,
   error,
   visible,
   onToggleVisible,
-  onChange,
-  onBlur,
+  registration,
 }: AuthPasswordFieldProps) {
   return (
     <div className={styles.loginField}>
@@ -59,12 +53,9 @@ function AuthPasswordField({
           id={id}
           className={cn(styles.loginInput, styles.loginInputWithAction, error && styles.loginInputError)}
           type={visible ? 'text' : 'password'}
-          name={name}
           autoComplete={autoComplete}
           placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          onBlur={onBlur}
+          {...registration}
         />
         <button
           type="button"

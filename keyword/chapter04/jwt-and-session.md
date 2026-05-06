@@ -41,6 +41,42 @@
 3. Access 만료 시 → 401 등 응답 후 Refresh로 재발급(앱 구조에 따라 인터셉터 등으로 묶음)
 4. 로그아웃 → 클라이언트에서 토큰 삭제·서버에서 Refresh 무효화 등 정책에 따름
 
+### Token Refresh 상세 흐름
+
+Access Token의 수명을 짧게 유지하면서 사용자 경험을 해치지 않기 위해 Refresh Token으로 새 Access Token을 조용히 재발급받는 흐름임.
+
+```
+[사용자 로그인]
+        │
+        ▼
+[서버에서 AccessToken과 RefreshToken 발급]
+        │
+        ▼
+[토큰 저장 (로컬 스토리지, 메모리, HttpOnly 쿠키 등 정책에 따름)]
+        │
+        ├──────────── API 요청 → [서버: AccessToken 검증]
+        │                   │
+        │                   └─> [유효한 AccessToken → 데이터 응답]
+        │
+        ▼
+[AccessToken 만료 (401 응답 등)]
+        │
+        ▼
+[RefreshToken으로 새로운 AccessToken 재발급 요청]
+        │
+        ▼
+[서버: RefreshToken 검증]
+        │
+        ├─ RefreshToken 정상 → 새 AccessToken (및 Rotation 정책 시 새 RefreshToken) 발급
+        │
+        └─ RefreshToken 만료·블랙리스트 등재 → 재발급 거부 → 로그인 페이지로 이동
+        │
+        ▼
+[새로운 AccessToken으로 원래 요청 재시도]
+```
+
+> 토큰 저장 위치에 따라 보안 특성이 달라짐. `localStorage`는 XSS에 취약하고, `HttpOnly 쿠키`는 스크립트 접근이 불가하여 보안 측면에서 권장됨 ([RFC 9700 Section 4.13](https://datatracker.ietf.org/doc/html/rfc9700#section-4.13))
+
 ---
 
 ## 세션(Session)

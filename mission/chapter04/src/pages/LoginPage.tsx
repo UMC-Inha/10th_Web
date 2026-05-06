@@ -20,7 +20,7 @@ function LoginPage() {
       <main className={styles.loginMain}>
         <h1 className={styles.loginHeading}>로그인</h1>
         <p className={styles.loginSubtitle}>계정 정보를 입력해 주세요</p>
-        <LoginCredentialsForm />
+        <LoginCredentialsForm onSuccess={() => navigate('/')} />
       </main>
     </div>
   );

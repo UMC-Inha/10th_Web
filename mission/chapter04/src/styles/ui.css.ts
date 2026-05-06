@@ -18,6 +18,38 @@ export const homeDesc = style({
   color: '#4e5968',
 });
 
+export const homeSessionCard = style({
+  marginBottom: '1.25rem',
+  padding: '0.875rem 1rem',
+  background: '#fff',
+  border: '1px solid #e5e8eb',
+  borderRadius: '12px',
+});
+
+export const homeSessionTitle = style({
+  margin: '0 0 0.5rem',
+  fontSize: '0.9rem',
+  fontWeight: 700,
+});
+
+export const homeSessionMeta = style({
+  margin: '0.25rem 0',
+  color: '#4e5968',
+  fontSize: '0.8125rem',
+});
+
+export const homeActionButton = style({
+  marginTop: '0.75rem',
+  padding: '0.5rem 0.75rem',
+  fontSize: '0.8125rem',
+  fontWeight: 600,
+  color: '#4e5968',
+  cursor: 'pointer',
+  background: '#f2f4f6',
+  border: '1px solid #d1d6db',
+  borderRadius: '8px',
+});
+
 export const homeNav = style({
   display: 'flex',
   flexDirection: 'column',

@@ -1,100 +1,84 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState, type FormEvent } from 'react';
+import { useForm } from 'react-hook-form';
 import {
-  getSignupEmailError,
-  getSignupNicknameError,
-  getSignupPasswordConfirmError,
-  getSignupPasswordError,
-  isSignupEmailValid,
-  isSignupNicknameValid,
-  isSignupPasswordStepValid,
-} from '../constants/signupValidation';
-import type { SignupStep, SignupTouched, SignupValues } from '../types/signupForm';
+  signupEmailSchema,
+  signupPasswordSchema,
+  signupProfileSchema,
+  signupSchema,
+  type SignupFormValues,
+} from '../schemas/authSchema';
+import type { SignupStep } from '../types/signupForm';
 
 export type UseSignupWizardFormOptions = {
-  onComplete: () => void;
+  onSubmitSuccess: (values: SignupFormValues) => void;
 };
 
-const INITIAL_SIGNUP_VALUES: SignupValues = {
-  email: '',
-  password: '',
-  passwordConfirm: '',
-  nickname: '',
-};
-
-const INITIAL_TOUCHED: SignupTouched = {
-  email: false,
-  password: false,
-  passwordConfirm: false,
-  nickname: false,
-};
-
-export function useSignupWizardForm({ onComplete }: UseSignupWizardFormOptions) {
+export function useSignupWizardForm({ onSubmitSuccess }: UseSignupWizardFormOptions) {
   const [step, setStep] = useState<SignupStep>('email');
-  const [values, setValues] = useState<SignupValues>(INITIAL_SIGNUP_VALUES);
-  const [touched, setTouched] = useState<SignupTouched>(INITIAL_TOUCHED);
+  const form = useForm<SignupFormValues>({
+    resolver: zodResolver(signupSchema),
+    mode: 'onTouched',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      email: '',
+      password: '',
+      passwordConfirm: '',
+      nickname: '',
+    },
+  });
+
+  const values = form.watch();
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [isPasswordConfirmVisible, setPasswordConfirmVisible] = useState(false);
 
-  const setField = <K extends keyof SignupValues>(key: K, value: SignupValues[K]) => {
-    setValues((prev) => ({ ...prev, [key]: value }));
-  };
+  const emailError = form.formState.errors.email?.message;
+  const passwordError = form.formState.errors.password?.message;
+  const passwordConfirmError = form.formState.errors.passwordConfirm?.message;
+  const nicknameError = form.formState.errors.nickname?.message;
 
-  const touchField = (key: keyof SignupValues) => {
-    setTouched((prev) => ({ ...prev, [key]: true }));
-  };
-
-  const emailError = useMemo(
-    () => getSignupEmailError(values.email, touched.email),
-    [touched.email, values.email],
+  const canGoPasswordStep = useMemo(
+    () => signupEmailSchema.safeParse({ email: values.email ?? '' }).success,
+    [values.email],
+  );
+  const canGoProfileStep = useMemo(
+    () =>
+      signupPasswordSchema.safeParse({
+        password: values.password ?? '',
+        passwordConfirm: values.passwordConfirm ?? '',
+      }).success,
+    [values.password, values.passwordConfirm],
+  );
+  const canSubmit = useMemo(
+    () =>
+      signupProfileSchema.safeParse({
+        nickname: values.nickname ?? '',
+      }).success,
+    [values.nickname],
   );
 
-  const passwordError = useMemo(
-    () => getSignupPasswordError(values.password, touched.password),
-    [touched.password, values.password],
-  );
-
-  const passwordConfirmError = useMemo(
-    () => getSignupPasswordConfirmError(values.password, values.passwordConfirm, touched.passwordConfirm),
-    [touched.passwordConfirm, values.password, values.passwordConfirm],
-  );
-
-  const nicknameError = useMemo(
-    () => getSignupNicknameError(values.nickname, touched.nickname),
-    [touched.nickname, values.nickname],
-  );
-
-  const canGoPasswordStep = isSignupEmailValid(values.email);
-  const canGoProfileStep = isSignupPasswordStepValid(values.password, values.passwordConfirm);
-  const canSubmit = isSignupNicknameValid(values.nickname);
-
-  const handleEmailNext = (event: FormEvent) => {
+  const handleEmailNext = async (event: FormEvent) => {
     event.preventDefault();
-    touchField('email');
-    if (!canGoPasswordStep) return;
+    const isValid = await form.trigger('email');
+    if (!isValid) return;
     setStep('password');
   };
 
-  const handlePasswordNext = (event: FormEvent) => {
+  const handlePasswordNext = async (event: FormEvent) => {
     event.preventDefault();
-    touchField('password');
-    touchField('passwordConfirm');
-    if (!canGoProfileStep) return;
+    const isValid = await form.trigger(['password', 'passwordConfirm']);
+    if (!isValid) return;
     setStep('profile');
   };
 
-  const handleSignupSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    touchField('nickname');
-    if (!canSubmit) return;
-    onComplete();
-  };
+  const handleSignupSubmit = form.handleSubmit((formValues) => {
+    onSubmitSuccess(formValues);
+  });
 
   return {
+    ...form,
     step,
     values,
-    touched,
-    setField,
-    touchField,
     emailError,
     passwordError,
     passwordConfirmError,

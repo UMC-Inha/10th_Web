@@ -1,24 +1,25 @@
-import { useCallback, useMemo } from 'react';
-import { getLoginFieldErrors, isLoginFormValid, LOGIN_FORM_INITIAL } from '../constants/loginValidation';
-import type { LoginValues } from '../types/loginForm';
-import { useForm } from './useForm';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { loginSchema, type LoginFormValues } from '../schemas/authSchema';
 
 export function useLoginForm() {
-  const validate = useCallback((values: LoginValues) => getLoginFieldErrors(values), []);
-
-  const { values, errors, handleChange, handleBlur, reset } = useForm<LoginValues>({
-    initialValues: LOGIN_FORM_INITIAL,
-    validate,
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    mode: 'onTouched',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
-  const canSubmit = useMemo(() => isLoginFormValid(values), [values]);
+  const values = form.watch();
+
+  const canSubmit = useMemo(() => loginSchema.safeParse(values).success, [values]);
 
   return {
-    values,
-    errors,
-    handleChange,
-    handleBlur,
+    ...form,
     canSubmit,
-    reset,
   };
 }
