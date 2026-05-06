@@ -7,6 +7,8 @@ import MovieDetailPage from './pages/MovieDetailPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import NotFoundPage from './pages/NotFoundPage'
+import ProtectedRoute from './components/ProtectedRoute'
+import GoogleCallbackPage from './pages/GoogleCallbackPage'
 
 function App() {
   return (
@@ -14,15 +16,18 @@ function App() {
       <Routes>
         <Route path="login" element={<LoginPage />} />
         <Route path="signup" element={<SignupPage />} />
-        <Route path="/" element={<Layout />}>
-          <Route index element={<HomePage />} />
-          <Route path="all" element={<AllMoviesPage />} />
-          <Route path="popular" element={<MovieListPage title="인기 영화" endpoint="popular" />} />
-          <Route path="upcoming" element={<MovieListPage title="개봉 예정" endpoint="upcoming" />} />
-          <Route path="top-rated" element={<MovieListPage title="평점 높은 영화" endpoint="top_rated" />} />
-          <Route path="now-playing" element={<MovieListPage title="현재 상영 중" endpoint="now_playing" />} />
-          <Route path="movies/:movieId" element={<MovieDetailPage />} />
-          <Route path="*" element={<NotFoundPage />} />
+        <Route path="v1/auth/google/callback" element={<GoogleCallbackPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<HomePage />} />
+            <Route path="all" element={<AllMoviesPage />} />
+            <Route path="popular" element={<MovieListPage title="인기 영화" endpoint="popular" />} />
+            <Route path="upcoming" element={<MovieListPage title="개봉 예정" endpoint="upcoming" />} />
+            <Route path="top-rated" element={<MovieListPage title="평점 높은 영화" endpoint="top_rated" />} />
+            <Route path="now-playing" element={<MovieListPage title="현재 상영 중" endpoint="now_playing" />} />
+            <Route path="movies/:movieId" element={<MovieDetailPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,4 +1,5 @@
 export interface UserToken {
   accessToken: string
-  email: string
+  refreshToken: string
+  name: string
 }

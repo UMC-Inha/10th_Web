@@ -1,13 +1,17 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginFormData } from '../lib/schemas'
 import type { UserToken } from '../types/auth'
 import useLocalStorage from '../hooks/useLocalStorage'
+import api, { BASE_URL } from '../lib/api'
+import axios from 'axios'
 
 const LoginPage = () => {
   const navigate = useNavigate()
   const [, setToken] = useLocalStorage<UserToken | null>('token', null)
+  const [serverError, setServerError] = useState('')
 
   const {
     register,
@@ -18,10 +22,29 @@ const LoginPage = () => {
     mode: 'onTouched',
   })
 
-  const onSubmit = (data: LoginFormData) => {
-    setToken({ accessToken: 'mock-access-token', email: data.email })
-    console.log('로그인 시도:', data)
-    navigate('/')
+  const onSubmit = async (data: LoginFormData) => {
+    setServerError('')
+    try {
+      const response = await api.post<{ name: string; accessToken: string; refreshToken: string }>(
+        '/v1/auth/signin',
+        { email: data.email, password: data.password },
+      )
+      setToken({
+        accessToken: response.data.accessToken,
+        refreshToken: response.data.refreshToken,
+        name: response.data.name,
+      })
+      navigate('/')
+    } catch (error) {
+      const message = axios.isAxiosError(error)
+        ? error.response?.data?.message
+        : undefined
+      setServerError(message ?? '이메일 또는 비밀번호가 올바르지 않습니다.')
+    }
+  }
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${BASE_URL}/v1/auth/google/login`
   }
 
   return (
@@ -43,6 +66,7 @@ const LoginPage = () => {
         {/* 구글 로그인 */}
         <button
           type="button"
+          onClick={handleGoogleLogin}
           className="flex w-full items-center justify-center gap-3 rounded-lg border border-white/40 bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-white/5"
         >
           <GoogleIcon />
@@ -81,6 +105,10 @@ const LoginPage = () => {
               <p className="mt-1.5 text-xs text-red-400">{errors.password.message}</p>
             )}
           </div>
+
+          {serverError && (
+            <p className="text-xs text-red-400">{serverError}</p>
+          )}
 
           <button
             type="submit"
