@@ -4,6 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { signinSchema, type SigninFormValues } from '../utils/validate';
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../api/axios'; //
+import Button from '../components/Button';
+import Input from '../components/Input';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -54,49 +56,44 @@ const LoginPage = () => {
 
       <div className="flex flex-col items-center justify-center flex-1 gap-4">
         <div className="flex flex-col gap-3 w-[300px]">
-          <input
+          <Input
             {...register('email')}
-            className={`border w-full p-[10px] focus:border-[#807bff] rounded-sm outline-none
-              ${errors?.email ? 'border-red-500 bg-red-200' : 'border-gray-300'}`}
             type="email"
             placeholder="이메일을 입력해주세요!"
+            hasError={!!errors.email}
+            errorMessage={errors.email?.message}
           />
           {errors.email && (
             <div className="text-red-500 text-sm">{errors.email.message}</div>
           )}
-          <input
+          <Input
             {...register('password')}
-            className={`border w-full p-[10px] focus:border-[#807bff] rounded-sm outline-none
-              ${errors.password ? 'border-red-500 bg-red-200' : 'border-gray-300'}`}
             type="password"
             placeholder="비밀번호를 입력해주세요!"
+            hasError={!!errors.password}
+            errorMessage={errors.password?.message}
           />
           {errors.password && (
             <div className="text-red-500 text-sm">
               {errors.password.message}
             </div>
           )}
-          <button
-            type="button"
+          <Button
             onClick={handleSubmit(onSubmit)}
             disabled={!isValid}
-            className="w-full bg-blue-300 text-white py-3 rounded-md text-lg font-medium hover:bg-blue-500 transition-colors cursor-pointer disabled:bg-gray-300"
+            variant="primary"
           >
             로그인
-          </button>
+          </Button>
           {/* 구글 로그인 버튼 */}
-          <button
-            type="button"
-            onClick={onGoogleLogin}
-            className="w-full flex items-center justify-center gap-2 border border-gray-300 py-3 rounded-md text-lg font-medium hover:bg-gray-100 transition-colors cursor-pointer"
-          >
+          <Button onClick={onGoogleLogin} variant="google">
             <img
               src="https://www.google.com/favicon.ico"
               alt="google"
               style={{ width: '18px', height: '18px' }}
             />
-            Google로 로그인
-          </button>
+            구글로 로그인
+          </Button>
         </div>
       </div>
     </div>

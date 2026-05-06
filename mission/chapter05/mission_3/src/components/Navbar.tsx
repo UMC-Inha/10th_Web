@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Button from './Button';
+
 const Navbar = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -25,31 +27,29 @@ const Navbar = () => {
             >
               마이페이지
             </span>
-            <button
+            <Button
+              variant="secondary"
               onClick={() => {
                 logout();
                 navigate('/');
               }}
-              className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
             >
               로그아웃
-            </button>
+            </Button>
           </div>
         ) : (
           // 로그인 안 된 상태
           <>
-            <button
-              onClick={() => navigate('/login')}
-              className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
-            >
+            <Button variant="secondary" onClick={() => navigate('/login')}>
               로그인
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
               onClick={() => navigate('/signup')}
-              className="px-4 py-2 text-sm bg-blue-300 text-white rounded-md hover:bg-blue-500 transition-colors"
+              className="px-4 py-2 text-sm"
             >
               회원가입
-            </button>
+            </Button>
           </>
         )}
       </div>
