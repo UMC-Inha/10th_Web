@@ -1,11 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function useCustomFetch<T>(fetchFn: () => Promise<T>) {
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const fetchFnRef = useRef(fetchFn);
-  fetchFnRef.current = fetchFn;
 
   useEffect(() => {
     let cancelled = false;
@@ -14,7 +12,7 @@ function useCustomFetch<T>(fetchFn: () => Promise<T>) {
       setIsLoading(true);
       setError(null);
       try {
-        const result = await fetchFnRef.current();
+        const result = await fetchFn();
         if (!cancelled) setData(result);
       } catch {
         if (!cancelled) setError('데이터를 불러오는 데 실패했습니다.');
@@ -28,7 +26,7 @@ function useCustomFetch<T>(fetchFn: () => Promise<T>) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [fetchFn]);
 
   return { data, isLoading, error };
 }
