@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router';
 import AuthInput from '../../components/auth/AuthInput';
@@ -42,6 +42,11 @@ function AuthPage() {
       avatar: '',
     },
   });
+
+  useEffect(() => {
+    setErrorMessage('');
+    setSuccessMessage('');
+  }, [location.pathname]);
 
   const handleSigninSubmit = signinForm.handleSubmit(async (values) => {
     setErrorMessage('');
