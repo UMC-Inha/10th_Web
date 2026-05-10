@@ -1,5 +1,13 @@
 import { useState } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useCustomFetch } from './hooks/useCustomFetch';
+import InfinitePostsJsonPlaceholder from './components/InfinitePostsJsonPlaceholder';
+import InfinitePostsAutoJsonPlaceholder from './components/InfinitePostsAutoJsonPlaceholder';
+
+const queryClient = new QueryClient();
+
+type Tab = 'custom-fetch' | 'infinite-button' | 'infinite-auto';
 
 // jsonplaceholder API 타입
 interface User {
@@ -54,9 +62,9 @@ function UserCard({ userId }: { userId: number }) {
 }
 
 // ─────────────────────────────────────────────────────────
-// 메인 App
+// useCustomFetch 데모 섹션 (기존 코드)
 // ─────────────────────────────────────────────────────────
-function App() {
+function CustomFetchDemo() {
   const [userId, setUserId] = useState<number>(1);
   const [isVisible, setIsVisible] = useState<boolean>(true);
 
@@ -66,12 +74,10 @@ function App() {
   };
 
   const handleRetryTest = () => {
-    // 존재하지 않는 ID → 404 에러 → 재시도 발생
     setUserId(999999);
   };
 
   const handleClearCache = () => {
-    // localStorage에서 캐시 항목 전부 제거
     const keys = Object.keys(localStorage).filter((k) =>
       k.includes('jsonplaceholder')
     );
@@ -80,15 +86,12 @@ function App() {
   };
 
   return (
-    <div className="app">
-      <header>
-        <h1>useCustomFetch 데모</h1>
-        <p>
-          React Query의 핵심 기능을 직접 구현한 커스텀 훅입니다.
-          <br />
-          <strong>콘솔(F12)</strong>을 열어 캐시 히트 / 재시도 / 취소 로그를 확인하세요.
-        </p>
-      </header>
+    <>
+      <p>
+        React Query의 핵심 기능을 직접 구현한 커스텀 훅입니다.
+        <br />
+        <strong>콘솔(F12)</strong>을 열어 캐시 히트 / 재시도 / 취소 로그를 확인하세요.
+      </p>
 
       <section className="features">
         <div className="feature-card">
@@ -134,7 +137,6 @@ function App() {
             <span>localStorage 캐시 삭제</span>
           </button>
         </div>
-
         <p className="current-id">현재 User ID: <strong>{userId}</strong></p>
       </section>
 
@@ -243,7 +245,50 @@ return () => {
 };`}</pre>
         </details>
       </section>
-    </div>
+    </>
+  );
+}
+
+// ─────────────────────────────────────────────────────────
+// 메인 App
+// ─────────────────────────────────────────────────────────
+function App() {
+  const [tab, setTab] = useState<Tab>('custom-fetch');
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <div className="app">
+        <header>
+          <h1>Chapter 06 — 데이터 패칭 데모</h1>
+          <nav className="tab-nav">
+            <button
+              className={`tab-btn ${tab === 'custom-fetch' ? 'active' : ''}`}
+              onClick={() => setTab('custom-fetch')}
+            >
+              useCustomFetch
+            </button>
+            <button
+              className={`tab-btn ${tab === 'infinite-button' ? 'active' : ''}`}
+              onClick={() => setTab('infinite-button')}
+            >
+              무한 스크롤 (버튼)
+            </button>
+            <button
+              className={`tab-btn ${tab === 'infinite-auto' ? 'active' : ''}`}
+              onClick={() => setTab('infinite-auto')}
+            >
+              무한 스크롤 (자동)
+            </button>
+          </nav>
+        </header>
+
+        {tab === 'custom-fetch' && <CustomFetchDemo />}
+        {tab === 'infinite-button' && <InfinitePostsJsonPlaceholder />}
+        {tab === 'infinite-auto' && <InfinitePostsAutoJsonPlaceholder />}
+      </div>
+
+      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+    </QueryClientProvider>
   );
 }
 
