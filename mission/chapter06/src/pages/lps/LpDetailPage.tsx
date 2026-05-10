@@ -1,8 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { deleteLp, getLpById, toggleLike } from '../../apis/lpsApi';
+import { createComment, deleteLp, getComments, getLpById, toggleLike } from '../../apis/lpsApi';
 import LoginModal from '../../components/modals/LoginModal';
 import ErrorState from '../../components/ui/ErrorState';
+import { SkeletonCommentList } from '../../components/ui/SkeletonCard';
+import type { LpSortOrder } from '../../types/lp';
 import { isAuthenticated } from '../../utils/authToken';
 
 function formatDate(dateStr: string) {
@@ -21,6 +24,12 @@ function LpDetailPage() {
   const loggedIn = isAuthenticated();
   const numericLpId = Number(lpId);
 
+  const [commentOrder, setCommentOrder] = useState<LpSortOrder>('desc');
+  const [commentInput, setCommentInput] = useState('');
+  const [commentError, setCommentError] = useState('');
+  const commentTriggerRef = useRef<HTMLDivElement>(null);
+
+  // ── LP 상세 ────────────────────────────────────────────
   const { data: lp, isLoading, isError, refetch } = useQuery({
     queryKey: ['lp', numericLpId],
     queryFn: () => getLpById(numericLpId),
@@ -29,6 +38,52 @@ function LpDetailPage() {
     gcTime: 1000 * 60 * 10,
   });
 
+  // ── 댓글 목록 (useInfiniteQuery) ────────────────────────
+  const {
+    data: commentsData,
+    isLoading: isCommentsLoading,
+    isError: isCommentsError,
+    isFetchingNextPage: isCommentsFetchingNext,
+    hasNextPage: commentsHasNext,
+    fetchNextPage: fetchNextComments,
+    refetch: refetchComments,
+  } = useInfiniteQuery({
+    queryKey: ['lpComments', numericLpId, commentOrder],
+    queryFn: ({ pageParam }) =>
+      getComments(numericLpId, {
+        order: commentOrder,
+        limit: 10,
+        cursor: pageParam as number,
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage?.hasNext) return undefined;
+      return lastPage.nextCursor ?? undefined;
+    },
+    enabled: !!lpId && !isNaN(numericLpId) && loggedIn,
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 10,
+  });
+
+  // 댓글 스크롤 트리거
+  useEffect(() => {
+    const el = commentTriggerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && commentsHasNext && !isCommentsFetchingNext) {
+          fetchNextComments();
+        }
+      },
+      { threshold: 0.1 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [commentsHasNext, isCommentsFetchingNext, fetchNextComments]);
+
+  const comments = commentsData?.pages.flatMap((p) => p?.data ?? []) ?? [];
+
+  // ── 좋아요 ────────────────────────────────────────────
   const likeMutation = useMutation({
     mutationFn: () => toggleLike(numericLpId),
     onSuccess: () => {
@@ -36,6 +91,7 @@ function LpDetailPage() {
     },
   });
 
+  // ── 삭제 ─────────────────────────────────────────────
   const deleteMutation = useMutation({
     mutationFn: () => deleteLp(numericLpId),
     onSuccess: () => {
@@ -44,10 +100,38 @@ function LpDetailPage() {
     },
   });
 
+  // ── 댓글 작성 ────────────────────────────────────────
+  const createCommentMutation = useMutation({
+    mutationFn: (content: string) => createComment(numericLpId, content),
+    onSuccess: () => {
+      setCommentInput('');
+      setCommentError('');
+      queryClient.invalidateQueries({ queryKey: ['lpComments', numericLpId] });
+    },
+    onError: (err) => {
+      setCommentError(err instanceof Error ? err.message : '댓글 작성에 실패했습니다.');
+    },
+  });
+
+  const handleCommentSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!commentInput.trim()) {
+      setCommentError('댓글 내용을 입력해주세요.');
+      return;
+    }
+    if (commentInput.trim().length < 1) {
+      setCommentError('댓글은 최소 1자 이상이어야 합니다.');
+      return;
+    }
+    createCommentMutation.mutate(commentInput.trim());
+  };
+
+  // ── 비로그인 모달 ────────────────────────────────────
   if (!loggedIn) {
     return <LoginModal from={location.pathname} />;
   }
 
+  // ── 로딩 ────────────────────────────────────────────
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-32">
@@ -56,12 +140,14 @@ function LpDetailPage() {
     );
   }
 
+  // ── 에러 ────────────────────────────────────────────
   if (isError || !lp) {
     return <ErrorState message="LP 정보를 불러오는 데 실패했습니다." onRetry={() => refetch()} />;
   }
 
   return (
     <div className="mx-auto max-w-2xl p-6">
+      {/* 뒤로가기 */}
       <button
         onClick={() => navigate(-1)}
         className="mb-6 flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
@@ -108,7 +194,7 @@ function LpDetailPage() {
       </div>
 
       {/* 액션 버튼 */}
-      <div className="flex flex-wrap gap-3">
+      <div className="mb-10 flex flex-wrap gap-3">
         <button
           onClick={() => likeMutation.mutate()}
           disabled={likeMutation.isPending}
@@ -119,9 +205,7 @@ function LpDetailPage() {
           </svg>
           좋아요 {lp.likes.length}
         </button>
-        <button
-          className="rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/10 transition-colors"
-        >
+        <button className="rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/10 transition-colors">
           수정
         </button>
         <button
@@ -136,6 +220,131 @@ function LpDetailPage() {
           삭제
         </button>
       </div>
+
+      {/* ── 댓글 섹션 ─────────────────────────────────── */}
+      <section>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-base font-semibold text-white">댓글</h2>
+
+          {/* 댓글 정렬 */}
+          <div className="flex gap-1.5">
+            <button
+              onClick={() => setCommentOrder('asc')}
+              className={[
+                'rounded-md border px-3 py-1 text-xs font-medium transition-colors',
+                commentOrder === 'asc'
+                  ? 'border-pink-500 bg-pink-500 text-white'
+                  : 'border-white/20 text-slate-400 hover:border-white/40',
+              ].join(' ')}
+            >
+              오래된순
+            </button>
+            <button
+              onClick={() => setCommentOrder('desc')}
+              className={[
+                'rounded-md border px-3 py-1 text-xs font-medium transition-colors',
+                commentOrder === 'desc'
+                  ? 'border-pink-500 bg-pink-500 text-white'
+                  : 'border-white/20 text-slate-400 hover:border-white/40',
+              ].join(' ')}
+            >
+              최신순
+            </button>
+          </div>
+        </div>
+
+        {/* 댓글 작성 폼 */}
+        <form onSubmit={handleCommentSubmit} className="mb-6">
+          <div className="flex flex-col gap-2 rounded-xl bg-white/5 p-3 border border-white/10 focus-within:border-pink-500/50 transition-colors">
+            <textarea
+              value={commentInput}
+              onChange={(e) => {
+                setCommentInput(e.target.value);
+                if (commentError) setCommentError('');
+              }}
+              placeholder="댓글을 입력해주세요..."
+              rows={3}
+              className="w-full resize-none bg-transparent text-sm text-white placeholder-slate-500 outline-none leading-relaxed"
+              maxLength={500}
+            />
+            <div className="flex items-center justify-between">
+              {commentError ? (
+                <p className="text-xs text-red-400">{commentError}</p>
+              ) : (
+                <p className="text-xs text-slate-600">{commentInput.length}/500자</p>
+              )}
+              <button
+                type="submit"
+                disabled={createCommentMutation.isPending || !commentInput.trim()}
+                className="rounded-lg bg-pink-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-pink-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {createCommentMutation.isPending ? '작성 중...' : '댓글 작성'}
+              </button>
+            </div>
+          </div>
+        </form>
+
+        {/* 초기 로딩 — 상단 Skeleton */}
+        {isCommentsLoading && <SkeletonCommentList count={5} />}
+
+        {isCommentsError && (
+          <ErrorState
+            message="댓글을 불러오는 데 실패했습니다."
+            onRetry={() => refetchComments()}
+          />
+        )}
+
+        {/* 댓글 목록 */}
+        {!isCommentsLoading && !isCommentsError && (
+          <>
+            {comments.length === 0 ? (
+              <p className="py-8 text-center text-sm text-slate-600">
+                아직 댓글이 없습니다. 첫 댓글을 작성해보세요!
+              </p>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {comments.map((comment) => (
+                  <div
+                    key={comment.id}
+                    className="rounded-xl bg-white/5 border border-white/5 p-4 hover:border-white/10 transition-colors"
+                  >
+                    <div className="mb-2 flex items-center gap-2">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-pink-500/20 text-xs font-semibold text-pink-400">
+                        {comment.authorId}
+                      </div>
+                      <span className="text-xs text-slate-400">
+                        사용자 #{comment.authorId}
+                      </span>
+                      <span className="ml-auto text-xs text-slate-600">
+                        {formatDate(comment.createdAt)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
+                      {comment.content}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* 추가 로딩 — 하단 Skeleton */}
+            {isCommentsFetchingNext && (
+              <div className="mt-3">
+                <SkeletonCommentList count={3} />
+              </div>
+            )}
+
+            {/* 스크롤 트리거 */}
+            <div ref={commentTriggerRef} className="h-4" />
+
+            {!commentsHasNext && comments.length > 0 && (
+              <p className="mt-4 text-center text-xs text-slate-600">
+                모든 댓글을 불러왔습니다.
+              </p>
+            )}
+          </>
+        )}
+      </section>
     </div>
   );
 }

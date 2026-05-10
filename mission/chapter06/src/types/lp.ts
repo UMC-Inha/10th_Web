@@ -50,3 +50,26 @@ export type GetLpsParams = {
   search?: string;
   order?: LpSortOrder;
 };
+
+// ── 댓글 ───────────────────────────────────────────────
+
+export type CommentDto = {
+  id: number;
+  content: string;
+  lpId: number;
+  authorId: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CommentListData = {
+  data: CommentDto[];
+  nextCursor: number | null;
+  hasNext: boolean;
+};
+
+export type GetCommentsParams = {
+  cursor?: number;
+  limit?: number;
+  order?: LpSortOrder;
+};

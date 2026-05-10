@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getLps } from '../../apis/lpsApi';
 import ErrorState from '../../components/ui/ErrorState';
@@ -56,15 +56,48 @@ function LpCard({ lp, onClick }: LpCardProps) {
 function LpsPage() {
   const navigate = useNavigate();
   const [sort, setSort] = useState<LpSortOrder>('desc');
+  const triggerRef = useRef<HTMLDivElement>(null);
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    refetch,
+  } = useInfiniteQuery({
     queryKey: ['lps', sort],
-    queryFn: () => getLps({ order: sort, limit: 50 }),
+    queryFn: ({ pageParam }) =>
+      getLps({ order: sort, limit: 20, cursor: pageParam as number }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage?.hasNext) return undefined;
+      return lastPage.nextCursor ?? undefined;
+    },
     staleTime: 1000 * 60 * 3,
     gcTime: 1000 * 60 * 10,
   });
 
-  const lps = data?.data ?? [];
+  // IntersectionObserver: 목록 하단에 도달하면 다음 페이지 요청
+  useEffect(() => {
+    const el = triggerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const lps = data?.pages.flatMap((page) => page?.data ?? []) ?? [];
 
   return (
     <div className="p-4">
@@ -94,6 +127,7 @@ function LpsPage() {
         </button>
       </div>
 
+      {/* 초기 로딩 — 상단에 Skeleton */}
       {isLoading && <SkeletonGrid count={20} />}
 
       {isError && (
@@ -104,15 +138,33 @@ function LpsPage() {
       )}
 
       {!isLoading && !isError && (
-        <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5">
-          {lps.map((lp) => (
-            <LpCard
-              key={lp.id}
-              lp={lp}
-              onClick={() => navigate(`/lp/${lp.id}`)}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5">
+            {lps.map((lp) => (
+              <LpCard
+                key={lp.id}
+                lp={lp}
+                onClick={() => navigate(`/lp/${lp.id}`)}
+              />
+            ))}
+          </div>
+
+          {/* 추가 로딩 — 하단에 Skeleton */}
+          {isFetchingNextPage && (
+            <div className="mt-1">
+              <SkeletonGrid count={10} />
+            </div>
+          )}
+
+          {/* 스크롤 트리거 감지 요소 */}
+          <div ref={triggerRef} className="h-4" />
+
+          {!hasNextPage && lps.length > 0 && (
+            <p className="mt-6 text-center text-xs text-slate-600">
+              모든 LP를 불러왔습니다.
+            </p>
+          )}
+        </>
       )}
     </div>
   );
