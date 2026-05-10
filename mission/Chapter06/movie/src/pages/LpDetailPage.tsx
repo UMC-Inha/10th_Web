@@ -3,6 +3,7 @@ import { useLp } from '../hooks/useLps'
 import { timeAgo } from '../lib/timeAgo'
 import { DetailSkeleton } from '../components/LoadingSkeleton'
 import ErrorMessage from '../components/ErrorMessage'
+import CommentSection from '../components/CommentSection'
 import useLocalStorage from '../hooks/useLocalStorage'
 import type { UserToken } from '../types/lp'
 
@@ -17,104 +18,87 @@ const LpDetailPage = () => {
 
   if (isLoading) return <DetailSkeleton />
   if (isError) return <ErrorMessage onRetry={() => refetch()} />
-
   if (!lp) return null
 
   return (
     <div className="relative min-h-full p-6">
-      <div className="mx-auto max-w-2xl rounded-2xl bg-neutral-800 p-8">
+      {/* LP 상세 + 댓글을 하나의 카드로 연결 */}
+      <div className="mx-auto max-w-2xl rounded-2xl bg-neutral-800">
 
-        {/* 작성자 + 업로드일 */}
-        <div className="mb-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {lp.author.avatar ? (
-              <img
-                src={lp.author.avatar}
-                alt={lp.author.name}
-                className="h-10 w-10 rounded-full object-cover"
-              />
-            ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-600 text-sm text-white">
-                {lp.author.name[0]}
+        {/* ── LP 상세 영역 ── */}
+        <div className="p-8">
+          {/* 작성자 + 업로드일 */}
+          <div className="mb-5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {lp.author.avatar ? (
+                <img src={lp.author.avatar} alt={lp.author.name} className="h-10 w-10 rounded-full object-cover" />
+              ) : (
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-600 text-sm text-white">
+                  {lp.author.name[0]}
+                </div>
+              )}
+              <span className="font-medium text-white">{lp.author.name}</span>
+            </div>
+            <span className="text-sm text-neutral-400">{timeAgo(lp.createdAt)}</span>
+          </div>
+
+          {/* 제목 + 수정/삭제 */}
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <h1 className="text-2xl font-bold text-white">{lp.title}</h1>
+            {isAuthor && (
+              <div className="flex shrink-0 gap-2">
+                <button type="button" onClick={() => navigate(`/lp/${lp.id}/edit`)} className="text-neutral-400 hover:text-white" aria-label="수정">
+                  <EditIcon />
+                </button>
+                <button type="button" className="text-neutral-400 hover:text-red-400" aria-label="삭제">
+                  <TrashIcon />
+                </button>
               </div>
             )}
-            <span className="font-medium text-white">{lp.author.name}</span>
           </div>
-          <span className="text-sm text-neutral-400">{timeAgo(lp.createdAt)}</span>
-        </div>
 
-        {/* 제목 + 수정/삭제 */}
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <h1 className="text-2xl font-bold text-white">{lp.title}</h1>
-          {isAuthor && (
-            <div className="flex shrink-0 gap-2">
-              <button
-                type="button"
-                onClick={() => navigate(`/lp/${lp.id}/edit`)}
-                className="text-neutral-400 hover:text-white"
-                aria-label="수정"
-              >
-                <EditIcon />
-              </button>
-              <button
-                type="button"
-                className="text-neutral-400 hover:text-red-400"
-                aria-label="삭제"
-              >
-                <TrashIcon />
-              </button>
+          {/* LP 원형 이미지 */}
+          <div className="mb-6 flex justify-center">
+            <div className="relative h-64 w-64 overflow-hidden rounded-full shadow-2xl">
+              {lp.thumbnail ? (
+                <img src={lp.thumbnail} alt={lp.title} className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-neutral-700 text-neutral-400">No Image</div>
+              )}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full bg-white/80" />
+              </div>
+            </div>
+          </div>
+
+          {/* 본문 */}
+          <p className="mb-6 leading-relaxed text-neutral-300">{lp.content}</p>
+
+          {/* 태그 */}
+          {lp.tags.length > 0 && (
+            <div className="mb-8 flex flex-wrap gap-2">
+              {lp.tags.map((tag) => (
+                <span key={tag.id} className="rounded-full bg-neutral-700 px-3 py-1 text-sm text-neutral-300">
+                  # {tag.name}
+                </span>
+              ))}
             </div>
           )}
-        </div>
 
-        {/* LP 원형 이미지 */}
-        <div className="mb-6 flex justify-center">
-          <div className="relative h-64 w-64 overflow-hidden rounded-full shadow-2xl">
-            {lp.thumbnail ? (
-              <img
-                src={lp.thumbnail}
-                alt={lp.title}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-neutral-700 text-neutral-400">
-                No Image
-              </div>
-            )}
-            {/* LP 중앙 구멍 */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="h-10 w-10 rounded-full bg-white/80" />
-            </div>
+          {/* 좋아요 */}
+          <div className="flex justify-center">
+            <button type="button" className="flex items-center gap-2 rounded-full px-4 py-2 text-neutral-300 hover:text-pink-400">
+              <span className="text-2xl text-pink-500">♥</span>
+              <span className="text-lg font-medium">{lp.likes.length}</span>
+            </button>
           </div>
         </div>
 
-        {/* 본문 */}
-        <p className="mb-6 leading-relaxed text-neutral-300">{lp.content}</p>
+        {/* 구분선 */}
+        <div className="mx-8 border-t border-neutral-700" />
 
-        {/* 태그 */}
-        {lp.tags.length > 0 && (
-          <div className="mb-8 flex flex-wrap gap-2">
-            {lp.tags.map((tag) => (
-              <span
-                key={tag.id}
-                className="rounded-full bg-neutral-700 px-3 py-1 text-sm text-neutral-300"
-              >
-                # {tag.name}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* 좋아요 */}
-        <div className="flex justify-center">
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-full px-4 py-2 text-neutral-300 hover:text-pink-400"
-          >
-            <span className="text-2xl text-pink-500">♥</span>
-            <span className="text-lg font-medium">{lp.likes.length}</span>
-          </button>
-        </div>
+        {/* ── 댓글 영역 ── */}
+        <CommentSection lpId={lp.id} hasToken={!!token} />
       </div>
 
       {/* 플로팅 + 버튼 */}

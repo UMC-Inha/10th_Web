@@ -1,15 +1,47 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLps } from '../hooks/useLps'
 import { timeAgo } from '../lib/timeAgo'
-import { GridSkeleton } from '../components/LoadingSkeleton'
+import { GridSkeleton, BottomSkeleton } from '../components/LoadingSkeleton'
 import ErrorMessage from '../components/ErrorMessage'
 import type { SortOrder } from '../types/lp'
 
 const HomePage = () => {
   const navigate = useNavigate()
   const [order, setOrder] = useState<SortOrder>('desc')
-  const { data, isLoading, isError, refetch } = useLps(order)
+
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useLps(order)
+
+  // 무한스크롤 트리거: sentinelRef가 뷰포트에 들어오면 다음 페이지 fetch
+  const sentinelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage()
+        }
+      },
+      { threshold: 0.1 },
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
+
+  // pages 배열을 flat하게 펼쳐 LP 목록으로 변환
+  const lps = data?.pages.flatMap((page) => page.data) ?? []
 
   return (
     <div className="relative min-h-full p-4">
@@ -31,13 +63,16 @@ const HomePage = () => {
         ))}
       </div>
 
+      {/* 초기 로딩 — 상단 스켈레톤 */}
       {isLoading && <GridSkeleton />}
+
+      {/* 에러 */}
       {isError && <ErrorMessage onRetry={() => refetch()} />}
 
       {/* LP 그리드 */}
-      {data && (
+      {lps.length > 0 && (
         <div className="grid grid-cols-2 gap-0.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 py-6 px-4">
-          {data.data.map((lp) => (
+          {lps.map((lp) => (
             <button
               key={lp.id}
               type="button"
@@ -58,7 +93,7 @@ const HomePage = () => {
                 </div>
               )}
 
-              {/* 호버 오버레이: 제목 / 업로드일 / 좋아요 */}
+              {/* 호버 오버레이 */}
               <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent p-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <p className="truncate text-sm font-semibold text-white">{lp.title}</p>
                 <div className="mt-1 flex items-center justify-between">
@@ -73,6 +108,12 @@ const HomePage = () => {
           ))}
         </div>
       )}
+
+      {/* 추가 로딩 — 하단 스켈레톤 (isFetchingNextPage) */}
+      {isFetchingNextPage && <BottomSkeleton />}
+
+      {/* IntersectionObserver 트리거 */}
+      <div ref={sentinelRef} className="h-4" />
 
       {/* 플로팅 + 버튼 */}
       <button

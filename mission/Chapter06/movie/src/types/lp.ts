@@ -48,6 +48,24 @@ export interface LpDetailResponse {
   data: LpDetail
 }
 
+export interface Comment {
+  id: number
+  content: string
+  lpId: number
+  authorId: number
+  createdAt: string
+  updatedAt: string
+  author: Author
+}
+
+export interface CommentListResponse {
+  data: {
+    data: Comment[]
+    nextCursor: number
+    hasNext: boolean
+  }
+}
+
 export type SortOrder = 'asc' | 'desc'
 
 export interface UserToken {

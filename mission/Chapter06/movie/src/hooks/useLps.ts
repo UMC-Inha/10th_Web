@@ -1,18 +1,30 @@
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import api from '../lib/api'
 import type { LpListResponse, LpDetailResponse, SortOrder } from '../types/lp'
 
+const LIMIT = 20
+
 export function useLps(order: SortOrder = 'desc') {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ['lps', order],
-    queryFn: async () => {
+    queryFn: async ({ pageParam }) => {
       const { data } = await api.get<LpListResponse>('/v1/lps', {
-        params: { order, limit: 20 },
+        params: {
+          order,
+          limit: LIMIT,
+          // pageParam이 undefined이면 커서 없이 첫 페이지 요청
+          ...(pageParam !== undefined && { cursor: pageParam }),
+        },
       })
       return data.data
     },
-    staleTime: 1000 * 60 * 5,  // 5분: 캐시 데이터를 신선한 것으로 유지
-    gcTime: 1000 * 60 * 10,    // 10분: 미사용 캐시 보존 시간
+    // 첫 요청은 커서 없이 시작
+    initialPageParam: undefined as number | undefined,
+    // 다음 커서가 있으면 반환, 없으면 undefined → fetchNextPage 중단
+    getNextPageParam: (lastPage) =>
+      lastPage.hasNext ? lastPage.nextCursor : undefined,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
   })
 }
 
