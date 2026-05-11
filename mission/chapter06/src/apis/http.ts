@@ -43,9 +43,11 @@ apiClient.interceptors.request.use((config) => {
 
 let refreshPromise: Promise<string | null> | null = null;
 
+const SKIP_REFRESH_URLS = ['/auth/signin', '/auth/signup', '/auth/refresh'] as const;
+
 const shouldSkipRefresh = (url?: string) => {
   if (!url) return false;
-  return url.includes('/auth/signin') || url.includes('/auth/signup') || url.includes('/auth/refresh');
+  return SKIP_REFRESH_URLS.some((path) => url.includes(path));
 };
 
 function toApiErrorMessage(error: unknown) {
