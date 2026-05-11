@@ -112,10 +112,6 @@ function LpDetailPage() {
       setCommentError('댓글 내용을 입력해주세요.');
       return;
     }
-    if (commentInput.trim().length < 1) {
-      setCommentError('댓글은 최소 1자 이상이어야 합니다.');
-      return;
-    }
     createCommentMutation.mutate(commentInput.trim());
   };
 
