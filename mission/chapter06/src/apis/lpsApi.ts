@@ -47,9 +47,3 @@ export function createComment(lpId: number, content: string) {
   });
 }
 
-export function deleteComment(lpId: number, commentId: number) {
-  return request<null>({
-    method: 'delete',
-    url: `/lps/${lpId}/comments/${commentId}`,
-  });
-}
