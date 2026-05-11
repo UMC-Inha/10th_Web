@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { signout } from '../apis/authApi';
-import { clearAuthTokens, isAuthenticated } from '../utils/authToken';
+import { useAuth } from '../contexts/AuthContext';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -11,7 +11,7 @@ type SidebarProps = {
 function Sidebar({ isOpen, onClose }: SidebarProps) {
   const navigate = useNavigate();
   const sidebarRef = useRef<HTMLElement>(null);
-  const loggedIn = isAuthenticated();
+  const { loggedIn, logout } = useAuth();
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -29,11 +29,9 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
     } catch {
       // 실패해도 토큰 정리
     } finally {
-      clearAuthTokens();
+      logout();
       onClose();
       navigate('/', { replace: true });
-      // 헤더 상태 강제 갱신을 위해 페이지 리로드
-      window.location.reload();
     }
   };
 

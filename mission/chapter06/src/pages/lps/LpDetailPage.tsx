@@ -8,7 +8,7 @@ import LoginModal from '../../components/modals/LoginModal';
 import ErrorState from '../../components/ui/ErrorState';
 import { SkeletonCommentList } from '../../components/ui/SkeletonCard';
 import type { LpSortOrder } from '../../types/lp';
-import { isAuthenticated } from '../../utils/authToken';
+import { useAuth } from '../../contexts/AuthContext';
 import { formatDate } from '../../utils/formatDate';
 
 function LpDetailPage() {
@@ -16,8 +16,8 @@ function LpDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
-  const loggedIn = isAuthenticated();
-  const numericLpId = Number(lpId);
+  const { loggedIn } = useAuth();
+  const numericLpId = lpId && !isNaN(Number(lpId)) ? Number(lpId) : null;
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [commentOrder, setCommentOrder] = useState<LpSortOrder>('desc');
@@ -30,14 +30,13 @@ function LpDetailPage() {
     queryKey: ['myInfo'],
     queryFn: getMyInfo,
     enabled: loggedIn,
-    staleTime: 1000 * 60 * 5,
   });
 
   // ── LP 상세 ────────────────────────────────────────────
   const { data: lp, isLoading, isError, refetch } = useQuery({
     queryKey: ['lp', numericLpId],
-    queryFn: () => getLpById(numericLpId),
-    enabled: !!lpId && !isNaN(numericLpId),
+    queryFn: () => getLpById(numericLpId!),
+    enabled: numericLpId !== null,
     staleTime: 1000 * 60 * 3,
     gcTime: 1000 * 60 * 10,
   });
@@ -53,18 +52,18 @@ function LpDetailPage() {
     refetch: refetchComments,
   } = useInfiniteQuery({
     queryKey: ['lpComments', numericLpId, commentOrder],
-    queryFn: ({ pageParam }) =>
-      getComments(numericLpId, {
+    queryFn: ({ pageParam }: { pageParam: number }) =>
+      getComments(numericLpId!, {
         order: commentOrder,
         limit: 10,
-        cursor: pageParam as number,
+        cursor: pageParam,
       }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
       if (!lastPage?.hasNext) return undefined;
       return lastPage.nextCursor ?? undefined;
     },
-    enabled: !!lpId && !isNaN(numericLpId) && loggedIn,
+    enabled: numericLpId !== null && loggedIn,
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 10,
   });
@@ -88,28 +87,35 @@ function LpDetailPage() {
   const comments = commentsData?.pages.flatMap((p) => p?.data ?? []) ?? [];
 
   // ── 좋아요 ────────────────────────────────────────────
+  const [likeError, setLikeError] = useState('');
+  const [deleteError, setDeleteError] = useState('');
+
   const likeMutation = useMutation({
-    mutationFn: () => toggleLike(numericLpId),
+    mutationFn: () => toggleLike(numericLpId!),
     onSuccess: () => {
+      setLikeError('');
       queryClient.invalidateQueries({ queryKey: ['lp', numericLpId] });
+    },
+    onError: (err) => {
+      setLikeError(err instanceof Error ? err.message : '좋아요 처리에 실패했습니다.');
     },
   });
 
   // ── 삭제 ─────────────────────────────────────────────
   const deleteMutation = useMutation({
-    mutationFn: () => deleteLp(numericLpId),
+    mutationFn: () => deleteLp(numericLpId!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lps'] });
       navigate('/', { replace: true });
     },
     onError: (err) => {
-      alert(err instanceof Error ? err.message : 'LP 삭제에 실패했습니다.');
+      setDeleteError(err instanceof Error ? err.message : 'LP 삭제에 실패했습니다.');
     },
   });
 
   // ── 댓글 작성 ────────────────────────────────────────
   const createCommentMutation = useMutation({
-    mutationFn: (content: string) => createComment(numericLpId, content),
+    mutationFn: (content: string) => createComment(numericLpId!, content),
     onSuccess: () => {
       setCommentInput('');
       setCommentError('');
@@ -211,6 +217,9 @@ function LpDetailPage() {
       </div>
 
       {/* 액션 버튼 */}
+      {likeError && (
+        <p className="mb-2 text-xs text-red-400">{likeError}</p>
+      )}
       <div className="mb-10 flex flex-wrap gap-3">
         <button
           onClick={() => likeMutation.mutate()}
@@ -222,6 +231,9 @@ function LpDetailPage() {
           </svg>
           좋아요 {lp.likes.length}
         </button>
+        {deleteError && (
+          <p className="w-full text-xs text-red-400">{deleteError}</p>
+        )}
         {isOwner && (
           <>
             {/* TODO: LP 수정 기능 구현 */}

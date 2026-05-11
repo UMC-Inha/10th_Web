@@ -1,41 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router';
 import { getMyInfo, getUserInfo } from '../../apis/usersApi';
 import PageLayout from '../../layouts/PageLayout';
-import type { UserInfo } from '../../types/user';
 
 function UsersPage() {
   const { userId } = useParams();
-  const [user, setUser] = useState<UserInfo | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
 
-  useEffect(() => {
-    let isMounted = true;
+  const { data: user, isLoading, error } = useQuery({
+    queryKey: ['user', userId ?? 'me'],
+    queryFn: () => (userId ? getUserInfo(userId) : getMyInfo()),
+  });
 
-    const loadUser = async () => {
-      setIsLoading(true);
-      setErrorMessage('');
-
-      try {
-        const data = userId ? await getUserInfo(userId) : await getMyInfo();
-        if (!isMounted) return;
-        setUser(data);
-      } catch (error) {
-        if (!isMounted) return;
-        setErrorMessage(error instanceof Error ? error.message : '유저 정보를 불러오지 못했습니다.');
-      } finally {
-        if (!isMounted) return;
-        setIsLoading(false);
-      }
-    };
-
-    void loadUser();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [userId]);
+  const errorMessage = error instanceof Error ? error.message : error ? '유저 정보를 불러오지 못했습니다.' : '';
 
   return (
     <PageLayout

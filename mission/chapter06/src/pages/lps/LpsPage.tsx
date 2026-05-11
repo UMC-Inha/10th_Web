@@ -61,8 +61,8 @@ function LpsPage() {
     refetch,
   } = useInfiniteQuery({
     queryKey: ['lps', sort],
-    queryFn: ({ pageParam }) =>
-      getLps({ order: sort, limit: 20, cursor: pageParam as number }),
+    queryFn: ({ pageParam }: { pageParam: number }) =>
+      getLps({ order: sort, limit: 20, cursor: pageParam }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
       if (!lastPage?.hasNext) return undefined;

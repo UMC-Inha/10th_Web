@@ -23,7 +23,7 @@ export type LpDto = {
   id: number;
   title: string;
   content: string;
-  thumbnail: string;
+  thumbnail: string | null;
   published: boolean;
   authorId: number;
   createdAt: string;

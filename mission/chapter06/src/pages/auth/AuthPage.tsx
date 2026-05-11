@@ -11,11 +11,13 @@ import {
   type SigninFormValues,
   type SignupFormValues,
 } from '../../schemas/authFormSchema';
-import { clearAuthTokens, isAuthenticated, setAuthTokens } from '../../utils/authToken';
+import { isAuthenticated } from '../../utils/authToken';
+import { useAuth } from '../../contexts/AuthContext';
 
 function AuthPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login, logout } = useAuth();
   const isSigninPage = location.pathname === '/auth/signin';
   const from = (location.state as { from?: string } | null)?.from ?? '/';
   const [errorMessage, setErrorMessage] = useState('');
@@ -44,7 +46,7 @@ function AuthPage() {
     try {
       const result = await signin(values);
       if (!result.data) throw new Error('로그인 응답 데이터가 없습니다.');
-      setAuthTokens(result.data.accessToken, result.data.refreshToken, result.data.name);
+      login(result.data.accessToken, result.data.refreshToken, result.data.name);
       navigate(from, { replace: true });
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : '로그인에 실패했습니다.');
@@ -78,7 +80,7 @@ function AuthPage() {
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : '로그아웃 요청에 실패했습니다.');
     } finally {
-      clearAuthTokens();
+      logout();
       navigate('/', { replace: true });
     }
   };

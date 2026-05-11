@@ -1,13 +1,12 @@
 import { Link } from 'react-router';
-import { getUserName, isAuthenticated } from '../utils/authToken';
+import { useAuth } from '../contexts/AuthContext';
 
 type HeaderProps = {
   onMenuClick: () => void;
 };
 
 function Header({ onMenuClick }: HeaderProps) {
-  const loggedIn = isAuthenticated();
-  const userName = getUserName();
+  const { loggedIn, userName } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 flex h-14 items-center justify-between bg-[#111111] px-4 border-b border-white/10">

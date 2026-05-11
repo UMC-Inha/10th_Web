@@ -91,6 +91,7 @@ apiClient.interceptors.response.use(
         })
         .catch(() => {
           clearAuthTokens();
+          window.location.href = '/auth/signin';
           return null;
         })
         .finally(() => {
