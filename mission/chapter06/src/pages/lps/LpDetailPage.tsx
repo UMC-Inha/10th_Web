@@ -91,6 +91,9 @@ function LpDetailPage() {
       queryClient.invalidateQueries({ queryKey: ['lps'] });
       navigate('/', { replace: true });
     },
+    onError: (err) => {
+      alert(err instanceof Error ? err.message : 'LP 삭제에 실패했습니다.');
+    },
   });
 
   // ── 댓글 작성 ────────────────────────────────────────
