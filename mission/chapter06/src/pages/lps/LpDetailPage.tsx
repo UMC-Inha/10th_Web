@@ -2,6 +2,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { createComment, deleteLp, getComments, getLpById, toggleLike } from '../../apis/lpsApi';
+import { getMyInfo } from '../../apis/usersApi';
 import LoginModal from '../../components/modals/LoginModal';
 import ErrorState from '../../components/ui/ErrorState';
 import { SkeletonCommentList } from '../../components/ui/SkeletonCard';
@@ -21,6 +22,14 @@ function LpDetailPage() {
   const [commentInput, setCommentInput] = useState('');
   const [commentError, setCommentError] = useState('');
   const commentTriggerRef = useRef<HTMLDivElement>(null);
+
+  // ── 현재 로그인 유저 ────────────────────────────────────
+  const { data: myInfo } = useQuery({
+    queryKey: ['myInfo'],
+    queryFn: getMyInfo,
+    enabled: loggedIn,
+    staleTime: 1000 * 60 * 5,
+  });
 
   // ── LP 상세 ────────────────────────────────────────────
   const { data: lp, isLoading, isError, refetch } = useQuery({
@@ -108,6 +117,8 @@ function LpDetailPage() {
       setCommentError(err instanceof Error ? err.message : '댓글 작성에 실패했습니다.');
     },
   });
+
+  const isOwner = !!myInfo && !!lp && myInfo.id === lp.authorId;
 
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -197,24 +208,28 @@ function LpDetailPage() {
           </svg>
           좋아요 {lp.likes.length}
         </button>
-        {/* TODO: LP 수정 기능 구현 */}
-        <button
-          disabled
-          className="rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-slate-500 cursor-not-allowed opacity-40"
-        >
-          수정
-        </button>
-        <button
-          onClick={() => {
-            if (confirm('정말 삭제하시겠습니까?')) {
-              deleteMutation.mutate();
-            }
-          }}
-          disabled={deleteMutation.isPending}
-          className="rounded-lg border border-red-500/50 px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-500 hover:text-white transition-colors disabled:opacity-50"
-        >
-          삭제
-        </button>
+        {isOwner && (
+          <>
+            {/* TODO: LP 수정 기능 구현 */}
+            <button
+              disabled
+              className="rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-slate-500 cursor-not-allowed opacity-40"
+            >
+              수정
+            </button>
+            <button
+              onClick={() => {
+                if (confirm('정말 삭제하시겠습니까?')) {
+                  deleteMutation.mutate();
+                }
+              }}
+              disabled={deleteMutation.isPending}
+              className="rounded-lg border border-red-500/50 px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-500 hover:text-white transition-colors disabled:opacity-50"
+            >
+              삭제
+            </button>
+          </>
+        )}
       </div>
 
       {/* ── 댓글 섹션 ─────────────────────────────────── */}
