@@ -7,14 +7,7 @@ import ErrorState from '../../components/ui/ErrorState';
 import { SkeletonCommentList } from '../../components/ui/SkeletonCard';
 import type { LpSortOrder } from '../../types/lp';
 import { isAuthenticated } from '../../utils/authToken';
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-}
+import { formatDate } from '../../utils/formatDate';
 
 function LpDetailPage() {
   const { lpId } = useParams<{ lpId: string }>();
@@ -169,7 +162,7 @@ function LpDetailPage() {
       <div className="mb-6">
         <h1 className="mb-2 text-2xl font-bold text-white">{lp.title}</h1>
         <div className="flex flex-wrap items-center gap-3 text-sm text-slate-400">
-          <span>{formatDate(lp.createdAt)}</span>
+          <span>{formatDate(lp.createdAt, { year: 'numeric', month: 'long', day: 'numeric' })}</span>
           <span className="flex items-center gap-1">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-pink-400">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -316,7 +309,7 @@ function LpDetailPage() {
                         사용자 #{comment.authorId}
                       </span>
                       <span className="ml-auto text-xs text-slate-600">
-                        {formatDate(comment.createdAt)}
+                        {formatDate(comment.createdAt, { year: 'numeric', month: 'long', day: 'numeric' })}
                       </span>
                     </div>
                     <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">

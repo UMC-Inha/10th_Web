@@ -5,14 +5,7 @@ import { getLps } from '../../apis/lpsApi';
 import ErrorState from '../../components/ui/ErrorState';
 import { SkeletonGrid } from '../../components/ui/SkeletonCard';
 import type { LpDto, LpSortOrder } from '../../types/lp';
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  });
-}
+import { formatDate } from '../../utils/formatDate';
 
 type LpCardProps = {
   lp: LpDto;
