@@ -194,7 +194,11 @@ function LpDetailPage() {
           </svg>
           좋아요 {lp.likes.length}
         </button>
-        <button className="rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/10 transition-colors">
+        {/* TODO: LP 수정 기능 구현 */}
+        <button
+          disabled
+          className="rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-slate-500 cursor-not-allowed opacity-40"
+        >
           수정
         </button>
         <button
