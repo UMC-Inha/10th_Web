@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { createComment, deleteLp, getComments, getLpById, toggleLike } from '../../apis/lpsApi';
 import { getMyInfo } from '../../apis/usersApi';
+import ConfirmModal from '../../components/modals/ConfirmModal';
 import LoginModal from '../../components/modals/LoginModal';
 import ErrorState from '../../components/ui/ErrorState';
 import { SkeletonCommentList } from '../../components/ui/SkeletonCard';
@@ -17,6 +18,7 @@ function LpDetailPage() {
   const queryClient = useQueryClient();
   const loggedIn = isAuthenticated();
   const numericLpId = Number(lpId);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [commentOrder, setCommentOrder] = useState<LpSortOrder>('desc');
   const [commentInput, setCommentInput] = useState('');
@@ -150,6 +152,18 @@ function LpDetailPage() {
 
   return (
     <div className="mx-auto max-w-2xl p-6">
+      {showDeleteConfirm && (
+        <ConfirmModal
+          message="정말 삭제하시겠습니까?&#10;삭제된 LP는 복구할 수 없습니다."
+          confirmLabel="삭제"
+          onConfirm={() => {
+            setShowDeleteConfirm(false);
+            deleteMutation.mutate();
+          }}
+          onCancel={() => setShowDeleteConfirm(false)}
+        />
+      )}
+
       {/* 뒤로가기 */}
       <button
         onClick={() => navigate(-1)}
@@ -218,11 +232,7 @@ function LpDetailPage() {
               수정
             </button>
             <button
-              onClick={() => {
-                if (confirm('정말 삭제하시겠습니까?')) {
-                  deleteMutation.mutate();
-                }
-              }}
+              onClick={() => setShowDeleteConfirm(true)}
               disabled={deleteMutation.isPending}
               className="rounded-lg border border-red-500/50 px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-500 hover:text-white transition-colors disabled:opacity-50"
             >
