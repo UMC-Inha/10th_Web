@@ -12,6 +12,7 @@ import {
   setRefreshToken,
 } from '../utils/authToken';
 import type { ApiResponse, SigninResponseData } from '../types/auth';
+import { ApiError } from '../utils/apiError';
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/v1';
 export type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
@@ -50,12 +51,17 @@ const shouldSkipRefresh = (url?: string) => {
   return SKIP_REFRESH_URLS.some((path) => url.includes(path));
 };
 
-function toApiErrorMessage(error: unknown) {
+function toApiError(error: unknown): ApiError {
+  if (error instanceof ApiError) return error;
+
   if (axios.isAxiosError<ApiResponse<unknown>>(error)) {
-    return error.response?.data?.message || '요청에 실패했습니다.';
+    const status = error.response?.status ?? 0;
+    const message = error.response?.data?.message || error.message || '요청에 실패했습니다.';
+    return new ApiError(message, status);
   }
-  if (error instanceof Error) return error.message;
-  return '요청에 실패했습니다.';
+
+  if (error instanceof Error) return new ApiError(error.message, 0);
+  return new ApiError('요청에 실패했습니다.', 0);
 }
 
 apiClient.interceptors.response.use(
@@ -113,12 +119,13 @@ export async function request<T>({ method, url, data, params }: RequestOptions):
     });
 
     if (!response.data.status) {
-      throw new Error(response.data.message || '요청에 실패했습니다.');
+      const status = response.status ?? 0;
+      throw new ApiError(response.data.message || '요청에 실패했습니다.', status);
     }
 
     return response.data;
   } catch (error) {
-    throw new Error(toApiErrorMessage(error));
+    throw toApiError(error);
   }
 }
 
