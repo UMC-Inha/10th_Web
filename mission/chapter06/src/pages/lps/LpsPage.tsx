@@ -84,7 +84,7 @@ function LpsPage() {
           fetchNextPage();
         }
       },
-      { threshold: 0.1 },
+      { threshold: 0.1, rootMargin: '400px' },
     );
 
     observer.observe(el);
