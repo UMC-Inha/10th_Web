@@ -55,6 +55,7 @@ function LpsPage() {
     data,
     isLoading,
     isError,
+    isSuccess,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
@@ -130,7 +131,7 @@ function LpsPage() {
         />
       )}
 
-      {!isLoading && !isError && (
+      {isSuccess && (
         <>
           <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5">
             {lps.map((lp) => (

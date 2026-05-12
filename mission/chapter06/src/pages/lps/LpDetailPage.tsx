@@ -46,6 +46,7 @@ function LpDetailPage() {
     data: commentsData,
     isLoading: isCommentsLoading,
     isError: isCommentsError,
+    isSuccess: isCommentsSuccess,
     isFetchingNextPage: isCommentsFetchingNext,
     hasNextPage: commentsHasNext,
     fetchNextPage: fetchNextComments,
@@ -328,7 +329,7 @@ function LpDetailPage() {
         )}
 
         {/* 댓글 목록 */}
-        {!isCommentsLoading && !isCommentsError && (
+        {isCommentsSuccess && (
           <>
             {comments.length === 0 ? (
               <p className="py-8 text-center text-sm text-slate-600">
