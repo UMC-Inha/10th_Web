@@ -1,0 +1,398 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: #0f0f0f;
+  color: #e5e5e5;
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ── 헤더 ── */
+header {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #2a2a2a;
+  padding-bottom: 1.5rem;
+}
+
+header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+header p {
+  color: #888;
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+/* ── 기능 뱃지 ── */
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.feature-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+
+.feature-card strong {
+  display: block;
+  font-size: 0.9rem;
+  color: #fff;
+  margin-bottom: 0.2rem;
+}
+
+.feature-card p {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.badge {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.badge.green { background: #14532d; color: #4ade80; }
+.badge.blue  { background: #1e3a5f; color: #60a5fa; }
+.badge.orange { background: #431407; color: #fb923c; }
+
+/* ── 컨트롤 ── */
+.controls {
+  margin-bottom: 2rem;
+}
+
+.controls h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ccc;
+  margin-bottom: 1rem;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+
+.btn span {
+  font-size: 0.7rem;
+  font-weight: 400;
+  opacity: 0.75;
+  text-align: center;
+}
+
+.btn.primary   { background: #2563eb; color: #fff; }
+.btn.secondary { background: #374151; color: #e5e5e5; }
+.btn.warning   { background: #d97706; color: #fff; }
+.btn.danger    { background: #dc2626; color: #fff; }
+
+.current-id {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.current-id strong {
+  color: #a78bfa;
+}
+
+/* ── 데모 카드 ── */
+.demo {
+  margin-bottom: 3rem;
+}
+
+.card {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.card h3 {
+  font-size: 1.15rem;
+  color: #fff;
+  margin-bottom: 0.75rem;
+}
+
+.card p {
+  font-size: 0.85rem;
+  color: #aaa;
+  margin-bottom: 0.35rem;
+  line-height: 1.5;
+}
+
+.card.loading {
+  align-items: center;
+  gap: 0.75rem;
+  border-color: #1e3a5f;
+}
+
+.card.error {
+  align-items: center;
+  gap: 0.5rem;
+  border-color: #7f1d1d;
+  background: #160a0a;
+}
+
+.card.error .error-icon { font-size: 2rem; }
+.card.error p { color: #f87171; }
+
+.card.success {
+  border-color: #14532d;
+}
+
+.card.hidden-msg {
+  align-items: center;
+  justify-content: center;
+  border-color: #374151;
+  background: #111;
+}
+
+.hint {
+  font-size: 0.75rem !important;
+  color: #555 !important;
+  margin-top: 0.5rem;
+}
+
+.revalidating {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: #1e3a5f;
+  color: #60a5fa;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+}
+
+/* ── 스피너 ── */
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #2a2a2a;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── 설명 섹션 ── */
+.explanation h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ccc;
+  margin-bottom: 1rem;
+}
+
+details {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+summary {
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #d4d4d4;
+  user-select: none;
+  list-style: none;
+}
+
+summary::before {
+  content: '▶ ';
+  font-size: 0.7rem;
+  color: #6366f1;
+  margin-right: 0.25rem;
+}
+
+details[open] summary::before {
+  content: '▼ ';
+}
+
+details p, details ul {
+  padding: 0.25rem 1rem 0.75rem;
+  font-size: 0.83rem;
+  color: #888;
+  line-height: 1.65;
+}
+
+details ul {
+  padding-left: 2.5rem;
+}
+
+details li {
+  margin-bottom: 0.3rem;
+}
+
+details em {
+  color: #a78bfa;
+}
+
+pre {
+  margin: 0.25rem 1rem 1rem;
+  background: #0d0d0d;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.78rem;
+  color: #a3e635;
+  overflow-x: auto;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+code {
+  background: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+  font-size: 0.82em;
+  color: #e879f9;
+}
+
+/* ─── 탭 네비게이션 ─────────────────────────────── */
+.tab-nav {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 0;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #999;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tab-btn:hover {
+  color: #e5e5e5;
+}
+
+.tab-btn.active {
+  border-bottom-color: #6366f1;
+  color: #6366f1;
+  font-weight: 600;
+}
+
+/* ─── 무한 스크롤 공통 ──────────────────────────── */
+.infinite-container {
+  max-width: 720px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+.post-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.post-item {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+}
+
+.post-item strong {
+  color: #6366f1;
+  min-width: 36px;
+  flex-shrink: 0;
+}
+
+.load-more {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.end-msg {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.status-msg {
+  text-align: center;
+  padding: 16px;
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.status-msg.error {
+  color: #f87171;
+}
+
+.debug-info {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #555;
+  padding: 8px 0 24px;
+}
+
