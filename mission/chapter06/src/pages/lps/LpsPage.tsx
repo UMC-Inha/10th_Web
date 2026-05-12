@@ -30,7 +30,7 @@ const LpCard = memo(function LpCard({ lp, onClick }: LpCardProps) {
       )}
 
       {/* 호버 오버레이 */}
-      <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/30 to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+      <div className="absolute inset-0 flex flex-col justify-end bg-linear-to-t from-black/80 via-black/30 to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
         <p className="line-clamp-2 text-sm font-semibold text-white">{lp.title}</p>
         <div className="mt-1 flex items-center gap-2 text-xs text-slate-300">
           <span>{formatDate(lp.createdAt)}</span>
@@ -84,7 +84,7 @@ function LpsPage() {
           fetchNextPage();
         }
       },
-      { threshold: 0.1, rootMargin: '400px' },
+      { threshold: 0.1, rootMargin: '400px' }
     );
 
     observer.observe(el);
@@ -93,10 +93,7 @@ function LpsPage() {
 
   const lps = data?.pages.flatMap((page) => page?.data ?? []) ?? [];
 
-  const handleCardClick = useCallback(
-    (id: number) => () => navigate(`/lp/${id}`),
-    [navigate],
-  );
+  const handleCardClick = useCallback((id: number) => () => navigate(`/lp/${id}`), [navigate]);
 
   return (
     <div className="p-4">
@@ -130,21 +127,14 @@ function LpsPage() {
       {isLoading && <SkeletonGrid count={20} />}
 
       {isError && (
-        <ErrorState
-          message="LP 목록을 불러오는 데 실패했습니다."
-          onRetry={() => refetch()}
-        />
+        <ErrorState message="LP 목록을 불러오는 데 실패했습니다." onRetry={() => refetch()} />
       )}
 
       {isSuccess && (
         <>
           <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5">
             {lps.map((lp) => (
-              <LpCard
-                key={lp.id}
-                lp={lp}
-                onClick={handleCardClick(lp.id)}
-              />
+              <LpCard key={lp.id} lp={lp} onClick={handleCardClick(lp.id)} />
             ))}
           </div>
 
@@ -159,9 +149,7 @@ function LpsPage() {
           <div ref={triggerRef} className="h-4" />
 
           {!hasNextPage && lps.length > 0 && (
-            <p className="mt-6 text-center text-xs text-slate-600">
-              모든 LP를 불러왔습니다.
-            </p>
+            <p className="mt-6 text-center text-xs text-slate-600">모든 LP를 불러왔습니다.</p>
           )}
         </>
       )}
