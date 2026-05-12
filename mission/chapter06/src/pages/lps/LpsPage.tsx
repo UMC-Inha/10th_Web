@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getLps } from '../../apis/lpsApi';
 import ErrorState from '../../components/ui/ErrorState';
@@ -12,7 +12,7 @@ type LpCardProps = {
   onClick: () => void;
 };
 
-function LpCard({ lp, onClick }: LpCardProps) {
+const LpCard = memo(function LpCard({ lp, onClick }: LpCardProps) {
   return (
     <div
       className="group relative aspect-square cursor-pointer overflow-hidden rounded-md bg-neutral-800"
@@ -44,7 +44,7 @@ function LpCard({ lp, onClick }: LpCardProps) {
       </div>
     </div>
   );
-}
+});
 
 function LpsPage() {
   const navigate = useNavigate();
@@ -93,6 +93,11 @@ function LpsPage() {
 
   const lps = data?.pages.flatMap((page) => page?.data ?? []) ?? [];
 
+  const handleCardClick = useCallback(
+    (id: number) => () => navigate(`/lp/${id}`),
+    [navigate],
+  );
+
   return (
     <div className="p-4">
       {/* 정렬 버튼 */}
@@ -138,7 +143,7 @@ function LpsPage() {
               <LpCard
                 key={lp.id}
                 lp={lp}
-                onClick={() => navigate(`/lp/${lp.id}`)}
+                onClick={handleCardClick(lp.id)}
               />
             ))}
           </div>
