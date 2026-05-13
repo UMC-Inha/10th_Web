@@ -6,7 +6,7 @@ const LIMIT = 20
 
 export function useLps(order: SortOrder = 'desc') {
   return useInfiniteQuery({
-    queryKey: ['lps', order],
+    queryKey: ['lps', 'list', order],
     queryFn: async ({ pageParam }) => {
       const { data } = await api.get<LpListResponse>('/v1/lps', {
         params: {
@@ -30,7 +30,7 @@ export function useLps(order: SortOrder = 'desc') {
 
 export function useLp(lpId: number) {
   return useQuery({
-    queryKey: ['lps', lpId],
+    queryKey: ['lps', 'detail', lpId],
     queryFn: async () => {
       const { data } = await api.get<LpDetailResponse>(`/v1/lps/${lpId}`)
       return data.data
