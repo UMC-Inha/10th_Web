@@ -55,7 +55,8 @@ const CommentSection = ({ lpId, hasToken }: Props) => {
     },
   })
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
     if (!input.trim()) {
       setInputError('댓글 내용을 입력해주세요.')
       return
@@ -90,7 +91,7 @@ const CommentSection = ({ lpId, hasToken }: Props) => {
       </div>
 
       {/* 댓글 입력란 */}
-      <div className="mb-6">
+      <form onSubmit={handleSubmit} className="mb-6">
         <div className="flex gap-2">
           <input
             type="text"
@@ -99,14 +100,12 @@ const CommentSection = ({ lpId, hasToken }: Props) => {
               setInput(e.target.value)
               if (inputError) setInputError('')
             }}
-            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
             placeholder="댓글을 입력해주세요"
             disabled={!hasToken}
             className="flex-1 rounded-lg border border-neutral-600 bg-neutral-700 px-4 py-2 text-sm text-white placeholder-neutral-400 outline-none focus:border-neutral-400 disabled:opacity-50"
           />
           <button
-            type="button"
-            onClick={handleSubmit}
+            type="submit"
             disabled={isPending || !hasToken}
             className="rounded-lg bg-neutral-600 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
@@ -115,7 +114,7 @@ const CommentSection = ({ lpId, hasToken }: Props) => {
         </div>
         {inputError && <p className="mt-1.5 text-xs text-red-400">{inputError}</p>}
         {!hasToken && <p className="mt-1.5 text-xs text-neutral-500">로그인 후 댓글을 작성하고 볼 수 있습니다.</p>}
-      </div>
+      </form>
 
       {/* 비로그인 상태 */}
       {!hasToken && (
