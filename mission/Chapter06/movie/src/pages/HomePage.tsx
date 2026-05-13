@@ -13,6 +13,7 @@ const HomePage = () => {
   const {
     data,
     isLoading,
+    isSuccess,
     isError,
     refetch,
     fetchNextPage,
@@ -70,7 +71,7 @@ const HomePage = () => {
       {isError && <ErrorMessage onRetry={() => refetch()} />}
 
       {/* LP 그리드 */}
-      {lps.length > 0 && (
+      {isSuccess && (
         <div className="grid grid-cols-2 gap-0.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 py-6 px-4">
           {lps.map((lp) => (
             <button
