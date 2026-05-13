@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { signUp } from '../api/authApi';
-import { useAuth } from '../context/AuthContext';
 
 const signupSchema = z
   .object({
@@ -25,7 +24,6 @@ type SignupFormData = z.infer<typeof signupSchema>;
 
 function SignupPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -57,14 +55,12 @@ function SignupPage() {
     setIsLoading(true);
     setApiError('');
     try {
-      const result = await signUp({
+      await signUp({
         email: data.email,
         password: data.password,
-        passwordCheck: data.confirmPassword,
         name: data.nickname,
       });
-      login(result.accessToken, result.refreshToken);
-      navigate('/');
+      navigate('/login');
     } catch (err) {
       setApiError(err instanceof Error ? err.message : '회원가입에 실패했습니다.');
     } finally {

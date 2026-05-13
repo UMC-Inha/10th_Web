@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { flushSync } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -41,7 +42,9 @@ function LoginPage() {
     setApiError('');
     try {
       const result = await signIn({ email: data.email, password: data.password });
-      login(result.accessToken, result.refreshToken);
+      flushSync(() => {
+        login(result.accessToken, result.refreshToken);
+      });
       navigate('/');
     } catch (err) {
       setApiError(err instanceof Error ? err.message : '로그인에 실패했습니다.');
