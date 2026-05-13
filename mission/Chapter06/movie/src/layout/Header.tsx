@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import useLocalStorage from '../hooks/useLocalStorage'
 import type { UserToken } from '../types/lp'
+import axiosInstance from '../lib/api'
 
 interface Props {
   onMenuClick: () => void
@@ -10,9 +11,15 @@ const Header = ({ onMenuClick }: Props) => {
   const navigate = useNavigate()
   const [token, setToken] = useLocalStorage<UserToken | null>('token', null)
 
-  const handleLogout = () => {
-    setToken(null)
-    navigate('/login')
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post('/v1/auth/signout')
+    } catch {
+      // 서버 무효화 실패해도 클라이언트 토큰은 제거
+    } finally {
+      setToken(null)
+      navigate('/login')
+    }
   }
 
   return (
