@@ -99,18 +99,53 @@ function LpDetailPage() {
 
   const comments = commentsData?.pages.flatMap((p) => p?.data ?? []) ?? [];
 
-  // ── 좋아요 ────────────────────────────────────────────
+  // ── 좋아요 (낙관적 업데이트) ──────────────────────────
   const [likeError, setLikeError] = useState('');
   const [deleteError, setDeleteError] = useState('');
 
   const likeMutation = useMutation({
     mutationFn: () => toggleLike(numericLpId!),
-    onSuccess: () => {
+
+    // 1단계: 서버 요청 직전 — 캐시를 즉시 낙관적으로 변경
+    onMutate: async () => {
+      // 진행 중인 리페치가 캐시를 덮어쓰지 않도록 취소
+      await queryClient.cancelQueries({ queryKey: ['lp', numericLpId] });
+
+      // 롤백을 위해 이전 LP 데이터 저장
+      const previousLp = queryClient.getQueryData<typeof lp>(['lp', numericLpId]);
+
+      if (previousLp && myInfo) {
+        const alreadyLiked = previousLp.likes.some((like) => like.userId === myInfo.id);
+
+        // 좋아요 상태를 즉시 토글
+        const optimisticLikes = alreadyLiked
+          ? previousLp.likes.filter((like) => like.userId !== myInfo.id)
+          : [
+              ...previousLp.likes,
+              { id: Date.now(), userId: myInfo.id, lpId: numericLpId! },
+            ];
+
+        queryClient.setQueryData(['lp', numericLpId], {
+          ...previousLp,
+          likes: optimisticLikes,
+        });
+      }
+
       setLikeError('');
-      queryClient.invalidateQueries({ queryKey: ['lp', numericLpId] });
+      return { previousLp };
     },
-    onError: (err) => {
+
+    // 2단계: 요청 실패 시 — 이전 데이터로 롤백
+    onError: (err, _, context) => {
+      if (context?.previousLp) {
+        queryClient.setQueryData(['lp', numericLpId], context.previousLp);
+      }
       setLikeError(err instanceof Error ? err.message : '좋아요 처리에 실패했습니다.');
+    },
+
+    // 3단계: 성공/실패 무관 — 서버 최종 상태와 동기화
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['lp', numericLpId] });
     },
   });
 
@@ -160,6 +195,7 @@ function LpDetailPage() {
   });
 
   const isOwner = !!myInfo && !!lp && myInfo.id === lp.authorId;
+  const isLiked = !!myInfo && !!lp && lp.likes.some((like) => like.userId === myInfo.id);
 
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -285,12 +321,24 @@ function LpDetailPage() {
         <button
           onClick={() => likeMutation.mutate()}
           disabled={likeMutation.isPending}
-          className="flex items-center gap-1.5 rounded-lg border border-pink-500 px-4 py-2 text-sm font-medium text-pink-400 hover:bg-pink-500 hover:text-white transition-colors disabled:opacity-50"
+          className={[
+            'flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50',
+            isLiked
+              ? 'border-pink-500 bg-pink-500 text-white hover:bg-pink-600'
+              : 'border-pink-500 text-pink-400 hover:bg-pink-500 hover:text-white',
+          ].join(' ')}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill={isLiked ? 'currentColor' : 'none'}
+            stroke="currentColor"
+            strokeWidth={isLiked ? '0' : '2'}
+          >
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
-          좋아요 {lp.likes.length}
+          {isLiked ? '좋아요 취소' : '좋아요'} {lp.likes.length}
         </button>
 
         {deleteError && <p className="w-full text-xs text-red-400">{deleteError}</p>}

@@ -3,6 +3,8 @@ import { useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import { uploadImage } from '../../apis/uploadsApi';
 import { getMyInfo, getUserInfo, updateMyInfo } from '../../apis/usersApi';
+import { useAuth } from '../../contexts/AuthContext';
+import type { UserInfo } from '../../types/user';
 
 function ProfileEditModal({
   initialName,
@@ -16,6 +18,7 @@ function ProfileEditModal({
   onClose: () => void;
 }) {
   const queryClient = useQueryClient();
+  const { userName, updateUserName } = useAuth();
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const [name, setName] = useState(initialName);
@@ -40,13 +43,55 @@ function ProfileEditModal({
         avatar: avatarUrl,
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
-      queryClient.invalidateQueries({ queryKey: ['myInfo'] });
+
+    // ── 낙관적 업데이트 ──────────────────────────────────────
+    onMutate: async () => {
+      // 1. 진행 중인 리페치 취소 (덮어쓰기 방지)
+      await queryClient.cancelQueries({ queryKey: ['user', 'me'] });
+      await queryClient.cancelQueries({ queryKey: ['myInfo'] });
+
+      // 2. 이전 데이터 저장 (롤백용)
+      const previousUser = queryClient.getQueryData<UserInfo>(['user', 'me']);
+      const previousMyInfo = queryClient.getQueryData<UserInfo>(['myInfo']);
+      const previousUserName = userName;
+
+      // 3. 캐시 낙관적 업데이트
+      const optimisticUpdate = (old: UserInfo | undefined) =>
+        old ? { ...old, name: name.trim(), bio: bio.trim() || null } : old;
+      queryClient.setQueryData<UserInfo>(['user', 'me'], optimisticUpdate);
+      queryClient.setQueryData<UserInfo>(['myInfo'], optimisticUpdate);
+
+      // 4. Nav-Bar 닉네임 즉시 업데이트
+      updateUserName(name.trim());
+
+      return { previousUser, previousMyInfo, previousUserName };
+    },
+
+    // ── 실패 시 롤백 ──────────────────────────────────────────
+    onError: (err, _, context) => {
+      if (context?.previousUser !== undefined) {
+        queryClient.setQueryData(['user', 'me'], context.previousUser);
+      }
+      if (context?.previousMyInfo !== undefined) {
+        queryClient.setQueryData(['myInfo'], context.previousMyInfo);
+      }
+      // Nav-Bar 닉네임 롤백
+      if (context?.previousUserName !== undefined) {
+        updateUserName(context.previousUserName ?? '');
+      }
+      setError(err instanceof Error ? err.message : '프로필 수정에 실패했습니다.');
+    },
+
+    // ── 성공 시 서버 응답으로 최종 동기화 ─────────────────────
+    onSuccess: (data) => {
+      if (data?.name) updateUserName(data.name);
       onClose();
     },
-    onError: (err) => {
-      setError(err instanceof Error ? err.message : '프로필 수정에 실패했습니다.');
+
+    // ── 항상 최종 서버 상태와 동기화 ───────────────────────────
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+      queryClient.invalidateQueries({ queryKey: ['myInfo'] });
     },
   });
 
@@ -209,7 +254,6 @@ function UsersPage() {
       {/* 프로필 카드 */}
       <div className="rounded-2xl bg-[#1e1e1e] border border-white/10 p-6">
         <div className="flex items-center gap-4">
-          {/* 아바타 */}
           {user.avatar ? (
             <img
               src={user.avatar}
@@ -227,7 +271,6 @@ function UsersPage() {
             <p className="text-sm text-slate-400 truncate">{user.email}</p>
           </div>
 
-          {/* 설정 버튼 (마이페이지에서만 표시) */}
           {isMyPage && (
             <button
               onClick={() => setShowEditModal(true)}
@@ -242,7 +285,6 @@ function UsersPage() {
           )}
         </div>
 
-        {/* Bio */}
         {user.bio && (
           <div className="mt-4 rounded-lg bg-white/5 px-4 py-3">
             <p className="text-sm text-slate-300 leading-relaxed">{user.bio}</p>
