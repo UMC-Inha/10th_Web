@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router';
 import AuthInput from '../../components/auth/AuthInput';
@@ -32,11 +31,6 @@ function AuthPage() {
     mode: 'onTouched',
     defaultValues: { name: '', email: '', password: '', bio: '', avatar: '' },
   });
-
-  useEffect(() => {
-    signinForm.reset();
-    signupForm.reset();
-  }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── 로그인 Mutation ──────────────────────────────────────
   const signinMutation = useMutation({
@@ -94,7 +88,7 @@ function AuthPage() {
           DOLIGO
         </Link>
 
-        <div className="rounded-2xl bg-[#1e1e1e] p-6 shadow-xl border border-white/10">
+        <div key={location.pathname} className="rounded-2xl bg-[#1e1e1e] p-6 shadow-xl border border-white/10">
           <h2 className="mb-1 text-xl font-bold text-white">{isSigninPage ? '로그인' : '회원가입'}</h2>
           <p className="mb-5 text-sm text-slate-500">
             {isSigninPage

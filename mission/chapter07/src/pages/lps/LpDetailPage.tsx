@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import {
   createComment,
@@ -16,7 +16,7 @@ import LoginModal from '../../components/modals/LoginModal';
 import LpEditModal from '../../components/modals/LpEditModal';
 import ErrorState from '../../components/ui/ErrorState';
 import { SkeletonCommentList } from '../../components/ui/SkeletonCard';
-import type { LpSortOrder } from '../../types/lp';
+import type { LpDetailDto, LpSortOrder } from '../../types/lp';
 import { useAuth } from '../../contexts/AuthContext';
 import { formatDate } from '../../utils/formatDate';
 
@@ -40,6 +40,20 @@ function LpDetailPage() {
   const [editingContent, setEditingContent] = useState('');
   const [openMenuCommentId, setOpenMenuCommentId] = useState<number | null>(null);
   const [deleteCommentId, setDeleteCommentId] = useState<number | null>(null);
+  const commentMenuRef = useRef<HTMLDivElement | null>(null);
+
+  // 댓글 메뉴 바깥 클릭 시 닫힘
+  const closeMenu = useCallback(() => setOpenMenuCommentId(null), []);
+  useEffect(() => {
+    if (openMenuCommentId === null) return;
+    const handleOutside = (e: MouseEvent) => {
+      if (commentMenuRef.current && !commentMenuRef.current.contains(e.target as Node)) {
+        closeMenu();
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, [openMenuCommentId, closeMenu]);
 
   // ── 현재 로그인 유저 ────────────────────────────────────
   const { data: myInfo } = useQuery({
@@ -112,7 +126,7 @@ function LpDetailPage() {
       await queryClient.cancelQueries({ queryKey: ['lp', numericLpId] });
 
       // 롤백을 위해 이전 LP 데이터 저장
-      const previousLp = queryClient.getQueryData<typeof lp>(['lp', numericLpId]);
+      const previousLp = queryClient.getQueryData<LpDetailDto>(['lp', numericLpId]);
 
       if (previousLp && myInfo) {
         const alreadyLiked = previousLp.likes.some((like) => like.userId === myInfo.id);
@@ -458,7 +472,10 @@ function LpDetailPage() {
 
                           {/* 본인 댓글 메뉴 */}
                           {isMyComment && !isEditing && (
-                            <div className="relative">
+                            <div
+                              ref={openMenuCommentId === comment.id ? commentMenuRef : null}
+                              className="relative"
+                            >
                               <button
                                 onClick={() =>
                                   setOpenMenuCommentId(openMenuCommentId === comment.id ? null : comment.id)

@@ -9,14 +9,14 @@ import { formatDate } from '../../utils/formatDate';
 
 type LpCardProps = {
   lp: LpDto;
-  onClick: () => void;
+  onNavigate: (id: number) => void;
 };
 
-const LpCard = memo(function LpCard({ lp, onClick }: LpCardProps) {
+const LpCard = memo(function LpCard({ lp, onNavigate }: LpCardProps) {
   return (
     <div
       className="group relative aspect-square cursor-pointer overflow-hidden rounded-md bg-neutral-800"
-      onClick={onClick}
+      onClick={() => onNavigate(lp.id)}
     >
       {lp.thumbnail ? (
         <img
@@ -93,7 +93,7 @@ function LpsPage() {
 
   const lps = data?.pages.flatMap((page) => page?.data ?? []) ?? [];
 
-  const handleCardClick = useCallback((id: number) => () => navigate(`/lp/${id}`), [navigate]);
+  const handleCardClick = useCallback((id: number) => navigate(`/lp/${id}`), [navigate]);
 
   return (
     <div className="p-4">
@@ -134,7 +134,7 @@ function LpsPage() {
         <>
           <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5">
             {lps.map((lp) => (
-              <LpCard key={lp.id} lp={lp} onClick={handleCardClick(lp.id)} />
+              <LpCard key={lp.id} lp={lp} onNavigate={handleCardClick} />
             ))}
           </div>
 
