@@ -13,7 +13,11 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => voi
   const setValue = (value: T) => {
     try {
       setStoredValue(value)
-      window.localStorage.setItem(key, JSON.stringify(value))
+      if (value === null || value === undefined) {
+        window.localStorage.removeItem(key)
+      } else {
+        window.localStorage.setItem(key, JSON.stringify(value))
+      }
     } catch {
       // localStorage unavailable
     }
