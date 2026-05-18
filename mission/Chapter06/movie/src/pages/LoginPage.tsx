@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginFormData } from '../lib/schemas'
@@ -11,7 +11,6 @@ import axios from 'axios'
 const LoginPage = () => {
   const navigate = useNavigate()
   const [, setToken] = useLocalStorage<UserToken | null>('token', null)
-  const [serverError, setServerError] = useState('')
 
   const {
     register,
@@ -22,26 +21,29 @@ const LoginPage = () => {
     mode: 'onTouched',
   })
 
-  const onSubmit = async (data: LoginFormData) => {
-    setServerError('')
-    try {
-      const response = await api.post<{ name: string; accessToken: string; refreshToken: string }>(
+  const { mutate: login, isPending, error } = useMutation({
+    mutationFn: (data: LoginFormData) =>
+      api.post<{ data: { name: string; accessToken: string; refreshToken: string } }>(
         '/v1/auth/signin',
         { email: data.email, password: data.password },
-      )
+      ),
+    onSuccess: (response) => {
       setToken({
-        accessToken: response.data.accessToken,
-        refreshToken: response.data.refreshToken,
-        name: response.data.name,
+        accessToken: response.data.data.accessToken,
+        refreshToken: response.data.data.refreshToken,
+        name: response.data.data.name,
       })
       navigate('/')
-    } catch (error) {
-      const message = axios.isAxiosError(error)
-        ? error.response?.data?.message
-        : undefined
-      setServerError(message ?? '이메일 또는 비밀번호가 올바르지 않습니다.')
-    }
-  }
+    },
+  })
+
+  const serverError = axios.isAxiosError(error)
+    ? error.response?.data?.message
+    : error
+    ? '이메일 또는 비밀번호가 올바르지 않습니다.'
+    : null
+
+  const onSubmit = (data: LoginFormData) => login(data)
 
   const handleGoogleLogin = () => {
     window.location.href = `${BASE_URL}/v1/auth/google/login`
@@ -108,10 +110,10 @@ const LoginPage = () => {
 
           <button
             type="submit"
-            disabled={!isValid}
+            disabled={!isValid || isPending}
             className="mt-2 w-full rounded-lg border border-white/20 bg-neutral-900 py-3 text-sm font-medium text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            로그인
+            {isPending ? '로그인 중...' : '로그인'}
           </button>
         </form>
       </div>

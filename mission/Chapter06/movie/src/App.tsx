@@ -5,6 +5,7 @@ import LpDetailPage from './pages/LpDetailPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import GoogleCallbackPage from './pages/GoogleCallbackPage'
+import MyPage from './pages/MyPage'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="lp/:lpId" element={<LpDetailPage />} />
+          <Route path="my" element={<MyPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

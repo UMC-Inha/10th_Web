@@ -1,47 +1,98 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
+import api from '../lib/api'
+import useLocalStorage from '../hooks/useLocalStorage'
+import type { UserToken } from '../types/lp'
 
 interface Props {
   isOpen: boolean
 }
 
 const Sidebar = ({ isOpen }: Props) => {
-  return (
-    // 데스크톱(lg+): relative로 레이아웃에 포함, 항상 표시
-    // 모바일: absolute 드로어, isOpen에 따라 슬라이드
-    <aside
-      className={`
-        flex flex-col justify-between bg-neutral-900 border-r border-neutral-800 shrink-0 w-36
-        absolute lg:relative h-full z-20 lg:z-auto
-        transition-transform duration-200
-        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}
-    >
-      <nav className="flex flex-col gap-1 p-3 pt-4">
-        <Link
-          to="/"
-          className="flex items-center gap-2 rounded px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white"
-        >
-          <SearchIcon />
-          찾기
-        </Link>
-        <Link
-          to="/my"
-          className="flex items-center gap-2 rounded px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white"
-        >
-          <PersonIcon />
-          마이페이지
-        </Link>
-      </nav>
+  const navigate = useNavigate()
+  const [, setToken] = useLocalStorage<UserToken | null>('token', null)
+  const [showConfirm, setShowConfirm] = useState(false)
 
-      <div className="p-3">
-        <button
-          type="button"
-          className="w-full rounded px-3 py-2 text-sm text-neutral-500 hover:bg-neutral-800 hover:text-red-400 text-left"
+  const { mutate: deleteAccount, isPending } = useMutation({
+    mutationFn: () => api.delete('/v1/users'),
+    onSuccess: () => {
+      setToken(null)
+      navigate('/login')
+    },
+  })
+
+  return (
+    <>
+      <aside
+        className={`
+          flex flex-col justify-between bg-neutral-900 border-r border-neutral-800 shrink-0 w-36
+          absolute lg:relative h-full z-20 lg:z-auto
+          transition-transform duration-200
+          ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}
+      >
+        <nav className="flex flex-col gap-1 p-3 pt-4">
+          <Link
+            to="/"
+            className="flex items-center gap-2 rounded px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white"
+          >
+            <SearchIcon />
+            찾기
+          </Link>
+          <Link
+            to="/my"
+            className="flex items-center gap-2 rounded px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white"
+          >
+            <PersonIcon />
+            마이페이지
+          </Link>
+        </nav>
+
+        <div className="p-3">
+          <button
+            type="button"
+            onClick={() => setShowConfirm(true)}
+            className="w-full rounded px-3 py-2 text-sm text-neutral-500 hover:bg-neutral-800 hover:text-red-400 text-left"
+          >
+            탈퇴하기
+          </button>
+        </div>
+      </aside>
+
+      {/* 탈퇴 확인 모달 */}
+      {showConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+          onClick={() => setShowConfirm(false)}
         >
-          탈퇴하기
-        </button>
-      </div>
-    </aside>
+          <div
+            className="w-72 rounded-2xl bg-neutral-800 p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="mb-2 text-base font-semibold text-white">정말 탈퇴하시겠어요?</p>
+            <p className="mb-6 text-sm text-neutral-400">탈퇴 후 모든 데이터가 삭제됩니다.</p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowConfirm(false)}
+                className="flex-1 rounded-lg border border-neutral-600 py-2.5 text-sm text-neutral-300 hover:border-white hover:text-white"
+              >
+                아니오
+              </button>
+              <button
+                type="button"
+                onClick={() => deleteAccount()}
+                disabled={isPending}
+                className="flex-1 rounded-lg bg-red-600 py-2.5 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-40"
+              >
+                {isPending ? '탈퇴 중...' : '예'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 
