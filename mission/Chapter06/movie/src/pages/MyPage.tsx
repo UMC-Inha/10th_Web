@@ -41,9 +41,27 @@ const MyPage = () => {
         bio: bioValue || null,
         ...(avatarFile && { avatar: avatarFile }),
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['me'] })
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['me'] })
+
+      const previousMe = queryClient.getQueryData<Me>(['me'])
+      const previousToken = token
+
+      // 캐시 즉시 업데이트 → 마이페이지 닉네임 반영
+      queryClient.setQueryData<Me>(['me'], (old) =>
+        old ? { ...old, name: nameValue, bio: bioValue || null } : old,
+      )
+      // localStorage 즉시 업데이트 → 헤더 닉네임 반영
       if (token) setToken({ ...token, name: nameValue })
+
+      return { previousMe, previousToken }
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousMe) queryClient.setQueryData(['me'], context.previousMe)
+      if (context?.previousToken) setToken(context.previousToken)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['me'] })
       setIsEditing(false)
       setAvatarFile('')
     },

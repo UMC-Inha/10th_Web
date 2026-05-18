@@ -36,13 +36,19 @@ const GoogleCallbackPage = () => {
     const accessToken = getValueByCandidates(mergedParams, ACCESS_TOKEN_KEYS)
     const refreshToken = getValueByCandidates(mergedParams, REFRESH_TOKEN_KEYS)
     const name = mergedParams.get('name') ?? ''
+    const userId = mergedParams.get('userId')
 
     if (!accessToken) {
       setMessage('토큰을 받지 못했습니다. 다시 로그인해 주세요.')
       return
     }
 
-    setToken({ accessToken, refreshToken: refreshToken ?? '', name })
+    setToken({
+      id: userId ? Number(userId) : undefined,
+      accessToken,
+      refreshToken: refreshToken ?? '',
+      name,
+    })
     navigate('/', { replace: true })
   }, [navigate, searchParams])
 

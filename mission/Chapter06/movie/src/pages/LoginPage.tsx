@@ -29,6 +29,7 @@ const LoginPage = () => {
       ),
     onSuccess: (response) => {
       setToken({
+        id: response.data.data.id,
         accessToken: response.data.data.accessToken,
         refreshToken: response.data.data.refreshToken,
         name: response.data.data.name,

@@ -21,6 +21,41 @@ const LpDetailPage = () => {
 
   const { data: lp, isLoading, isError, refetch } = useLp(Number(lpId))
   const isAuthor = !!token && !!lp && token.name === lp.author.name
+  const isLiked = !!token?.id && !!lp && lp.likes.some((l) => l.userId === token.id)
+  const lpIdNum = Number(lpId)
+
+  const { mutate: toggleLike } = useMutation({
+    mutationFn: () =>
+      isLiked
+        ? api.delete(`/v1/lps/${lpIdNum}/likes`)
+        : api.post(`/v1/lps/${lpIdNum}/likes`),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['lps', 'detail', lpIdNum] })
+      const previousLp = queryClient.getQueryData(['lps', 'detail', lpIdNum])
+
+      queryClient.setQueryData(['lps', 'detail', lpIdNum], (old: typeof lp) => {
+        if (!old) return old
+        if (isLiked) {
+          return { ...old, likes: old.likes.filter((l) => l.userId !== token?.id) }
+        } else {
+          return {
+            ...old,
+            likes: [...old.likes, { id: Date.now(), userId: token?.id ?? 0, lpId: lpIdNum }],
+          }
+        }
+      })
+
+      return { previousLp }
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousLp) {
+        queryClient.setQueryData(['lps', 'detail', lpIdNum], context.previousLp)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['lps', 'detail', lpIdNum] })
+    },
+  })
 
   const { mutate: deleteLp } = useMutation({
     mutationFn: () => api.delete(`/v1/lps/${lpId}`),
@@ -101,8 +136,14 @@ const LpDetailPage = () => {
 
           {/* 좋아요 */}
           <div className="flex justify-center">
-            <button type="button" className="flex items-center gap-2 rounded-full px-4 py-2 text-neutral-300 hover:text-pink-400">
-              <span className="text-2xl text-pink-500">♥</span>
+            <button
+              type="button"
+              onClick={() => token && toggleLike()}
+              className={`flex items-center gap-2 rounded-full px-4 py-2 transition-colors ${
+                isLiked ? 'text-pink-400' : 'text-neutral-300 hover:text-pink-400'
+              } ${!token ? 'cursor-default' : ''}`}
+            >
+              <span className={`text-2xl ${isLiked ? 'text-pink-400' : 'text-pink-500'}`}>♥</span>
               <span className="text-lg font-medium">{lp.likes.length}</span>
             </button>
           </div>
