@@ -4,6 +4,7 @@ import { updateLp } from '../../apis/lpsApi';
 import { uploadImage } from '../../apis/uploadsApi';
 import { useLpForm } from '../../hooks/useLpForm';
 import type { LpDetailDto } from '../../types/lp';
+import { LpFormProvider } from './LpFormContext';
 import LpFormFields from './LpFormFields';
 
 type LpEditModalProps = {
@@ -79,34 +80,21 @@ function LpEditModal({ lp, onClose }: LpEditModalProps) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5 p-6">
-          <LpFormFields
-            title={form.title}
-            onTitleChange={form.setTitle}
-            content={form.content}
-            onContentChange={form.setContent}
-            thumbnailPreview={form.thumbnailPreview}
-            onFileChange={form.handleFileChange}
-            onRemoveThumbnail={form.handleRemoveThumbnail}
-            tagInput={form.tagInput}
-            onTagInputChange={form.setTagInput}
-            tags={form.tags}
-            onAddTag={form.handleAddTag}
-            onTagKeyDown={form.handleTagKeyDown}
-            onRemoveTag={form.handleRemoveTag}
-            errors={form.errors}
-            titleId="edit-lp-title"
-            contentId="edit-lp-content"
-          />
-
-          <button
-            type="submit"
-            disabled={updateMutation.isPending}
-            className="h-11 w-full rounded-xl bg-pink-500 text-sm font-semibold text-white hover:bg-pink-600 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {updateMutation.isPending ? '수정 중...' : '수정 완료'}
-          </button>
-        </form>
+        <LpFormProvider value={form}>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 p-6">
+            <LpFormFields
+              titleId="edit-lp-title"
+              contentId="edit-lp-content"
+            />
+            <button
+              type="submit"
+              disabled={updateMutation.isPending}
+              className="h-11 w-full rounded-xl bg-pink-500 text-sm font-semibold text-white hover:bg-pink-600 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {updateMutation.isPending ? '수정 중...' : '수정 완료'}
+            </button>
+          </form>
+        </LpFormProvider>
       </div>
     </div>
   );
