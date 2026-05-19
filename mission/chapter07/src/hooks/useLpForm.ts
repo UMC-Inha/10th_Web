@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type LpFormOptions = {
   initialTitle?: string;
@@ -21,16 +21,39 @@ export function useLpForm({
   const [tags, setTags] = useState<string[]>(initialTags);
   const [error, setError] = useState('');
 
+  // Object URL은 브라우저 메모리를 직접 점유하므로, 이전 URL을 추적해 해제함
+  const objectUrlRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    // 훅을 사용하는 컴포넌트가 언마운트될 때 마지막 Object URL 해제
+    return () => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = null;
+      }
+    };
+  }, []);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // 이전 Object URL이 있으면 먼저 해제
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+    }
+
+    const url = URL.createObjectURL(file);
+    objectUrlRef.current = url;
     setThumbnailFile(file);
-    const reader = new FileReader();
-    reader.onload = () => setThumbnailPreview(reader.result as string);
-    reader.readAsDataURL(file);
+    setThumbnailPreview(url);
   };
 
   const handleRemoveThumbnail = () => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
     setThumbnailFile(null);
     setThumbnailPreview(null);
   };
