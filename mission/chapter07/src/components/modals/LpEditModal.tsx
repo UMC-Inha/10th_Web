@@ -45,17 +45,13 @@ function LpEditModal({ lp, onClose }: LpEditModalProps) {
       onClose();
     },
     onError: (err) => {
-      form.setError(err instanceof Error ? err.message : 'LP 수정에 실패했습니다.');
+      form.setFormError(err instanceof Error ? err.message : 'LP 수정에 실패했습니다.');
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const validationError = form.validate();
-    if (validationError) {
-      form.setError(validationError);
-      return;
-    }
+    if (!form.validate()) return;
     updateMutation.mutate();
   };
 
@@ -98,7 +94,7 @@ function LpEditModal({ lp, onClose }: LpEditModalProps) {
             onAddTag={form.handleAddTag}
             onTagKeyDown={form.handleTagKeyDown}
             onRemoveTag={form.handleRemoveTag}
-            error={form.error}
+            errors={form.errors}
             titleId="edit-lp-title"
             contentId="edit-lp-content"
           />

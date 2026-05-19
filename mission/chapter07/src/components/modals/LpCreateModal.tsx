@@ -38,17 +38,13 @@ function LpCreateModal({ onClose }: LpCreateModalProps) {
       onClose();
     },
     onError: (err) => {
-      form.setError(err instanceof Error ? err.message : 'LP 생성에 실패했습니다.');
+      form.setFormError(err instanceof Error ? err.message : 'LP 생성에 실패했습니다.');
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const validationError = form.validate();
-    if (validationError) {
-      form.setError(validationError);
-      return;
-    }
+    if (!form.validate()) return;
     createMutation.mutate();
   };
 
@@ -91,7 +87,7 @@ function LpCreateModal({ onClose }: LpCreateModalProps) {
             onAddTag={form.handleAddTag}
             onTagKeyDown={form.handleTagKeyDown}
             onRemoveTag={form.handleRemoveTag}
-            error={form.error}
+            errors={form.errors}
             titleId="create-lp-title"
             contentId="create-lp-content"
           />

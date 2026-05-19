@@ -16,6 +16,14 @@ type FormState = {
   tags: string[];
 };
 
+export type FormErrors = {
+  title: string;
+  content: string;
+  form: string;
+};
+
+const EMPTY_ERRORS: FormErrors = { title: '', content: '', form: '' };
+
 export function useLpForm({
   initialTitle = '',
   initialContent = '',
@@ -32,9 +40,9 @@ export function useLpForm({
   };
 
   const [formState, setFormState] = useState<FormState>(initialFormState);
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState<FormErrors>(EMPTY_ERRORS);
 
-  // Object URL은 브라우저 메모리를 직접 점유하므로, 이전 URL을 추적해 해제함
+  // Object URL은 브라우저 메모리를 직접 점유하므로, 이전 URL을 추적해 해제한다
   const objectUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -90,11 +98,18 @@ export function useLpForm({
     setFormState((prev) => ({ ...prev, tags: prev.tags.filter((t) => t !== tag) }));
   };
 
-  const validate = (): string => {
-    if (!formState.title.trim()) return '제목을 입력해주세요.';
-    if (!formState.content.trim()) return '내용을 입력해주세요.';
-    return '';
+  // 각 필드의 에러를 개별적으로 설정하고 유효하면 true 반환
+  const validate = (): boolean => {
+    const next: FormErrors = { title: '', content: '', form: '' };
+    if (!formState.title.trim()) next.title = '제목을 입력해주세요.';
+    if (!formState.content.trim()) next.content = '내용을 입력해주세요.';
+    setErrors(next);
+    return !next.title && !next.content;
   };
+
+  // API 레벨 에러 (제출 실패 등) 를 form 에러로 설정
+  const setFormError = (msg: string) =>
+    setErrors((prev) => ({ ...prev, form: msg }));
 
   const resetForm = () => {
     if (objectUrlRef.current) {
@@ -102,7 +117,7 @@ export function useLpForm({
       objectUrlRef.current = null;
     }
     setFormState(initialFormState);
-    setError('');
+    setErrors(EMPTY_ERRORS);
   };
 
   return {
@@ -118,8 +133,8 @@ export function useLpForm({
     tagInput: formState.tagInput,
     setTagInput: (tagInput: string) => setFormState((prev) => ({ ...prev, tagInput })),
     tags: formState.tags,
-    error,
-    setError,
+    errors,
+    setFormError,
     handleFileChange,
     handleRemoveThumbnail,
     handleAddTag,
