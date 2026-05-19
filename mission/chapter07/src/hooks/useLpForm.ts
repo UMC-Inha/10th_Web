@@ -7,18 +7,31 @@ type LpFormOptions = {
   initialTags?: string[];
 };
 
+type FormState = {
+  title: string;
+  content: string;
+  thumbnailFile: File | null;
+  thumbnailPreview: string | null;
+  tagInput: string;
+  tags: string[];
+};
+
 export function useLpForm({
   initialTitle = '',
   initialContent = '',
   initialThumbnail = null,
   initialTags = [],
 }: LpFormOptions = {}) {
-  const [title, setTitle] = useState(initialTitle);
-  const [content, setContent] = useState(initialContent);
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
-  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(initialThumbnail ?? null);
-  const [tagInput, setTagInput] = useState('');
-  const [tags, setTags] = useState<string[]>(initialTags);
+  const initialFormState: FormState = {
+    title: initialTitle,
+    content: initialContent,
+    thumbnailFile: null,
+    thumbnailPreview: initialThumbnail ?? null,
+    tagInput: '',
+    tags: initialTags,
+  };
+
+  const [formState, setFormState] = useState<FormState>(initialFormState);
   const [error, setError] = useState('');
 
   // Object URL은 브라우저 메모리를 직접 점유하므로, 이전 URL을 추적해 해제함
@@ -45,8 +58,7 @@ export function useLpForm({
 
     const url = URL.createObjectURL(file);
     objectUrlRef.current = url;
-    setThumbnailFile(file);
-    setThumbnailPreview(url);
+    setFormState((prev) => ({ ...prev, thumbnailFile: file, thumbnailPreview: url }));
   };
 
   const handleRemoveThumbnail = () => {
@@ -54,18 +66,16 @@ export function useLpForm({
       URL.revokeObjectURL(objectUrlRef.current);
       objectUrlRef.current = null;
     }
-    setThumbnailFile(null);
-    setThumbnailPreview(null);
+    setFormState((prev) => ({ ...prev, thumbnailFile: null, thumbnailPreview: null }));
   };
 
   const handleAddTag = () => {
-    const trimmed = tagInput.trim();
-    if (!trimmed || tags.includes(trimmed)) {
-      setTagInput('');
+    const trimmed = formState.tagInput.trim();
+    if (!trimmed || formState.tags.includes(trimmed)) {
+      setFormState((prev) => ({ ...prev, tagInput: '' }));
       return;
     }
-    setTags((prev) => [...prev, trimmed]);
-    setTagInput('');
+    setFormState((prev) => ({ ...prev, tags: [...prev.tags, trimmed], tagInput: '' }));
   };
 
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -76,28 +86,45 @@ export function useLpForm({
   };
 
   const handleRemoveTag = (tag: string) => {
-    setTags((prev) => prev.filter((t) => t !== tag));
+    setFormState((prev) => ({ ...prev, tags: prev.tags.filter((t) => t !== tag) }));
   };
 
   const validate = (): string => {
-    if (!title.trim()) return '제목을 입력해주세요.';
-    if (!content.trim()) return '내용을 입력해주세요.';
+    if (!formState.title.trim()) return '제목을 입력해주세요.';
+    if (!formState.content.trim()) return '내용을 입력해주세요.';
     return '';
   };
 
+  const resetForm = () => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+    setFormState(initialFormState);
+    setError('');
+  };
+
   return {
-    title, setTitle,
-    content, setContent,
-    thumbnailFile,
-    thumbnailPreview,
-    tagInput, setTagInput,
-    tags,
-    error, setError,
+    // 폼 입력 데이터 묶음 — 제출 시 formState 하나만 참조해도 됨
+    formState,
+    // 개별 필드 접근 (기존 소비 컴포넌트 호환)
+    title: formState.title,
+    setTitle: (title: string) => setFormState((prev) => ({ ...prev, title })),
+    content: formState.content,
+    setContent: (content: string) => setFormState((prev) => ({ ...prev, content })),
+    thumbnailFile: formState.thumbnailFile,
+    thumbnailPreview: formState.thumbnailPreview,
+    tagInput: formState.tagInput,
+    setTagInput: (tagInput: string) => setFormState((prev) => ({ ...prev, tagInput })),
+    tags: formState.tags,
+    error,
+    setError,
     handleFileChange,
     handleRemoveThumbnail,
     handleAddTag,
     handleTagKeyDown,
     handleRemoveTag,
     validate,
+    resetForm,
   };
 }
