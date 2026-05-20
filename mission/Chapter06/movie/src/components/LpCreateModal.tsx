@@ -11,8 +11,14 @@ interface InitialData {
 
 interface Props {
   onClose: () => void
-  lpId?: number        // 있으면 수정 모드
+  lpId?: number
   initialData?: InitialData
+}
+
+interface FormErrors {
+  thumbnail?: string
+  title?: string
+  content?: string
 }
 
 const VinylPlaceholder = () => (
@@ -35,12 +41,25 @@ const LpCreateModal = ({ onClose, lpId, initialData }: Props) => {
   const [content, setContent] = useState(initialData?.content ?? '')
   const [tagInput, setTagInput] = useState('')
   const [tags, setTags] = useState<string[]>(initialData?.tags ?? [])
+  const [errors, setErrors] = useState<FormErrors>({})
+
+  const validate = (): boolean => {
+    const next: FormErrors = {}
+    if (!thumbnail) next.thumbnail = 'LP 이미지를 선택해주세요.'
+    if (!title.trim()) next.title = 'LP 이름을 입력해주세요.'
+    if (!content.trim()) next.content = 'LP 내용을 입력해주세요.'
+    setErrors(next)
+    return Object.keys(next).length === 0
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = () => setThumbnail(reader.result as string)
+    reader.onload = () => {
+      setThumbnail(reader.result as string)
+      setErrors((prev) => ({ ...prev, thumbnail: undefined }))
+    }
     reader.readAsDataURL(file)
   }
 
@@ -66,6 +85,13 @@ const LpCreateModal = ({ onClose, lpId, initialData }: Props) => {
     },
   })
 
+  const handleSubmit = () => {
+    if (!validate()) return
+    mutation.mutate()
+  }
+
+  const isSubmitDisabled = mutation.isPending
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
@@ -89,11 +115,13 @@ const LpCreateModal = ({ onClose, lpId, initialData }: Props) => {
         </h2>
 
         {/* 썸네일 */}
-        <div className="mb-6 flex justify-center">
+        <div className="mb-1 flex justify-center">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="h-36 w-36 overflow-hidden rounded-full"
+            className={`h-36 w-36 overflow-hidden rounded-full ring-2 ${
+              errors.thumbnail ? 'ring-red-500' : 'ring-transparent'
+            }`}
             aria-label="이미지 선택"
           >
             {thumbnail ? (
@@ -110,22 +138,43 @@ const LpCreateModal = ({ onClose, lpId, initialData }: Props) => {
             onChange={handleImageChange}
           />
         </div>
+        {errors.thumbnail && (
+          <p className="mb-3 text-center text-xs text-red-400">{errors.thumbnail}</p>
+        )}
 
         <div className="space-y-3">
-          <input
-            type="text"
-            placeholder="LP Name"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-lg border border-neutral-600 bg-neutral-700 px-4 py-2.5 text-sm text-white placeholder-neutral-400 outline-none focus:border-white/50"
-          />
-          <input
-            type="text"
-            placeholder="LP Content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="w-full rounded-lg border border-neutral-600 bg-neutral-700 px-4 py-2.5 text-sm text-white placeholder-neutral-400 outline-none focus:border-white/50"
-          />
+          <div>
+            <input
+              type="text"
+              placeholder="LP Name"
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value)
+                if (errors.title) setErrors((prev) => ({ ...prev, title: undefined }))
+              }}
+              className={`w-full rounded-lg border bg-neutral-700 px-4 py-2.5 text-sm text-white placeholder-neutral-400 outline-none focus:border-white/50 ${
+                errors.title ? 'border-red-500' : 'border-neutral-600'
+              }`}
+            />
+            {errors.title && <p className="mt-1 text-xs text-red-400">{errors.title}</p>}
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="LP Content"
+              value={content}
+              onChange={(e) => {
+                setContent(e.target.value)
+                if (errors.content) setErrors((prev) => ({ ...prev, content: undefined }))
+              }}
+              className={`w-full rounded-lg border bg-neutral-700 px-4 py-2.5 text-sm text-white placeholder-neutral-400 outline-none focus:border-white/50 ${
+                errors.content ? 'border-red-500' : 'border-neutral-600'
+              }`}
+            />
+            {errors.content && <p className="mt-1 text-xs text-red-400">{errors.content}</p>}
+          </div>
+
           <div className="flex gap-2">
             <input
               type="text"
@@ -176,8 +225,8 @@ const LpCreateModal = ({ onClose, lpId, initialData }: Props) => {
 
           <button
             type="button"
-            onClick={() => mutation.mutate()}
-            disabled={!title || mutation.isPending}
+            onClick={handleSubmit}
+            disabled={isSubmitDisabled}
             className="mt-1 w-full rounded-lg bg-pink-500 py-3 text-sm font-semibold text-white hover:bg-pink-400 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {mutation.isPending
