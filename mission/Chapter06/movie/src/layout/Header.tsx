@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
 import useLocalStorage from '../hooks/useLocalStorage'
 import type { UserToken } from '../types/lp'
 import axiosInstance from '../lib/api'
@@ -11,16 +12,13 @@ const Header = ({ onMenuClick }: Props) => {
   const navigate = useNavigate()
   const [token, setToken] = useLocalStorage<UserToken | null>('token', null)
 
-  const handleLogout = async () => {
-    try {
-      await axiosInstance.post('/v1/auth/signout')
-    } catch {
-      // 서버 무효화 실패해도 클라이언트 토큰은 제거
-    } finally {
+  const { mutate: logout } = useMutation({
+    mutationFn: () => axiosInstance.post('/v1/auth/signout'),
+    onSettled: () => {
       setToken(null)
       navigate('/login')
-    }
-  }
+    },
+  })
 
   return (
     <header className="flex h-14 items-center justify-between bg-neutral-900 px-4 border-b border-neutral-800 shrink-0">
@@ -52,7 +50,7 @@ const Header = ({ onMenuClick }: Props) => {
             <span className="text-sm text-white">{token.name}님 반갑습니다.</span>
             <button
               type="button"
-              onClick={handleLogout}
+              onClick={() => logout()}
               className="text-sm text-white hover:text-pink-400"
             >
               로그아웃

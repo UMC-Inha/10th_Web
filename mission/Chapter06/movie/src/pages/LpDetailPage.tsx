@@ -1,20 +1,69 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useLp } from '../hooks/useLps'
 import { timeAgo } from '../lib/timeAgo'
 import { DetailSkeleton } from '../components/LoadingSkeleton'
 import ErrorMessage from '../components/ErrorMessage'
 import CommentSection from '../components/CommentSection'
+import LpCreateModal from '../components/LpCreateModal'
 import useLocalStorage from '../hooks/useLocalStorage'
+import api from '../lib/api'
 import type { UserToken } from '../types/lp'
 
 const LpDetailPage = () => {
   const { lpId } = useParams<{ lpId: string }>()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [token] = useLocalStorage<UserToken | null>('token', null)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   const { data: lp, isLoading, isError, refetch } = useLp(Number(lpId))
-
   const isAuthor = !!token && !!lp && token.name === lp.author.name
+  const isLiked = !!token?.id && !!lp && lp.likes.some((l) => l.userId === token.id)
+  const lpIdNum = Number(lpId)
+
+  const { mutate: toggleLike } = useMutation({
+    mutationFn: () =>
+      isLiked
+        ? api.delete(`/v1/lps/${lpIdNum}/likes`)
+        : api.post(`/v1/lps/${lpIdNum}/likes`),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['lps', 'detail', lpIdNum] })
+      const previousLp = queryClient.getQueryData(['lps', 'detail', lpIdNum])
+
+      queryClient.setQueryData(['lps', 'detail', lpIdNum], (old: typeof lp) => {
+        if (!old) return old
+        if (isLiked) {
+          return { ...old, likes: old.likes.filter((l) => l.userId !== token?.id) }
+        } else {
+          return {
+            ...old,
+            likes: [...old.likes, { id: Date.now(), userId: token?.id ?? 0, lpId: lpIdNum }],
+          }
+        }
+      })
+
+      return { previousLp }
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousLp) {
+        queryClient.setQueryData(['lps', 'detail', lpIdNum], context.previousLp)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['lps', 'detail', lpIdNum] })
+    },
+  })
+
+  const { mutate: deleteLp } = useMutation({
+    mutationFn: () => api.delete(`/v1/lps/${lpId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lps', 'list'] })
+      navigate('/')
+    },
+  })
 
   if (isLoading) return <DetailSkeleton />
   if (isError) return <ErrorMessage onRetry={() => refetch()} />
@@ -47,10 +96,10 @@ const LpDetailPage = () => {
             <h1 className="text-2xl font-bold text-white">{lp.title}</h1>
             {isAuthor && (
               <div className="flex shrink-0 gap-2">
-                <button type="button" onClick={() => navigate(`/lp/${lp.id}/edit`)} className="text-neutral-400 hover:text-white" aria-label="수정">
+                <button type="button" onClick={() => setIsEditModalOpen(true)} className="text-neutral-400 hover:text-white" aria-label="수정">
                   <EditIcon />
                 </button>
-                <button type="button" className="text-neutral-400 hover:text-red-400" aria-label="삭제">
+                <button type="button" onClick={() => deleteLp()} className="text-neutral-400 hover:text-red-400" aria-label="삭제">
                   <TrashIcon />
                 </button>
               </div>
@@ -87,8 +136,14 @@ const LpDetailPage = () => {
 
           {/* 좋아요 */}
           <div className="flex justify-center">
-            <button type="button" className="flex items-center gap-2 rounded-full px-4 py-2 text-neutral-300 hover:text-pink-400">
-              <span className="text-2xl text-pink-500">♥</span>
+            <button
+              type="button"
+              onClick={() => token && toggleLike()}
+              className={`flex items-center gap-2 rounded-full px-4 py-2 transition-colors ${
+                isLiked ? 'text-pink-400' : 'text-neutral-300 hover:text-pink-400'
+              } ${!token ? 'cursor-default' : ''}`}
+            >
+              <span className={`text-2xl ${isLiked ? 'text-pink-400' : 'text-pink-500'}`}>♥</span>
               <span className="text-lg font-medium">{lp.likes.length}</span>
             </button>
           </div>
@@ -104,12 +159,26 @@ const LpDetailPage = () => {
       {/* 플로팅 + 버튼 */}
       <button
         type="button"
-        onClick={() => navigate('/lp/new')}
+        onClick={() => setIsCreateModalOpen(true)}
         className="fixed bottom-6 right-6 flex h-12 w-12 items-center justify-center rounded-full bg-pink-500 text-2xl text-white shadow-lg hover:bg-pink-400"
         aria-label="LP 추가"
       >
         +
       </button>
+
+      {isCreateModalOpen && <LpCreateModal onClose={() => setIsCreateModalOpen(false)} />}
+      {isEditModalOpen && (
+        <LpCreateModal
+          onClose={() => setIsEditModalOpen(false)}
+          lpId={lp.id}
+          initialData={{
+            title: lp.title,
+            content: lp.content,
+            thumbnail: lp.thumbnail,
+            tags: lp.tags.map((t) => t.name),
+          }}
+        />
+      )}
     </div>
   )
 }

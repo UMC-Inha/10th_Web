@@ -69,6 +69,7 @@ export interface CommentListResponse {
 export type SortOrder = 'asc' | 'desc'
 
 export interface UserToken {
+  id?: number
   accessToken: string
   refreshToken: string
   name: string

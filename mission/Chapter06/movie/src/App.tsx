@@ -4,6 +4,8 @@ import HomePage from './pages/HomePage'
 import LpDetailPage from './pages/LpDetailPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
+import GoogleCallbackPage from './pages/GoogleCallbackPage'
+import MyPage from './pages/MyPage'
 
 function App() {
   return (
@@ -11,9 +13,11 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/v1/auth/google/callback" element={<GoogleCallbackPage />} />
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="lp/:lpId" element={<LpDetailPage />} />
+          <Route path="my" element={<MyPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

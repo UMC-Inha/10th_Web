@@ -4,11 +4,13 @@ import { useLps } from '../hooks/useLps'
 import { timeAgo } from '../lib/timeAgo'
 import { GridSkeleton, BottomSkeleton } from '../components/LoadingSkeleton'
 import ErrorMessage from '../components/ErrorMessage'
+import LpCreateModal from '../components/LpCreateModal'
 import type { SortOrder } from '../types/lp'
 
 const HomePage = () => {
   const navigate = useNavigate()
   const [order, setOrder] = useState<SortOrder>('desc')
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const {
     data,
@@ -119,12 +121,14 @@ const HomePage = () => {
       {/* 플로팅 + 버튼 */}
       <button
         type="button"
-        onClick={() => navigate('/lp/new')}
+        onClick={() => setIsModalOpen(true)}
         className="fixed bottom-6 right-6 flex h-12 w-12 items-center justify-center rounded-full bg-pink-500 text-2xl text-white shadow-lg hover:bg-pink-400"
         aria-label="LP 추가"
       >
         +
       </button>
+
+      {isModalOpen && <LpCreateModal onClose={() => setIsModalOpen(false)} />}
     </div>
   )
 }
