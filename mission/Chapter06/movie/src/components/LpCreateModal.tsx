@@ -132,7 +132,10 @@ const LpCreateModal = ({ onClose, lpId, initialData }: Props) => {
               placeholder="LP Tag"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
+              onKeyDown={(e) => {
+                if (e.nativeEvent.isComposing) return
+                if (e.key === 'Enter') handleAddTag()
+              }}
               className="flex-1 rounded-lg border border-neutral-600 bg-neutral-700 px-4 py-2.5 text-sm text-white placeholder-neutral-400 outline-none focus:border-white/50"
             />
             <button
