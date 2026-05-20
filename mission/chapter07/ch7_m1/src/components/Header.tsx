@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
+import { logoutApi } from '../api/userApi';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -9,10 +11,13 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const navigate = useNavigate();
   const { isLoggedIn, userName, logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
+  const { mutate: doLogout, isPending } = useMutation({
+    mutationFn: logoutApi,
+    onSettled: () => {
+      logout();
+      navigate('/');
+    },
+  });
 
   return (
     <header className="fixed top-0 left-0 right-0 h-14 bg-[#111] border-b border-[#222] flex items-center justify-between px-4 z-50">
@@ -43,10 +48,11 @@ export default function Header({ onMenuClick }: HeaderProps) {
               {userName}님 반갑습니다.
             </span>
             <button
-              className="px-3 py-[6px] rounded-md text-sm font-semibold bg-transparent border border-[#555] text-white hover:opacity-80 transition-opacity cursor-pointer"
-              onClick={handleLogout}
+              className="px-3 py-[6px] rounded-md text-sm font-semibold bg-transparent border border-[#555] text-white hover:opacity-80 transition-opacity cursor-pointer disabled:opacity-50"
+              onClick={() => doLogout()}
+              disabled={isPending}
             >
-              로그아웃
+              {isPending ? '로그아웃 중...' : '로그아웃'}
             </button>
           </>
         ) : (

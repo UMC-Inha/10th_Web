@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createLp, updateLp } from '../api/lpApi';
 import { uploadImage } from '../api/userApi';
@@ -51,9 +51,20 @@ export default function CreateLpModal({ onClose, initialLp }: CreateLpModalProps
     },
   });
 
+  useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
     setThumbnailUrl('');
@@ -164,7 +175,7 @@ export default function CreateLpModal({ onClose, initialLp }: CreateLpModalProps
                 type="text"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (e.nativeEvent.isComposing) return; addTag(); } }}
                 placeholder="태그를 입력하세요"
                 maxLength={30}
                 className="flex-1 py-2.5 px-3.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#ff2d78] transition-colors"
