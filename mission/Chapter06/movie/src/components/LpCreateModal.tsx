@@ -83,6 +83,10 @@ const LpCreateModal = ({ onClose, lpId, initialData }: Props) => {
       }
       onClose()
     },
+    onError: (error) => {
+      console.error('Failed to save LP:', error)
+      // mutation.isError로 UI에 이미 표시하고 있으니 여기선 로깅만
+    },
   })
 
   const handleSubmit = () => {
