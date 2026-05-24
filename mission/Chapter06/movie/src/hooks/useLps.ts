@@ -12,17 +12,38 @@ export function useLps(order: SortOrder = 'desc') {
         params: {
           order,
           limit: LIMIT,
-          // pageParam이 undefined이면 커서 없이 첫 페이지 요청
           ...(pageParam !== undefined && { cursor: pageParam }),
         },
       })
       return data.data
     },
-    // 첫 요청은 커서 없이 시작
     initialPageParam: undefined as number | undefined,
-    // 다음 커서가 있으면 반환, 없으면 undefined → fetchNextPage 중단
     getNextPageParam: (lastPage) =>
       lastPage.hasNext ? lastPage.nextCursor : undefined,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+  })
+}
+
+export function useSearchLps(debouncedQuery: string, order: SortOrder = 'desc') {
+  const trimmed = debouncedQuery.trim()
+  return useInfiniteQuery({
+    queryKey: ['lps', 'search', trimmed, order],
+    queryFn: async ({ pageParam }) => {
+      const { data } = await api.get<LpListResponse>('/v1/lps', {
+        params: {
+          search: trimmed,
+          order,
+          limit: LIMIT,
+          ...(pageParam !== undefined && { cursor: pageParam }),
+        },
+      })
+      return data.data
+    },
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (lastPage) =>
+      lastPage.hasNext ? lastPage.nextCursor : undefined,
+    enabled: trimmed.length > 0,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
   })
