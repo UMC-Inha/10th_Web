@@ -10,9 +10,23 @@ const Layout = () => {
     <div className="flex h-screen flex-col bg-black">
       <Header onMenuClick={toggle} />
       <div className="relative flex flex-1 overflow-hidden">
+        {/*
+          데스크탑 전용 스페이서: 사이드바와 동일한 너비로 레이아웃 공간을 차지해
+          main 콘텐츠를 오른쪽으로 밀어냄. 모바일에서는 숨김.
+        */}
+        <div
+          aria-hidden="true"
+          className={`
+            hidden lg:block shrink-0 h-full
+            transition-[width] duration-300 ease-in-out
+            ${isOpen ? 'w-36' : 'w-0'}
+          `}
+        />
+
+        {/* 사이드바: 항상 absolute. 데스크탑은 스페이서가 공간 확보, 모바일은 오버레이 */}
         <Sidebar isOpen={isOpen} onClose={close} />
 
-        {/* 모바일 backdrop */}
+        {/* 모바일 backdrop: 모바일에서만 사이드바 열릴 때 표시 */}
         <div
           onClick={close}
           aria-hidden="true"
@@ -23,8 +37,8 @@ const Layout = () => {
           `}
         />
 
-        {/* 사이드바 열림 시 main 스크롤도 잠금 (이 레이아웃에서 실제 스크롤은 main에 있음) */}
-        <main className={`flex-1 overflow-y-auto ${isOpen ? 'overflow-hidden' : ''}`}>
+        {/* 모바일에서 사이드바 오버레이 중 배경 스크롤 방지 */}
+        <main className={`flex-1 overflow-y-auto ${isOpen ? 'max-lg:overflow-hidden' : ''}`}>
           <Outlet />
         </main>
       </div>

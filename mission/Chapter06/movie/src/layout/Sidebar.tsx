@@ -27,10 +27,10 @@ const Sidebar = ({ isOpen, onClose }: Props) => {
     <>
       <aside
         className={`
-          flex flex-col justify-between bg-neutral-900 border-r border-neutral-800 shrink-0 w-36
-          absolute lg:relative h-full z-20 lg:z-auto
+          flex flex-col justify-between bg-neutral-900 border-r border-neutral-800 w-36
+          absolute h-full z-20
           transition-transform duration-300 ease-in-out
-          ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
         <nav className="flex flex-col gap-1 p-3 pt-4">
