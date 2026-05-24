@@ -1,10 +1,11 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getLps } from '../../apis/lpsApi';
 import ErrorState from '../../components/ui/ErrorState';
 import { SkeletonGrid } from '../../components/ui/SkeletonCard';
 import useDebounce from '../../hooks/useDebounce';
+import useThrottle from '../../hooks/useThrottle';
 import type { LpDto, LpSortOrder } from '../../types/lp';
 import { formatDate } from '../../utils/formatDate';
 
@@ -51,7 +52,6 @@ function LpsPage() {
   const navigate = useNavigate();
   const [sort, setSort] = useState<LpSortOrder>('desc');
   const [search, setSearch] = useState('');
-  const triggerRef = useRef<HTMLDivElement>(null);
 
   const debouncedSearch = useDebounce(search.trim(), 300);
 
@@ -83,23 +83,19 @@ function LpsPage() {
     gcTime: 1000 * 60 * 10,
   });
 
-  // IntersectionObserver: 목록 하단에 도달하면 다음 페이지 요청
+  // 스크롤 이벤트 핸들러: 페이지 하단 300px 이내 진입 시 다음 페이지 요청
+  const handleScroll = useThrottle(() => {
+    const nearBottom =
+      window.innerHeight + window.scrollY >= document.body.offsetHeight - 300;
+    if (nearBottom && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, 1000);
+
   useEffect(() => {
-    const el = triggerRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1, rootMargin: '400px' }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
   const lps = data?.pages.flatMap((page) => page?.data ?? []) ?? [];
 
@@ -195,9 +191,6 @@ function LpsPage() {
                   <SkeletonGrid count={10} />
                 </div>
               )}
-
-              {/* 스크롤 트리거 감지 요소 */}
-              <div ref={triggerRef} className="h-4" />
 
               {!hasNextPage && (
                 <p className="mt-6 text-center text-xs text-slate-600">모든 LP를 불러왔습니다.</p>
