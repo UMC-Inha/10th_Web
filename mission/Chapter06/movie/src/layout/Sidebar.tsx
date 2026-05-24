@@ -7,9 +7,10 @@ import type { UserToken } from '../types/lp'
 
 interface Props {
   isOpen: boolean
+  onClose: () => void
 }
 
-const Sidebar = ({ isOpen }: Props) => {
+const Sidebar = ({ isOpen, onClose }: Props) => {
   const navigate = useNavigate()
   const [, setToken] = useLocalStorage<UserToken | null>('token', null)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -28,13 +29,14 @@ const Sidebar = ({ isOpen }: Props) => {
         className={`
           flex flex-col justify-between bg-neutral-900 border-r border-neutral-800 shrink-0 w-36
           absolute lg:relative h-full z-20 lg:z-auto
-          transition-transform duration-200
+          transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
         <nav className="flex flex-col gap-1 p-3 pt-4">
           <Link
             to="/"
+            onClick={onClose}
             className="flex items-center gap-2 rounded px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white"
           >
             <SearchIcon />
@@ -42,6 +44,7 @@ const Sidebar = ({ isOpen }: Props) => {
           </Link>
           <Link
             to="/my"
+            onClick={onClose}
             className="flex items-center gap-2 rounded px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white"
           >
             <PersonIcon />
