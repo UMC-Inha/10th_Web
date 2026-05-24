@@ -1,9 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
-import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { deleteMyAccount } from '../apis/usersApi';
 import ConfirmModal from '../components/modals/ConfirmModal';
 import { useAuth } from '../contexts/AuthContext';
+import { useState } from 'react';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -12,19 +13,8 @@ type SidebarProps = {
 
 function Sidebar({ isOpen, onClose }: SidebarProps) {
   const navigate = useNavigate();
-  const sidebarRef = useRef<HTMLElement>(null);
   const { loggedIn, logout } = useAuth();
   const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (isOpen && sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onClose]);
 
   const withdrawMutation = useMutation({
     mutationFn: deleteMyAccount,
@@ -34,7 +24,6 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
       navigate('/auth/signin', { replace: true });
     },
     onError: () => {
-      // 탈퇴 실패 시에도 로컬 토큰 정리 후 로그인 페이지로 이동
       logout();
       onClose();
       navigate('/auth/signin', { replace: true });
@@ -57,22 +46,26 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
         />
       )}
 
-      {/* 모바일 오버레이 */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-20 bg-black/50 lg:hidden"
-          onClick={onClose}
-        />
-      )}
+      {/* 오버레이: 사이드바 바깥 클릭 시 닫힘 / 트랜지션 적용 */}
+      <div
+        className={[
+          'fixed inset-0 z-20 bg-black/50 lg:hidden',
+          'transition-opacity duration-300',
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
+        ].join(' ')}
+        onClick={onClose}
+        aria-hidden="true"
+      />
 
+      {/* 사이드바 패널 */}
       <aside
-        ref={sidebarRef}
         className={[
           'fixed top-0 left-0 z-30 h-full w-48 bg-[#1a1a1a] flex flex-col pt-16',
-          'transition-transform duration-300',
+          'transition-transform duration-300 ease-in-out',
           'lg:translate-x-0 lg:sticky lg:z-auto',
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         ].join(' ')}
+        aria-label="사이드바 메뉴"
       >
         <nav className="flex flex-col gap-1 p-4 flex-1">
           <Link

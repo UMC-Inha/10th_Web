@@ -2,19 +2,20 @@ import { useState } from 'react';
 import { Outlet } from 'react-router';
 import LpCreateModal from '../components/modals/LpCreateModal';
 import { useAuth } from '../contexts/AuthContext';
+import useSidebar from '../hooks/useSidebar';
 import Header from './Header';
 import Sidebar from './Sidebar';
 
 function AppLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isOpen: sidebarOpen, open: openSidebar, close: closeSidebar } = useSidebar();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const { loggedIn } = useAuth();
 
   return (
     <div className="min-h-screen bg-[#111111] text-white flex flex-col">
-      <Header onMenuClick={() => setSidebarOpen(true)} />
+      <Header onMenuClick={openSidebar} />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
         <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>
