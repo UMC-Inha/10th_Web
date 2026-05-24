@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLps, useSearchLps } from '../hooks/useLps'
 import { useDebounce } from '../hooks/useDebounce'
+import { useThrottle } from '../hooks/useThrottle'
 import { timeAgo } from '../lib/timeAgo'
 import { GridSkeleton, BottomSkeleton } from '../components/LoadingSkeleton'
 import ErrorMessage from '../components/ErrorMessage'
@@ -23,6 +24,9 @@ const HomePage = () => {
   const { data, isLoading, isSuccess, isError, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
     isSearching ? searchLps : allLps
 
+  // 1초에 한 번만 다음 페이지를 요청하도록 스로틀 적용
+  const throttledFetchNextPage = useThrottle(fetchNextPage, 1000)
+
   const sentinelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -32,7 +36,7 @@ const HomePage = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage()
+          throttledFetchNextPage()
         }
       },
       { threshold: 0.1 },
@@ -40,7 +44,7 @@ const HomePage = () => {
 
     observer.observe(el)
     return () => observer.disconnect()
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
+  }, [hasNextPage, isFetchingNextPage, throttledFetchNextPage])
 
   const lps = data?.pages.flatMap((page) => page.data) ?? []
 
