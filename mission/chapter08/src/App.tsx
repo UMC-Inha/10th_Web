@@ -1,7 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
+import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
-import { ROUTES } from './constants/paths';
+import { ROUTES, ROUTE_PATTERNS } from './constants/paths';
 import AppLayout from './layouts/AppLayout';
 
 const AuthPage = lazy(() => import('./pages/auth/AuthPage'));
@@ -20,29 +21,31 @@ function PageLoader() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          {/* 헤더+사이드바 레이아웃 */}
-          <Route element={<AppLayout />}>
-            <Route path={ROUTES.home} element={<LpsPage />} />
-            <Route path="/lp/:lpId" element={<LpDetailPage />} />
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            {/* 헤더+사이드바 레이아웃 */}
+            <Route element={<AppLayout />}>
+              <Route path={ROUTES.home} element={<LpsPage />} />
+              <Route path={ROUTE_PATTERNS.lpDetail} element={<LpDetailPage />} />
 
-            <Route element={<ProtectedRoute />}>
-              <Route path={ROUTES.usersMe} element={<UsersPage />} />
-              <Route path="/users/:userId" element={<UsersPage />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path={ROUTES.usersMe} element={<UsersPage />} />
+                <Route path={ROUTE_PATTERNS.usersDetail} element={<UsersPage />} />
+              </Route>
             </Route>
-          </Route>
 
-          {/* 인증 전용 페이지 (레이아웃 없음) */}
-          <Route path={ROUTES.authSignin} element={<AuthPage />} />
-          <Route path={ROUTES.authSignup} element={<AuthPage />} />
-          <Route path={ROUTES.authGoogleCallback} element={<GoogleCallbackPage />} />
+            {/* 인증 전용 페이지 (레이아웃 없음) */}
+            <Route path={ROUTES.authSignin} element={<AuthPage />} />
+            <Route path={ROUTES.authSignup} element={<AuthPage />} />
+            <Route path={ROUTES.authGoogleCallback} element={<GoogleCallbackPage />} />
 
-          <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
+            <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 
