@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useParams } from 'react-router';
 import { getMyInfo, getUserInfo } from '../../apis/usersApi';
+import { QUERY_KEYS } from '../../constants/queryKeys';
 import ProfileEditModal from '../../components/modals/ProfileEditModal';
 
 function UsersPage() {
@@ -10,7 +11,7 @@ function UsersPage() {
   const [showEditModal, setShowEditModal] = useState(false);
 
   const { data: user, isLoading, error } = useQuery({
-    queryKey: ['user', userId ?? 'me'],
+    queryKey: QUERY_KEYS.user(userId ?? 'me'),
     queryFn: () => (userId ? getUserInfo(userId) : getMyInfo()),
   });
 

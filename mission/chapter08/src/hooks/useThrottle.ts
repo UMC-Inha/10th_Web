@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 /**
  * 지정한 interval 동안 최대 한 번만 실행되는 스로틀된 함수를 반환함
@@ -11,7 +11,10 @@ function useThrottle<T extends unknown[]>(
 ): (...args: T) => void {
   const lastTimeRef = useRef(0);
   const fnRef = useRef(fn);
-  fnRef.current = fn;
+
+  useEffect(() => {
+    fnRef.current = fn;
+  }, [fn]);
 
   return useCallback(
     (...args: T) => {

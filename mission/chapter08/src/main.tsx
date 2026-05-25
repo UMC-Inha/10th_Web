@@ -4,13 +4,14 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './App.css';
 import App from './App.tsx';
+import { GC_TIME_10_MIN, STALE_TIME_5_MIN } from './constants/queryConfig';
 import { AuthProvider } from './contexts/AuthContext.tsx';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5,
-      gcTime: 1000 * 60 * 10,
+      staleTime: STALE_TIME_5_MIN,
+      gcTime: GC_TIME_10_MIN,
       retry: 1,
     },
   },
