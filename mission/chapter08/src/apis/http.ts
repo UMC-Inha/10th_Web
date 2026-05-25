@@ -8,6 +8,7 @@ import {
   clearAuthTokens,
   getAccessToken,
   getRefreshToken,
+  invalidateAuthSession,
   setAccessToken,
   setRefreshToken,
 } from '../utils/authToken';
@@ -70,9 +71,20 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as RetriableRequestConfig | undefined;
     const isUnauthorized = error.response?.status === 401;
-    const refreshToken = getRefreshToken();
 
-    if (!originalRequest || !isUnauthorized || originalRequest._retry || shouldSkipRefresh(originalRequest.url) || !refreshToken) {
+    if (!originalRequest || !isUnauthorized) {
+      return Promise.reject(error);
+    }
+
+    if (originalRequest._retry || shouldSkipRefresh(originalRequest.url)) {
+      return Promise.reject(error);
+    }
+
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) {
+      if (getAccessToken()) {
+        invalidateAuthSession();
+      }
       return Promise.reject(error);
     }
 

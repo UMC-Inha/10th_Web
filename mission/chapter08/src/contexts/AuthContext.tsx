@@ -1,5 +1,12 @@
-import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
-import { clearAuthTokens, getUserName, isAuthenticated, setAuthTokens, setUserName as storeUserName } from '../utils/authToken';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import {
+  AUTH_SESSION_INVALIDATED_EVENT,
+  clearAuthTokens,
+  getUserName,
+  isAuthenticated,
+  setAuthTokens,
+  setUserName as storeUserName,
+} from '../utils/authToken';
 
 type AuthContextValue = {
   loggedIn: boolean;
@@ -18,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback((accessToken: string, refreshToken?: string | null, name?: string | null) => {
     setAuthTokens(accessToken, refreshToken, name);
     setLoggedIn(true);
-    setUserName(name ?? null);
+    setUserName(name ?? getUserName());
   }, []);
 
   const logout = useCallback(() => {
@@ -27,17 +34,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUserName(null);
   }, []);
 
-  // 낙관적 업데이트 및 서버 응답 반영에 사용
   const updateUserName = useCallback((name: string) => {
     storeUserName(name);
     setUserName(name);
   }, []);
 
-  return (
-    <AuthContext.Provider value={{ loggedIn, userName, login, logout, updateUserName }}>
-      {children}
-    </AuthContext.Provider>
+  useEffect(() => {
+    const syncLoggedOut = () => {
+      setLoggedIn(false);
+      setUserName(null);
+    };
+    window.addEventListener(AUTH_SESSION_INVALIDATED_EVENT, syncLoggedOut);
+    return () => window.removeEventListener(AUTH_SESSION_INVALIDATED_EVENT, syncLoggedOut);
+  }, []);
+
+  const value = useMemo(
+    () => ({ loggedIn, userName, login, logout, updateUserName }),
+    [loggedIn, userName, login, logout, updateUserName],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

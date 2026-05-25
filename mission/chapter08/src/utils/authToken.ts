@@ -1,5 +1,7 @@
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, USER_NAME_KEY } from '../constants/auth';
 
+export const AUTH_SESSION_INVALIDATED_EVENT = 'auth:session-invalidated';
+
 export function getAccessToken() {
   return window.localStorage.getItem(ACCESS_TOKEN_KEY);
 }
@@ -44,6 +46,12 @@ export function clearAuthTokens() {
   clearAccessToken();
   clearRefreshToken();
   clearUserName();
+}
+
+/** localStorage 정리 후 AuthContext 등에 세션 무효화를 알림 */
+export function invalidateAuthSession() {
+  clearAuthTokens();
+  window.dispatchEvent(new CustomEvent(AUTH_SESSION_INVALIDATED_EVENT));
 }
 
 export function setAuthTokens(accessToken: string, refreshToken?: string | null, userName?: string | null) {
