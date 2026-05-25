@@ -1,28 +1,45 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 /**
- * 지정한 interval 동안 최대 한 번만 실행되는 스로틀된 함수를 반환함
- * - fn은 ref로 관리하여 interval이 바뀌지 않아도 항상 최신 콜백이 호출됨
- * - 언마운트 시 타이머를 clearTimeout으로 정리함
+ * 콜백을 interval(ms) 간격으로만 실행하도록 제한하는 throttle 훅
+ * - trailing: interval 내 마지막 호출은 interval 종료 후 1회 실행
+ * - 언마운트 / delay 변경 시 pending timeout 정리
  */
 function useThrottle<T extends unknown[]>(
-  fn: (...args: T) => void,
+  callback: (...args: T) => void,
   interval: number,
-): (...args: T) => void {
-  const lastTimeRef = useRef(0);
-  const fnRef = useRef(fn);
+) {
+  const callbackRef = useRef(callback);
+  const lastRanRef = useRef(0);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    fnRef.current = fn;
-  }, [fn]);
+    callbackRef.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [interval]);
 
   return useCallback(
     (...args: T) => {
       const now = Date.now();
-      if (now - lastTimeRef.current >= interval) {
-        lastTimeRef.current = now;
-        fnRef.current(...args);
+      const elapsed = now - lastRanRef.current;
+
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+      if (elapsed >= interval) {
+        lastRanRef.current = now;
+        callbackRef.current(...args);
+        return;
       }
+
+      timeoutRef.current = setTimeout(() => {
+        lastRanRef.current = Date.now();
+        callbackRef.current(...args);
+      }, interval - elapsed);
     },
     [interval],
   );
