@@ -5,6 +5,8 @@ import { updateMyInfo } from '../../apis/usersApi';
 import { QUERY_KEYS } from '../../constants/queryKeys';
 import { useAuth } from '../../contexts/AuthContext';
 import type { UserInfo } from '../../types/user';
+import { readFileAsDataURL } from '../../utils/readFileAsDataURL';
+import { getApiErrorMessage } from '../../utils/getApiErrorMessage';
 import ModalOverlay from '../ui/ModalOverlay';
 
 type ProfileEditModalProps = {
@@ -28,11 +30,7 @@ function ProfileEditModal({ initialName, initialBio, initialAvatar, onClose }: P
     mutationFn: async () => {
       let avatarUrl: string | null = avatarPreview || null;
       if (avatarFile) {
-        try {
-          avatarUrl = await uploadImage(avatarFile);
-        } catch {
-          // 업로드 실패 시 기존 avatar 유지
-        }
+        avatarUrl = await uploadImage(avatarFile);
       }
       return updateMyInfo({
         name: name.trim() || undefined,
@@ -66,10 +64,10 @@ function ProfileEditModal({ initialName, initialBio, initialAvatar, onClose }: P
       if (context?.previousMyInfo !== undefined) {
         queryClient.setQueryData(QUERY_KEYS.myInfo, context.previousMyInfo);
       }
-      if (context?.previousUserName !== undefined) {
-        updateUserName(context.previousUserName ?? '');
+      if (context?.previousUserName !== undefined && context.previousUserName !== null) {
+        updateUserName(context.previousUserName);
       }
-      setError(err instanceof Error ? err.message : '프로필 수정에 실패했습니다.');
+      setError(getApiErrorMessage(err, '프로필 수정에 실패했습니다.'));
     },
 
     onSuccess: (data) => {
@@ -83,13 +81,17 @@ function ProfileEditModal({ initialName, initialBio, initialAvatar, onClose }: P
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setAvatarFile(file);
-    const reader = new FileReader();
-    reader.onload = () => setAvatarPreview(reader.result as string);
-    reader.readAsDataURL(file);
+    try {
+      const preview = await readFileAsDataURL(file);
+      setAvatarPreview(preview);
+    } catch {
+      setAvatarFile(null);
+      setAvatarPreview(initialAvatar);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -103,10 +105,10 @@ function ProfileEditModal({ initialName, initialBio, initialAvatar, onClose }: P
   };
 
   return (
-    <ModalOverlay onClose={onClose}>
+    <ModalOverlay onClose={onClose} labelledBy="profile-edit-modal-title">
       <div className="w-full max-w-md rounded-2xl bg-[#1e1e1e] border border-white/10 shadow-2xl">
         <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
-          <h2 className="text-lg font-bold text-white">프로필 수정</h2>
+          <h2 id="profile-edit-modal-title" className="text-lg font-bold text-white">프로필 수정</h2>
           <button
             onClick={onClose}
             className="rounded-md p-1 text-slate-400 hover:text-white transition-colors"

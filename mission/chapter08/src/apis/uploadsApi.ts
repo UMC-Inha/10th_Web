@@ -1,5 +1,6 @@
-import type { ApiResponse } from '../types/auth';
-import apiClient from './http';
+import { API_UPLOAD_PATHS } from '../constants/paths';
+import { ApiError } from '../utils/apiError';
+import { requestData } from './http';
 
 /**
  * 이미지 파일을 서버에 업로드하고 URL을 반환합니다.
@@ -10,9 +11,15 @@ export async function uploadImage(file: File): Promise<string> {
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await apiClient.post<ApiResponse<{ url: string }>>('/uploads', formData);
+  const data = await requestData<{ url: string }>({
+    method: 'post',
+    url: API_UPLOAD_PATHS.upload,
+    data: formData,
+  });
 
-  const url = response.data.data?.url;
-  if (!url) throw new Error('이미지 업로드에 실패했습니다.');
-  return url;
+  if (!data?.url) {
+    throw new ApiError('이미지 업로드에 실패했습니다.', 0);
+  }
+
+  return data.url;
 }

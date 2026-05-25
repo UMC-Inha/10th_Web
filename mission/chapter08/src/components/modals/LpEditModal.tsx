@@ -4,6 +4,7 @@ import { uploadImage } from '../../apis/uploadsApi';
 import { QUERY_KEYS } from '../../constants/queryKeys';
 import { useLpForm } from '../../hooks/useLpForm';
 import type { LpDetailDto } from '../../types/lp';
+import { getApiErrorMessage } from '../../utils/getApiErrorMessage';
 import ModalOverlay from '../ui/ModalOverlay';
 import LpFormFields from './LpFormFields';
 
@@ -26,11 +27,7 @@ function LpEditModal({ lp, onClose }: LpEditModalProps) {
     mutationFn: async () => {
       let thumbnailUrl: string | null | undefined = form.thumbnailPreview;
       if (form.thumbnailFile) {
-        try {
-          thumbnailUrl = await uploadImage(form.thumbnailFile);
-        } catch {
-          // 업로드 실패 시 기존 썸네일 유지
-        }
+        thumbnailUrl = await uploadImage(form.thumbnailFile);
       }
       return updateLp(lp.id, {
         title: form.title.trim(),
@@ -45,25 +42,21 @@ function LpEditModal({ lp, onClose }: LpEditModalProps) {
       onClose();
     },
     onError: (err) => {
-      form.setError(err instanceof Error ? err.message : 'LP 수정에 실패했습니다.');
+      form.setError(getApiErrorMessage(err, 'LP 수정에 실패했습니다.'));
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const validationError = form.validate();
-    if (validationError) {
-      form.setError(validationError);
-      return;
-    }
+    if (!form.validate()) return;
     updateMutation.mutate();
   };
 
   return (
-    <ModalOverlay onClose={onClose}>
+    <ModalOverlay onClose={onClose} labelledBy="lp-edit-modal-title">
       <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-[#1e1e1e] border border-white/10 shadow-2xl">
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-[#1e1e1e] px-6 py-4">
-          <h2 className="text-lg font-bold text-white">LP 수정하기</h2>
+          <h2 id="lp-edit-modal-title" className="text-lg font-bold text-white">LP 수정하기</h2>
           <button
             onClick={onClose}
             className="rounded-md p-1 text-slate-400 hover:text-white transition-colors"
@@ -90,6 +83,7 @@ function LpEditModal({ lp, onClose }: LpEditModalProps) {
             onAddTag={form.handleAddTag}
             onTagKeyDown={form.handleTagKeyDown}
             onRemoveTag={form.handleRemoveTag}
+            fieldErrors={form.fieldErrors}
             error={form.error}
             titleId="edit-lp-title"
             contentId="edit-lp-content"

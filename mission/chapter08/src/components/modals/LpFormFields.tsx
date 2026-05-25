@@ -12,7 +12,8 @@ type LpFormFieldsProps = {
   onAddTag: () => void;
   onTagKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onRemoveTag: (tag: string) => void;
-  error: string;
+  fieldErrors?: { title?: string; content?: string };
+  error?: string;
   titleId?: string;
   contentId?: string;
 };
@@ -31,7 +32,8 @@ export default function LpFormFields({
   onAddTag,
   onTagKeyDown,
   onRemoveTag,
-  error,
+  fieldErrors = {},
+  error = '',
   titleId = 'lp-title',
   contentId = 'lp-content',
 }: LpFormFieldsProps) {
@@ -87,6 +89,9 @@ export default function LpFormFields({
           placeholder="LP 제목을 입력하세요"
           className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-slate-500 outline-none transition-colors focus:border-pink-500/50"
         />
+        {fieldErrors.title && (
+          <p className="mt-1 text-xs text-red-400">{fieldErrors.title}</p>
+        )}
       </div>
 
       {/* 내용 */}
@@ -102,6 +107,9 @@ export default function LpFormFields({
           rows={4}
           className="w-full resize-none rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-slate-500 outline-none transition-colors focus:border-pink-500/50"
         />
+        {fieldErrors.content && (
+          <p className="mt-1 text-xs text-red-400">{fieldErrors.content}</p>
+        )}
       </div>
 
       {/* 태그 */}
