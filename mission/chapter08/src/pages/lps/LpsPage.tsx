@@ -1,59 +1,25 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getLps } from '../../apis/lpsApi';
+import LpCard from '../../components/lps/LpCard';
 import ErrorState from '../../components/ui/ErrorState';
+import SortToggle from '../../components/ui/SortToggle';
 import { SkeletonGrid } from '../../components/ui/SkeletonCard';
+import { LP_PAGE_SIZE, SCROLL_THRESHOLD_PX, SCROLL_THROTTLE_MS, SKELETON_LP_FETCH_MORE_COUNT, SKELETON_LP_GRID_COUNT } from '../../constants/pagination';
+import { ROUTES } from '../../constants/paths';
+import { DEBOUNCE_SEARCH_MS, GC_TIME_10_MIN, STALE_TIME_3_MIN } from '../../constants/queryConfig';
+import { QUERY_KEYS } from '../../constants/queryKeys';
 import useDebounce from '../../hooks/useDebounce';
 import useThrottle from '../../hooks/useThrottle';
-import type { LpDto, LpSortOrder } from '../../types/lp';
-import { formatDate } from '../../utils/formatDate';
-
-type LpCardProps = {
-  lp: LpDto;
-  onNavigate: (id: number) => void;
-};
-
-const LpCard = memo(function LpCard({ lp, onNavigate }: LpCardProps) {
-  return (
-    <div
-      className="group relative aspect-square cursor-pointer overflow-hidden rounded-md bg-neutral-800"
-      onClick={() => onNavigate(lp.id)}
-    >
-      {lp.thumbnail ? (
-        <img
-          src={lp.thumbnail}
-          alt={lp.title}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-          loading="lazy"
-        />
-      ) : (
-        <div className="h-full w-full bg-neutral-700" />
-      )}
-
-      {/* 호버 오버레이 */}
-      <div className="absolute inset-0 flex flex-col justify-end bg-linear-to-t from-black/80 via-black/30 to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <p className="line-clamp-2 text-sm font-semibold text-white">{lp.title}</p>
-        <div className="mt-1 flex items-center gap-2 text-xs text-slate-300">
-          <span>{formatDate(lp.createdAt)}</span>
-          <span className="flex items-center gap-0.5">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg>
-            {lp.likes.length}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-});
+import { DEFAULT_LP_SORT_ORDER, type LpSortOrder } from '../../types/lp';
 
 function LpsPage() {
   const navigate = useNavigate();
-  const [sort, setSort] = useState<LpSortOrder>('desc');
+  const [sort, setSort] = useState<LpSortOrder>(DEFAULT_LP_SORT_ORDER);
   const [search, setSearch] = useState('');
 
-  const debouncedSearch = useDebounce(search.trim(), 300);
+  const debouncedSearch = useDebounce(search.trim(), DEBOUNCE_SEARCH_MS);
 
   const {
     data,
@@ -65,11 +31,11 @@ function LpsPage() {
     fetchNextPage,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ['lps', sort, debouncedSearch],
+    queryKey: QUERY_KEYS.lps(sort, debouncedSearch),
     queryFn: ({ pageParam }: { pageParam: number }) =>
       getLps({
         order: sort,
-        limit: 20,
+        limit: LP_PAGE_SIZE,
         cursor: pageParam,
         search: debouncedSearch || undefined,
       }),
@@ -78,19 +44,17 @@ function LpsPage() {
       if (!lastPage?.hasNext) return undefined;
       return lastPage.nextCursor ?? undefined;
     },
-    enabled: true,
-    staleTime: 1000 * 60 * 3,
-    gcTime: 1000 * 60 * 10,
+    staleTime: STALE_TIME_3_MIN,
+    gcTime: GC_TIME_10_MIN,
   });
 
-  // 스크롤 이벤트 핸들러: 페이지 하단 300px 이내 진입 시 다음 페이지 요청
   const handleScroll = useThrottle(() => {
     const nearBottom =
-      window.innerHeight + window.scrollY >= document.body.offsetHeight - 300;
+      window.innerHeight + window.scrollY >= document.body.offsetHeight - SCROLL_THRESHOLD_PX;
     if (nearBottom && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, 1000);
+  }, SCROLL_THROTTLE_MS);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -99,13 +63,11 @@ function LpsPage() {
 
   const lps = data?.pages.flatMap((page) => page?.data ?? []) ?? [];
 
-  const handleCardClick = useCallback((id: number) => navigate(`/lp/${id}`), [navigate]);
+  const handleCardClick = useCallback((id: number) => navigate(ROUTES.lpDetail(id)), [navigate]);
 
   return (
     <div className="p-4">
-      {/* 검색창 + 정렬 버튼 */}
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        {/* 검색 입력 */}
         <div className="relative w-full sm:max-w-xs">
           <svg
             className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
@@ -135,35 +97,10 @@ function LpsPage() {
           )}
         </div>
 
-        {/* 정렬 버튼 */}
-        <div className="flex shrink-0 gap-2">
-          <button
-            onClick={() => setSort('asc')}
-            className={[
-              'rounded-lg border px-4 py-1.5 text-sm font-medium transition-colors',
-              sort === 'asc'
-                ? 'border-pink-500 bg-pink-500 text-white'
-                : 'border-white/20 text-slate-300 hover:border-white/40',
-            ].join(' ')}
-          >
-            오래된순
-          </button>
-          <button
-            onClick={() => setSort('desc')}
-            className={[
-              'rounded-lg border px-4 py-1.5 text-sm font-medium transition-colors',
-              sort === 'desc'
-                ? 'border-pink-500 bg-pink-500 text-white'
-                : 'border-white/20 text-slate-300 hover:border-white/40',
-            ].join(' ')}
-          >
-            최신순
-          </button>
-        </div>
+        <SortToggle value={sort} onChange={setSort} size="md" />
       </div>
 
-      {/* 초기 로딩 — 상단에 Skeleton */}
-      {isLoading && <SkeletonGrid count={20} />}
+      {isLoading && <SkeletonGrid count={SKELETON_LP_GRID_COUNT} />}
 
       {isError && (
         <ErrorState message="LP 목록을 불러오는 데 실패했습니다." onRetry={() => refetch()} />
@@ -185,10 +122,9 @@ function LpsPage() {
                 ))}
               </div>
 
-              {/* 추가 로딩 — 하단에 Skeleton */}
               {isFetchingNextPage && (
                 <div className="mt-1">
-                  <SkeletonGrid count={10} />
+                  <SkeletonGrid count={SKELETON_LP_FETCH_MORE_COUNT} />
                 </div>
               )}
 

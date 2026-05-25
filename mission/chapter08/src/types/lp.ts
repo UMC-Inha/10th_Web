@@ -42,7 +42,14 @@ export type LpListData = {
   hasNext: boolean;
 };
 
-export type LpSortOrder = 'asc' | 'desc';
+export const LP_SORT_ORDER_LABELS = {
+  asc: '오래된순',
+  desc: '최신순',
+} as const;
+
+export type LpSortOrder = keyof typeof LP_SORT_ORDER_LABELS;
+
+export const DEFAULT_LP_SORT_ORDER: LpSortOrder = 'desc';
 
 export type GetLpsParams = {
   cursor?: number;
