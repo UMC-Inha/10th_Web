@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { getLps } from '../api/lpApi';
 import { useDebounce } from '../hooks/useDebounce';
-import { useThrottle } from '../hooks/useThrottle';
 import { useSearchLps } from '../hooks/useSearchLps';
 import type { SortOrder } from '../types/lp';
 import LpCard from '../components/LpCard';
@@ -14,14 +13,11 @@ export default function HomePage() {
   const [sort, setSort] = useState<SortOrder>('desc');
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
+  const sentinelRef = useRef<HTMLDivElement>(null);
   const { isLoggedIn } = useAuth();
 
   const debouncedQuery = useDebounce(searchQuery, 300);
   const isSearching = debouncedQuery.trim() !== '';
-
-  // 스크롤 위치를 300ms 간격으로만 처리
-  const throttledScrollY = useThrottle(scrollY, 300);
 
   const allLpsQuery = useInfiniteQuery({
     queryKey: ['lps', sort],
@@ -46,23 +42,22 @@ export default function HomePage() {
 
   const lps = data?.pages.flatMap((page) => page.data) ?? [];
 
-  // 스크롤 이벤트 등록 — raw 이벤트는 매우 빠르게 발생하므로 state만 업데이트
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const onIntersect = useCallback(
+    ([entry]: IntersectionObserverEntry[]) => {
+      if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [hasNextPage, isFetchingNextPage, fetchNextPage],
+  );
 
-  // throttledScrollY 기준으로 하단 도달 여부 판단 → 다음 페이지 요청
   useEffect(() => {
-    const scrollHeight = document.documentElement.scrollHeight;
-    const clientHeight = document.documentElement.clientHeight;
-    const isNearBottom = throttledScrollY + clientHeight >= scrollHeight - 300;
-
-    if (isNearBottom && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [throttledScrollY, hasNextPage, isFetchingNextPage, fetchNextPage]);
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(onIntersect, { threshold: 0.1 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onIntersect]);
 
   return (
     <div className="p-6 pb-20 relative">
@@ -142,6 +137,8 @@ export default function HomePage() {
               {Array.from({ length: 4 }).map((_, i) => <LpCardSkeleton key={i} />)}
             </div>
           )}
+
+          <div ref={sentinelRef} className="h-10" />
 
           {!hasNextPage && lps.length > 0 && (
             <p className="text-center text-[#555] text-sm py-4">모든 LP를 불러왔습니다.</p>
