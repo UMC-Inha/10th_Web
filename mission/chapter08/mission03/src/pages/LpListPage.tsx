@@ -20,9 +20,7 @@ const LpListPage = () => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const {searchKeyword} = useOutletContext<{searchKeyword: string}>();
   
-  const isSearchEnabled = searchKeyword.trim() === "" 
-  ? true
-  : searchKeyword.trim().length > 0;
+  const isSearchEnabled = searchKeyword.trim().length > 0;
   
   const {
     data,

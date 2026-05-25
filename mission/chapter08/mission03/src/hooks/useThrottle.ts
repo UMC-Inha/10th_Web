@@ -2,36 +2,40 @@ import { useEffect, useRef, useState } from "react";
 
 function useThrottle<T>(value : T, delay: number = 500): T {
     const [throttledValue, setThrottledValue] = useState<T>(value);
-    const lastExecuted = useRef<number>(Date.now());
-    const timerRef = useRef<number | null>(null);
+    const lastExecuted = useRef<number>(0); // 첫 입력 즉시 실행
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const valueRef = useRef<T>(value);
+
+    useEffect(()=> {
+        valueRef.current = value;
+    }, [value]);
 
     useEffect(()=> {
     const now = Date.now();
     const remaining = lastExecuted.current + delay - now;
+
+    const excute = () => {
+        lastExecuted.current = Date.now();
+        setThrottledValue(valueRef.current);
+        timerRef.current = null;
+    };
 
     if (remaining <= 0) {
       if (timerRef.current !== null) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
       }
-      lastExecuted.current = now;
-      setThrottledValue(value);
-    } else {
-        if (timerRef.current !== null) clearTimeout(timerRef.current);
-        timerRef.current = setTimeout(() => {
-            lastExecuted.current = Date.now();
-            setThrottledValue(value);
-            timerRef.current = null;
-        }, remaining);
-        }
+      excute();
+    } else if (!timerRef.current) {
+        timerRef.current = setTimeout(excute, remaining);
+    }
+}, [value, delay]);
 
-    return () => {
-        if (timerRef.current !== null) {
-            clearTimeout(timerRef.current);
-            timerRef.current = null;
-        }
-    };
-    }, [value, delay]);
+    useEffect(()=>{
+        return() => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
+    },[]);
 
     return throttledValue;
 }
