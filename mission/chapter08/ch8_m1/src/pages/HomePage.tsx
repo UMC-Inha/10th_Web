@@ -1,6 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { getLps } from '../api/lpApi';
 import { useDebounce } from '../hooks/useDebounce';
 import { useSearchLps } from '../hooks/useSearchLps';
 import type { SortOrder } from '../types/lp';
@@ -19,17 +17,6 @@ export default function HomePage() {
   const debouncedQuery = useDebounce(searchQuery, 300);
   const isSearching = debouncedQuery.trim() !== '';
 
-  const allLpsQuery = useInfiniteQuery({
-    queryKey: ['lps', sort],
-    queryFn: ({ pageParam }) => getLps(sort, pageParam as number, 20),
-    initialPageParam: 0,
-    getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
-    staleTime: 1000 * 60 * 3,
-    gcTime: 1000 * 60 * 10,
-  });
-
-  const searchQuery_ = useSearchLps(debouncedQuery, sort);
-
   const {
     data,
     isLoading,
@@ -38,7 +25,7 @@ export default function HomePage() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = isSearching ? searchQuery_ : allLpsQuery;
+  } = useSearchLps(debouncedQuery, sort);
 
   const lps = data?.pages.flatMap((page) => page.data) ?? [];
 
