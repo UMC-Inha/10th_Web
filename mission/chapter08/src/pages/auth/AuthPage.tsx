@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router';
 import AuthInput from '../../components/auth/AuthInput';
 import { signin, signup } from '../../apis/authApi';
 import { API_BASE_URL } from '../../apis/http';
+import { API_AUTH_PATHS, ROUTES } from '../../constants/paths';
 import {
   signinFormSchema,
   signupFormSchema,
@@ -17,8 +18,8 @@ function AuthPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
-  const isSigninPage = location.pathname === '/auth/signin';
-  const from = (location.state as { from?: string } | null)?.from ?? '/';
+  const isSigninPage = location.pathname === ROUTES.authSignin;
+  const from = (location.state as { from?: string } | null)?.from ?? ROUTES.home;
 
   const signinForm = useForm<SigninFormValues>({
     resolver: zodResolver(signinFormSchema),
@@ -55,7 +56,7 @@ function AuthPage() {
       return signup(payload);
     },
     onSuccess: () => {
-      navigate('/auth/signin', { replace: true });
+      navigate(ROUTES.authSignin, { replace: true });
     },
   });
 
@@ -68,7 +69,7 @@ function AuthPage() {
   });
 
   const handleGoogleSignin = () => {
-    window.location.href = `${API_BASE_URL}/auth/google/login`;
+    window.location.href = `${API_BASE_URL}${API_AUTH_PATHS.googleLogin}`;
   };
 
   const {
@@ -205,14 +206,14 @@ function AuthPage() {
             {isSigninPage ? (
               <>
                 계정이 없으신가요?{' '}
-                <Link to="/auth/signup" className="text-pink-400 hover:underline">
+                <Link to={ROUTES.authSignup} className="text-pink-400 hover:underline">
                   회원가입
                 </Link>
               </>
             ) : (
               <>
                 이미 계정이 있으신가요?{' '}
-                <Link to="/auth/signin" className="text-pink-400 hover:underline">
+                <Link to={ROUTES.authSignin} className="text-pink-400 hover:underline">
                   로그인
                 </Link>
               </>

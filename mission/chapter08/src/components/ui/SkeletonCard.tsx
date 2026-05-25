@@ -1,5 +1,10 @@
 // ── LP 카드 스켈레톤 ────────────────────────────────────
 
+import {
+  SKELETON_COMMENT_INITIAL_COUNT,
+  SKELETON_LP_GRID_COUNT,
+} from '../../constants/pagination';
+
 function SkeletonCard() {
   return (
     <div className="aspect-square animate-pulse rounded-md bg-white/10" />
@@ -10,7 +15,7 @@ type SkeletonGridProps = {
   count?: number;
 };
 
-export function SkeletonGrid({ count = 20 }: SkeletonGridProps) {
+export function SkeletonGrid({ count = SKELETON_LP_GRID_COUNT }: SkeletonGridProps) {
   return (
     <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5">
       {Array.from({ length: count }).map((_, i) => (
@@ -40,7 +45,7 @@ type SkeletonCommentListProps = {
   count?: number;
 };
 
-export function SkeletonCommentList({ count = 5 }: SkeletonCommentListProps) {
+export function SkeletonCommentList({ count = SKELETON_COMMENT_INITIAL_COUNT }: SkeletonCommentListProps) {
   return (
     <div className="flex flex-col gap-3">
       {Array.from({ length: count }).map((_, i) => (

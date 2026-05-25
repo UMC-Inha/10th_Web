@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { deleteMyAccount } from '../apis/usersApi';
 import ConfirmModal from '../components/modals/ConfirmModal';
+import { ROUTES } from '../constants/paths';
 import { useAuth } from '../contexts/AuthContext';
 import { useState } from 'react';
 
@@ -21,12 +21,12 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
     onSuccess: () => {
       logout();
       onClose();
-      navigate('/auth/signin', { replace: true });
+      navigate(ROUTES.authSignin, { replace: true });
     },
     onError: () => {
       logout();
       onClose();
-      navigate('/auth/signin', { replace: true });
+      navigate(ROUTES.authSignin, { replace: true });
     },
   });
 
@@ -69,7 +69,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
         <nav className="flex flex-col gap-1 p-4 flex-1">
           <Link
-            to="/"
+            to={ROUTES.home}
             className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-white/10 transition-colors"
             onClick={onClose}
           >
@@ -79,7 +79,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
             찾기
           </Link>
           <Link
-            to="/users/me"
+            to={ROUTES.usersMe}
             className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-white/10 transition-colors"
             onClick={onClose}
           >

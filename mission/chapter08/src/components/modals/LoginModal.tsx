@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router';
+import { ROUTES } from '../../constants/paths';
 
 type LoginModalProps = {
   from?: string;
@@ -8,7 +9,7 @@ function LoginModal({ from }: LoginModalProps) {
   const navigate = useNavigate();
 
   const handleConfirm = () => {
-    navigate('/auth/signin', { state: { from: from ?? '/' } });
+    navigate(ROUTES.authSignin, { state: { from: from ?? ROUTES.home } });
   };
 
   return (

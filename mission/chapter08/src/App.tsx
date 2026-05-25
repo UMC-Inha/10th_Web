@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import ProtectedRoute from './components/ProtectedRoute';
+import { ROUTES } from './constants/paths';
 import AppLayout from './layouts/AppLayout';
 
 const AuthPage = lazy(() => import('./pages/auth/AuthPage'));
@@ -24,21 +25,21 @@ function App() {
         <Routes>
           {/* 헤더+사이드바 레이아웃 */}
           <Route element={<AppLayout />}>
-            <Route path="/" element={<LpsPage />} />
+            <Route path={ROUTES.home} element={<LpsPage />} />
             <Route path="/lp/:lpId" element={<LpDetailPage />} />
 
             <Route element={<ProtectedRoute />}>
-              <Route path="/users/me" element={<UsersPage />} />
+              <Route path={ROUTES.usersMe} element={<UsersPage />} />
               <Route path="/users/:userId" element={<UsersPage />} />
             </Route>
           </Route>
 
           {/* 인증 전용 페이지 (레이아웃 없음) */}
-          <Route path="/auth/signin" element={<AuthPage />} />
-          <Route path="/auth/signup" element={<AuthPage />} />
-          <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
+          <Route path={ROUTES.authSignin} element={<AuthPage />} />
+          <Route path={ROUTES.authSignup} element={<AuthPage />} />
+          <Route path={ROUTES.authGoogleCallback} element={<GoogleCallbackPage />} />
 
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

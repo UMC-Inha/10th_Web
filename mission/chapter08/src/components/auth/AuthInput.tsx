@@ -1,9 +1,13 @@
 import type { UseFormRegisterReturn } from 'react-hook-form';
 
+const AUTH_INPUT_TYPES = ['text', 'email', 'password', 'url'] as const;
+
+type AuthInputType = (typeof AUTH_INPUT_TYPES)[number];
+
 type AuthInputProps = {
   id: string;
   label: string;
-  type?: 'text' | 'email' | 'password' | 'url';
+  type?: AuthInputType;
   placeholder?: string;
   autoComplete?: string;
   registration: UseFormRegisterReturn;
@@ -13,7 +17,7 @@ type AuthInputProps = {
 function AuthInput({
   id,
   label,
-  type = 'text',
+  type = AUTH_INPUT_TYPES[0],
   placeholder,
   autoComplete,
   registration,

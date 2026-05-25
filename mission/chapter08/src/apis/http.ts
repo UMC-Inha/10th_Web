@@ -12,10 +12,13 @@ import {
   setRefreshToken,
 } from '../utils/authToken';
 import type { ApiResponse, SigninResponseData } from '../types/auth';
+import { API_AUTH_PATHS, ROUTES, SKIP_TOKEN_REFRESH_PATHS } from '../constants/paths';
 import { ApiError } from '../utils/apiError';
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/v1';
-export type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
+
+export const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete'] as const;
+export type HttpMethod = (typeof HTTP_METHODS)[number];
 
 export type RequestOptions = {
   method: HttpMethod;
@@ -44,11 +47,9 @@ apiClient.interceptors.request.use((config) => {
 
 let refreshPromise: Promise<string | null> | null = null;
 
-const SKIP_REFRESH_URLS = ['/auth/signin', '/auth/signup', '/auth/refresh'] as const;
-
 const shouldSkipRefresh = (url?: string) => {
   if (!url) return false;
-  return SKIP_REFRESH_URLS.some((path) => url.includes(path));
+  return SKIP_TOKEN_REFRESH_PATHS.some((path) => url.includes(path));
 };
 
 function toApiError(error: unknown): ApiError {
@@ -79,7 +80,7 @@ apiClient.interceptors.response.use(
 
     if (!refreshPromise) {
       refreshPromise = axios
-        .post<ApiResponse<SigninResponseData>>(`${API_BASE_URL}/auth/refresh`, { refresh: refreshToken })
+        .post<ApiResponse<SigninResponseData>>(`${API_BASE_URL}${API_AUTH_PATHS.refresh}`, { refresh: refreshToken })
         .then((response) => {
           if (!response.data.status || !response.data.data?.accessToken) return null;
           const newAccessToken = response.data.data.accessToken;
@@ -91,7 +92,7 @@ apiClient.interceptors.response.use(
         })
         .catch(() => {
           clearAuthTokens();
-          window.location.href = '/auth/signin';
+          window.location.href = ROUTES.authSignin;
           return null;
         })
         .finally(() => {

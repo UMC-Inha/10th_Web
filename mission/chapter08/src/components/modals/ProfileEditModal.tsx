@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { uploadImage } from '../../apis/uploadsApi';
 import { updateMyInfo } from '../../apis/usersApi';
+import { QUERY_KEYS } from '../../constants/queryKeys';
 import { useAuth } from '../../contexts/AuthContext';
 import type { UserInfo } from '../../types/user';
+import ModalOverlay from '../ui/ModalOverlay';
 
 type ProfileEditModalProps = {
   initialName: string;
@@ -15,7 +17,6 @@ type ProfileEditModalProps = {
 function ProfileEditModal({ initialName, initialBio, initialAvatar, onClose }: ProfileEditModalProps) {
   const queryClient = useQueryClient();
   const { userName, updateUserName } = useAuth();
-  const overlayRef = useRef<HTMLDivElement>(null);
 
   const [name, setName] = useState(initialName);
   const [bio, setBio] = useState(initialBio);
@@ -41,17 +42,17 @@ function ProfileEditModal({ initialName, initialBio, initialAvatar, onClose }: P
     },
 
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ['user', 'me'] });
-      await queryClient.cancelQueries({ queryKey: ['myInfo'] });
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.user('me') });
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.myInfo });
 
-      const previousUser = queryClient.getQueryData<UserInfo>(['user', 'me']);
-      const previousMyInfo = queryClient.getQueryData<UserInfo>(['myInfo']);
+      const previousUser = queryClient.getQueryData<UserInfo>(QUERY_KEYS.user('me'));
+      const previousMyInfo = queryClient.getQueryData<UserInfo>(QUERY_KEYS.myInfo);
       const previousUserName = userName;
 
       const optimisticUpdate = (old: UserInfo | undefined) =>
         old ? { ...old, name: name.trim(), bio: bio.trim() || null } : old;
-      queryClient.setQueryData<UserInfo>(['user', 'me'], optimisticUpdate);
-      queryClient.setQueryData<UserInfo>(['myInfo'], optimisticUpdate);
+      queryClient.setQueryData<UserInfo>(QUERY_KEYS.user('me'), optimisticUpdate);
+      queryClient.setQueryData<UserInfo>(QUERY_KEYS.myInfo, optimisticUpdate);
 
       updateUserName(name.trim());
 
@@ -60,10 +61,10 @@ function ProfileEditModal({ initialName, initialBio, initialAvatar, onClose }: P
 
     onError: (err, _, context) => {
       if (context?.previousUser !== undefined) {
-        queryClient.setQueryData(['user', 'me'], context.previousUser);
+        queryClient.setQueryData(QUERY_KEYS.user('me'), context.previousUser);
       }
       if (context?.previousMyInfo !== undefined) {
-        queryClient.setQueryData(['myInfo'], context.previousMyInfo);
+        queryClient.setQueryData(QUERY_KEYS.myInfo, context.previousMyInfo);
       }
       if (context?.previousUserName !== undefined) {
         updateUserName(context.previousUserName ?? '');
@@ -77,8 +78,8 @@ function ProfileEditModal({ initialName, initialBio, initialAvatar, onClose }: P
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
-      queryClient.invalidateQueries({ queryKey: ['myInfo'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.user('me') });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.myInfo });
     },
   });
 
@@ -101,16 +102,8 @@ function ProfileEditModal({ initialName, initialBio, initialAvatar, onClose }: P
     updateMutation.mutate();
   };
 
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    if (e.target === overlayRef.current) onClose();
-  };
-
   return (
-    <div
-      ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
-      onClick={handleOverlayClick}
-    >
+    <ModalOverlay onClose={onClose}>
       <div className="w-full max-w-md rounded-2xl bg-[#1e1e1e] border border-white/10 shadow-2xl">
         <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
           <h2 className="text-lg font-bold text-white">프로필 수정</h2>
@@ -189,7 +182,7 @@ function ProfileEditModal({ initialName, initialBio, initialAvatar, onClose }: P
           </button>
         </form>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
 

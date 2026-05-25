@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router';
 import { signout } from '../apis/authApi';
+import { ROUTES } from '../constants/paths';
 import { useAuth } from '../contexts/AuthContext';
 
 type HeaderProps = {
@@ -15,7 +16,7 @@ function Header({ onMenuClick }: HeaderProps) {
     mutationFn: signout,
     onSettled: () => {
       logout();
-      navigate('/', { replace: true });
+      navigate(ROUTES.home, { replace: true });
     },
   });
 
@@ -32,7 +33,7 @@ function Header({ onMenuClick }: HeaderProps) {
           </svg>
         </button>
 
-        <Link to="/" className="text-xl font-extrabold text-pink-500 tracking-tight">
+        <Link to={ROUTES.home} className="text-xl font-extrabold text-pink-500 tracking-tight">
           DOLIGO
         </Link>
       </div>
@@ -60,13 +61,13 @@ function Header({ onMenuClick }: HeaderProps) {
         ) : (
           <div className="flex items-center gap-2">
             <Link
-              to="/auth/signin"
+              to={ROUTES.authSignin}
               className="rounded-md px-3 py-1.5 text-sm text-slate-300 hover:text-white transition-colors"
             >
               로그인
             </Link>
             <Link
-              to="/auth/signup"
+              to={ROUTES.authSignup}
               className="rounded-md bg-pink-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-pink-600 transition-colors"
             >
               회원가입

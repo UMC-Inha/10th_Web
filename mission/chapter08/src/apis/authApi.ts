@@ -1,3 +1,4 @@
+import { API_AUTH_PATHS } from '../constants/paths';
 import type {
   SigninRequest,
   SigninResponseData,
@@ -9,7 +10,7 @@ import { request } from './http';
 export function signup(payload: SignupRequest) {
   return request<SignupResponseData>({
     method: 'post',
-    url: '/auth/signup',
+    url: API_AUTH_PATHS.signup,
     data: payload,
   });
 }
@@ -17,7 +18,7 @@ export function signup(payload: SignupRequest) {
 export function signin(payload: SigninRequest) {
   return request<SigninResponseData>({
     method: 'post',
-    url: '/auth/signin',
+    url: API_AUTH_PATHS.signin,
     data: payload,
   });
 }
@@ -25,7 +26,7 @@ export function signin(payload: SigninRequest) {
 export function signout() {
   return request<null>({
     method: 'post',
-    url: '/auth/signout',
+    url: API_AUTH_PATHS.signout,
     data: {},
   });
 }

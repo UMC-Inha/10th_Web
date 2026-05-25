@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRef } from 'react';
 import { updateLp } from '../../apis/lpsApi';
 import { uploadImage } from '../../apis/uploadsApi';
+import { QUERY_KEYS } from '../../constants/queryKeys';
 import { useLpForm } from '../../hooks/useLpForm';
 import type { LpDetailDto } from '../../types/lp';
+import ModalOverlay from '../ui/ModalOverlay';
 import LpFormFields from './LpFormFields';
 
 type LpEditModalProps = {
@@ -13,7 +14,6 @@ type LpEditModalProps = {
 
 function LpEditModal({ lp, onClose }: LpEditModalProps) {
   const queryClient = useQueryClient();
-  const overlayRef = useRef<HTMLDivElement>(null);
 
   const form = useLpForm({
     initialTitle: lp.title,
@@ -40,8 +40,8 @@ function LpEditModal({ lp, onClose }: LpEditModalProps) {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lp', lp.id] });
-      queryClient.invalidateQueries({ queryKey: ['lps'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.lp(lp.id) });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.lpsAll });
       onClose();
     },
     onError: (err) => {
@@ -59,16 +59,8 @@ function LpEditModal({ lp, onClose }: LpEditModalProps) {
     updateMutation.mutate();
   };
 
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    if (e.target === overlayRef.current) onClose();
-  };
-
   return (
-    <div
-      ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
-      onClick={handleOverlayClick}
-    >
+    <ModalOverlay onClose={onClose}>
       <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-[#1e1e1e] border border-white/10 shadow-2xl">
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-[#1e1e1e] px-6 py-4">
           <h2 className="text-lg font-bold text-white">LP 수정하기</h2>
@@ -112,7 +104,7 @@ function LpEditModal({ lp, onClose }: LpEditModalProps) {
           </button>
         </form>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
 

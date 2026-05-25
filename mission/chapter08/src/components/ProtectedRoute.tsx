@@ -1,4 +1,5 @@
 import { Navigate, Outlet, useLocation } from 'react-router';
+import { ROUTES } from '../constants/paths';
 import { useAuth } from '../contexts/AuthContext';
 
 function ProtectedRoute() {
@@ -6,7 +7,7 @@ function ProtectedRoute() {
   const { loggedIn } = useAuth();
 
   if (!loggedIn) {
-    return <Navigate to="/auth/signin" replace state={{ from: location.pathname }} />;
+    return <Navigate to={ROUTES.authSignin} replace state={{ from: location.pathname }} />;
   }
 
   return <Outlet />;
