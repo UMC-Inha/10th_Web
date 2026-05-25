@@ -25,7 +25,7 @@ function AuthInput({
 }: AuthInputProps) {
   return (
     <div className="grid gap-1.5">
-      <label htmlFor={id} className="text-sm font-semibold text-slate-700">
+      <label htmlFor={id} className="text-sm font-semibold text-slate-300">
         {label}
       </label>
       <input
