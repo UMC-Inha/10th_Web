@@ -1,22 +1,24 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useLocation, useParams } from 'react-router';
 import { getMyInfo, getUserInfo } from '../../apis/usersApi';
 import { QUERY_KEYS } from '../../constants/queryKeys';
+import { ROUTES } from '../../constants/paths';
 import ProfileEditModal from '../../components/modals/ProfileEditModal';
+import ErrorState from '../../components/ui/ErrorState';
+import { getApiErrorMessage, getApiErrorStatus } from '../../utils/getApiErrorMessage';
 
 function UsersPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { userId } = useParams();
   const isMyPage = !userId;
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const { data: user, isLoading, error } = useQuery({
+  const { data: user, isLoading, error, refetch } = useQuery({
     queryKey: QUERY_KEYS.user(userId ?? 'me'),
     queryFn: () => (userId ? getUserInfo(userId) : getMyInfo()),
   });
-
-  const errorMessage =
-    error instanceof Error ? error.message : error ? '유저 정보를 불러오지 못했습니다.' : '';
 
   if (isLoading) {
     return (
@@ -26,11 +28,23 @@ function UsersPage() {
     );
   }
 
-  if (errorMessage) {
+  if (error) {
+    const status = getApiErrorStatus(error);
+    const message = getApiErrorMessage(error, '유저 정보를 불러오지 못했습니다.');
+
     return (
-      <div className="flex items-center justify-center py-32 text-red-400 text-sm">
-        {errorMessage}
-      </div>
+      <ErrorState
+        message={message}
+        onRetry={status === 404 ? undefined : () => refetch()}
+        actionLabel={status === 401 ? '로그인하기' : status === 404 ? '홈으로' : undefined}
+        onAction={
+          status === 401
+            ? () => navigate(ROUTES.authSignin, { state: { from: location.pathname } })
+            : status === 404
+              ? () => navigate(ROUTES.home)
+              : undefined
+        }
+      />
     );
   }
 

@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, type KeyboardEvent } from 'react';
 import type { LpDto } from '../../types/lp';
 import { formatDate } from '../../utils/formatDate';
 
@@ -8,10 +8,21 @@ type LpCardProps = {
 };
 
 const LpCard = memo(function LpCard({ lp, onNavigate }: LpCardProps) {
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onNavigate(lp.id);
+    }
+  };
+
   return (
     <div
-      className="group relative aspect-square cursor-pointer overflow-hidden rounded-md bg-neutral-800"
+      role="button"
+      tabIndex={0}
+      aria-label={`${lp.title} LP 상세 보기`}
+      className="group relative aspect-square cursor-pointer overflow-hidden rounded-md bg-neutral-800 outline-none focus-visible:ring-2 focus-visible:ring-pink-500"
       onClick={() => onNavigate(lp.id)}
+      onKeyDown={handleKeyDown}
     >
       {lp.thumbnail ? (
         <img
@@ -24,7 +35,7 @@ const LpCard = memo(function LpCard({ lp, onNavigate }: LpCardProps) {
         <div className="h-full w-full bg-neutral-700" />
       )}
 
-      <div className="absolute inset-0 flex flex-col justify-end bg-linear-to-t from-black/80 via-black/30 to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+      <div className="absolute inset-0 flex flex-col justify-end bg-linear-to-t from-black/80 via-black/30 to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
         <p className="line-clamp-2 text-sm font-semibold text-white">{lp.title}</p>
         <div className="mt-1 flex items-center gap-2 text-xs text-slate-300">
           <span>{formatDate(lp.createdAt)}</span>

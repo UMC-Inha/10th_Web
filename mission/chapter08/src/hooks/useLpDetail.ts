@@ -8,6 +8,7 @@ import { ROUTES } from '../constants/paths';
 import { QUERY_KEYS } from '../constants/queryKeys';
 import { useAuth } from '../contexts/AuthContext';
 import type { LpDetailDto } from '../types/lp';
+import { getApiErrorMessage } from '../utils/getApiErrorMessage';
 
 function useLpDetail(lpId: number) {
   const queryClient = useQueryClient();
@@ -55,7 +56,7 @@ function useLpDetail(lpId: number) {
       if (context?.previousLp) {
         queryClient.setQueryData(QUERY_KEYS.lp(lpId), context.previousLp);
       }
-      setLikeError(err instanceof Error ? err.message : '좋아요 처리에 실패했습니다.');
+      setLikeError(getApiErrorMessage(err, '좋아요 처리에 실패했습니다.'));
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.lp(lpId) });
@@ -69,7 +70,7 @@ function useLpDetail(lpId: number) {
       navigate(ROUTES.home, { replace: true });
     },
     onError: (err) => {
-      setDeleteError(err instanceof Error ? err.message : 'LP 삭제에 실패했습니다.');
+      setDeleteError(getApiErrorMessage(err, 'LP 삭제에 실패했습니다.'));
     },
   });
 
@@ -82,6 +83,7 @@ function useLpDetail(lpId: number) {
     myInfo,
     isLoading: lpQuery.isLoading,
     isError: lpQuery.isError,
+    error: lpQuery.error,
     refetch: lpQuery.refetch,
     isOwner,
     isLiked,

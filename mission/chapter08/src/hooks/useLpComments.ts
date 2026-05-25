@@ -4,6 +4,7 @@ import { createComment, deleteComment, getComments, updateComment } from '../api
 import { COMMENT_PAGE_SIZE } from '../constants/pagination';
 import { GC_TIME_10_MIN, STALE_TIME_2_MIN } from '../constants/queryConfig';
 import { QUERY_KEYS } from '../constants/queryKeys';
+import { getApiErrorMessage } from '../utils/getApiErrorMessage';
 import useIntersectionObserver from './useIntersectionObserver';
 import { DEFAULT_LP_SORT_ORDER, type LpSortOrder } from '../types/lp';
 import type { UserInfo } from '../types/user';
@@ -64,7 +65,7 @@ function useLpComments({ lpId, myInfo, loggedIn }: UseLpCommentsOptions) {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.lpCommentsAll(lpId) });
     },
     onError: (err) => {
-      setCommentError(err instanceof Error ? err.message : '댓글 작성에 실패했습니다.');
+      setCommentError(getApiErrorMessage(err, '댓글 작성에 실패했습니다.'));
     },
   });
 
@@ -74,7 +75,11 @@ function useLpComments({ lpId, myInfo, loggedIn }: UseLpCommentsOptions) {
     onSuccess: () => {
       setEditingCommentId(null);
       setEditingContent('');
+      setCommentError('');
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.lpCommentsAll(lpId) });
+    },
+    onError: (err) => {
+      setCommentError(getApiErrorMessage(err, '댓글 수정에 실패했습니다.'));
     },
   });
 
@@ -82,7 +87,11 @@ function useLpComments({ lpId, myInfo, loggedIn }: UseLpCommentsOptions) {
     mutationFn: (commentId: number) => deleteComment(lpId, commentId),
     onSuccess: () => {
       setDeleteCommentId(null);
+      setCommentError('');
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.lpCommentsAll(lpId) });
+    },
+    onError: (err) => {
+      setCommentError(getApiErrorMessage(err, '댓글 삭제에 실패했습니다.'));
     },
   });
 

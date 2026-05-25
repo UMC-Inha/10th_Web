@@ -7,8 +7,10 @@ import ConfirmModal from '../../components/modals/ConfirmModal';
 import LoginModal from '../../components/modals/LoginModal';
 import LpEditModal from '../../components/modals/LpEditModal';
 import ErrorState from '../../components/ui/ErrorState';
+import { ROUTES } from '../../constants/paths';
 import useLpDetail from '../../hooks/useLpDetail';
 import { useAuth } from '../../contexts/AuthContext';
+import { getApiErrorMessage, getApiErrorStatus } from '../../utils/getApiErrorMessage';
 
 type LpDetailContentProps = {
   lpId: number;
@@ -24,6 +26,7 @@ function LpDetailContent({ lpId }: LpDetailContentProps) {
     myInfo,
     isLoading,
     isError,
+    error,
     refetch,
     isOwner,
     isLiked,
@@ -42,7 +45,23 @@ function LpDetailContent({ lpId }: LpDetailContentProps) {
   }
 
   if (isError || !lp) {
-    return <ErrorState message="LP 정보를 불러오는 데 실패했습니다." onRetry={() => refetch()} />;
+    const status = getApiErrorStatus(error);
+    const message = getApiErrorMessage(error, 'LP 정보를 불러오는 데 실패했습니다.');
+
+    return (
+      <ErrorState
+        message={message}
+        onRetry={status === 404 ? undefined : () => refetch()}
+        actionLabel={status === 401 ? '로그인하기' : status === 404 ? '목록으로' : undefined}
+        onAction={
+          status === 401
+            ? () => navigate(ROUTES.authSignin, { state: { from: ROUTES.lpDetail(lpId) } })
+            : status === 404
+              ? () => navigate(ROUTES.home)
+              : undefined
+        }
+      />
+    );
   }
 
   return (
@@ -94,6 +113,7 @@ function LpDetailContent({ lpId }: LpDetailContentProps) {
 function LpDetailPage() {
   const { lpId } = useParams<{ lpId: string }>();
   const location = useLocation();
+  const navigate = useNavigate();
   const { loggedIn } = useAuth();
   const numericLpId = lpId && !isNaN(Number(lpId)) ? Number(lpId) : null;
 
@@ -102,7 +122,13 @@ function LpDetailPage() {
   }
 
   if (numericLpId === null) {
-    return <ErrorState message="잘못된 LP 주소입니다." />;
+    return (
+      <ErrorState
+        message="잘못된 LP 주소입니다."
+        actionLabel="목록으로"
+        onAction={() => navigate(ROUTES.home)}
+      />
+    );
   }
 
   return <LpDetailContent lpId={numericLpId} />;

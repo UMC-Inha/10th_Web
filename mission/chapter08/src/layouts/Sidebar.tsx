@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router';
 import { deleteMyAccount } from '../apis/usersApi';
 import ConfirmModal from '../components/modals/ConfirmModal';
 import { ROUTES } from '../constants/paths';
+import { Z_INDEX } from '../constants/zIndex';
 import { useAuth } from '../contexts/AuthContext';
+import { getApiErrorMessage } from '../utils/getApiErrorMessage';
 import { useState } from 'react';
 
 type SidebarProps = {
@@ -15,6 +17,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
   const navigate = useNavigate();
   const { loggedIn, logout } = useAuth();
   const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false);
+  const [withdrawError, setWithdrawError] = useState('');
 
   const withdrawMutation = useMutation({
     mutationFn: deleteMyAccount,
@@ -23,10 +26,8 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
       onClose();
       navigate(ROUTES.authSignin, { replace: true });
     },
-    onError: () => {
-      logout();
-      onClose();
-      navigate(ROUTES.authSignin, { replace: true });
+    onError: (err) => {
+      setWithdrawError(getApiErrorMessage(err, '탈퇴에 실패했습니다.'));
     },
   });
 
@@ -49,7 +50,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* 오버레이: 사이드바 바깥 클릭 시 닫힘 / 트랜지션 적용 */}
       <div
         className={[
-          'fixed inset-0 z-20 bg-black/50 lg:hidden',
+          `fixed inset-0 ${Z_INDEX.sidebarOverlay} bg-black/50 lg:hidden`,
           'transition-opacity duration-300',
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
         ].join(' ')}
@@ -60,7 +61,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* 사이드바 패널 */}
       <aside
         className={[
-          'fixed top-0 left-0 z-30 h-full w-48 bg-[#1a1a1a] flex flex-col pt-16',
+          `fixed top-0 left-0 ${Z_INDEX.sidebar} h-full w-48 bg-[#1a1a1a] flex flex-col pt-16`,
           'transition-transform duration-300 ease-in-out',
           'lg:translate-x-0 lg:sticky lg:z-auto',
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
@@ -92,8 +93,14 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         {loggedIn && (
           <div className="p-4 border-t border-white/10">
+            {withdrawError && (
+              <p className="mb-2 rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-400">{withdrawError}</p>
+            )}
             <button
-              onClick={() => setShowWithdrawConfirm(true)}
+              onClick={() => {
+                setWithdrawError('');
+                setShowWithdrawConfirm(true);
+              }}
               disabled={withdrawMutation.isPending}
               className="w-full text-left rounded-lg px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
             >
