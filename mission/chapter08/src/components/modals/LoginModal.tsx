@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router';
 import { ROUTES } from '../../constants/paths';
+import ModalOverlay from '../ui/ModalOverlay';
 
 type LoginModalProps = {
   from?: string;
@@ -12,10 +13,12 @@ function LoginModal({ from }: LoginModalProps) {
     navigate(ROUTES.authSignin, { state: { from: from ?? ROUTES.home } });
   };
 
+  const handleClose = () => navigate(-1);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+    <ModalOverlay onClose={handleClose} labelledBy="login-modal-title">
       <div className="w-80 rounded-2xl bg-[#1e1e1e] p-6 shadow-2xl border border-white/10">
-        <h2 className="mb-2 text-lg font-bold text-white">로그인이 필요합니다</h2>
+        <h2 id="login-modal-title" className="mb-2 text-lg font-bold text-white">로그인이 필요합니다</h2>
         <p className="mb-6 text-sm text-slate-400">
           이 페이지를 보려면 로그인이 필요합니다.
           <br />
@@ -23,7 +26,7 @@ function LoginModal({ from }: LoginModalProps) {
         </p>
         <div className="flex gap-3">
           <button
-            onClick={() => navigate(-1)}
+            onClick={handleClose}
             className="flex-1 rounded-lg border border-white/20 py-2 text-sm text-slate-300 hover:bg-white/10 transition-colors"
           >
             취소
@@ -36,7 +39,7 @@ function LoginModal({ from }: LoginModalProps) {
           </button>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
 

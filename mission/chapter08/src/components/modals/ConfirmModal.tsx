@@ -1,3 +1,5 @@
+import ModalOverlay from '../ui/ModalOverlay';
+
 type ConfirmModalProps = {
   message: string;
   confirmLabel?: string;
@@ -14,8 +16,9 @@ function ConfirmModal({
   onCancel,
 }: ConfirmModalProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+    <ModalOverlay onClose={onCancel} labelledBy="confirm-modal-title">
       <div className="w-80 rounded-2xl bg-[#1e1e1e] p-6 shadow-2xl border border-white/10">
+        <h2 id="confirm-modal-title" className="mb-3 text-lg font-bold text-white">확인</h2>
         <p className="mb-6 text-sm text-slate-300 whitespace-pre-line">{message}</p>
         <div className="flex gap-3">
           <button
@@ -32,7 +35,7 @@ function ConfirmModal({
           </button>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
 

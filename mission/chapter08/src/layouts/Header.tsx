@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router';
 import { signout } from '../apis/authApi';
 import { ROUTES } from '../constants/paths';
+import { Z_INDEX } from '../constants/zIndex';
 import { useAuth } from '../contexts/AuthContext';
 
 type HeaderProps = {
@@ -21,7 +22,7 @@ function Header({ onMenuClick }: HeaderProps) {
   });
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center justify-between bg-[#111111] px-4 border-b border-white/10">
+    <header className={`sticky top-0 ${Z_INDEX.header} flex h-14 items-center justify-between bg-[#111111] px-4 border-b border-white/10`}>
       <div className="flex items-center gap-3">
         <button
           onClick={onMenuClick}
@@ -39,12 +40,6 @@ function Header({ onMenuClick }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-3">
-        <button className="rounded-md p-1 text-slate-400 hover:text-white transition-colors" aria-label="검색">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-          </svg>
-        </button>
-
         {loggedIn ? (
           <div className="flex items-center gap-3">
             <span className="hidden text-sm text-slate-300 sm:block">
