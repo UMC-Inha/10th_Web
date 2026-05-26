@@ -1,0 +1,52 @@
+import { lazy, Suspense } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
+import ErrorBoundary from './components/ErrorBoundary';
+import ProtectedRoute from './components/ProtectedRoute';
+import { ROUTES, ROUTE_PATTERNS } from './constants/paths';
+import AppLayout from './layouts/AppLayout';
+
+const AuthPage = lazy(() => import('./pages/auth/AuthPage'));
+const GoogleCallbackPage = lazy(() => import('./pages/auth/GoogleCallbackPage'));
+const LpDetailPage = lazy(() => import('./pages/lps/LpDetailPage'));
+const LpsPage = lazy(() => import('./pages/lps/LpsPage'));
+const UsersPage = lazy(() => import('./pages/users/UsersPage'));
+
+function PageLoader() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[#111111]">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-pink-500 border-t-transparent" />
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            {/* 헤더+사이드바 레이아웃 */}
+            <Route element={<AppLayout />}>
+              <Route path={ROUTES.home} element={<LpsPage />} />
+              <Route path={ROUTE_PATTERNS.lpDetail} element={<LpDetailPage />} />
+
+              <Route element={<ProtectedRoute />}>
+                <Route path={ROUTES.usersMe} element={<UsersPage />} />
+                <Route path={ROUTE_PATTERNS.usersDetail} element={<UsersPage />} />
+              </Route>
+            </Route>
+
+            {/* 인증 전용 페이지 (레이아웃 없음) */}
+            <Route path={ROUTES.authSignin} element={<AuthPage />} />
+            <Route path={ROUTES.authSignup} element={<AuthPage />} />
+            <Route path={ROUTES.authGoogleCallback} element={<GoogleCallbackPage />} />
+
+            <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+    </ErrorBoundary>
+  );
+}
+
+export default App;
