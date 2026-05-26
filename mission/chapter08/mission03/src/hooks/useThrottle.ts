@@ -14,7 +14,7 @@ function useThrottle<T>(value : T, delay: number = 500): T {
     const now = Date.now();
     const remaining = lastExecuted.current + delay - now;
 
-    const excute = () => {
+    const execute = () => {
         lastExecuted.current = Date.now();
         setThrottledValue(valueRef.current);
         timerRef.current = null;
@@ -25,17 +25,19 @@ function useThrottle<T>(value : T, delay: number = 500): T {
         clearTimeout(timerRef.current);
         timerRef.current = null;
       }
-      excute();
+      execute();
     } else if (!timerRef.current) {
-        timerRef.current = setTimeout(excute, remaining);
+        timerRef.current = setTimeout(execute, remaining);
     }
-}, [value, delay]);
 
-    useEffect(()=>{
-        return() => {
-            if (timerRef.current) clearTimeout(timerRef.current);
-        };
-    },[]);
+    //useEffect 내부로 cleanup 함수 통합함
+    return () => {
+        if (timerRef.current !== null) {
+            clearTimeout(timerRef.current);
+            timerRef.current = null;
+        }
+    };
+}, [value, delay]);
 
     return throttledValue;
 }
