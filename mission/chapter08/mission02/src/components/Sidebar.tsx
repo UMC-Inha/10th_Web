@@ -12,7 +12,7 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
-  const { accessToken, logout } = useAuth();
+  const { accessToken } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -20,15 +20,10 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const withdrawMutation = useMutation({
     mutationFn: deleteUser,
     onSuccess: () => {
-      logout();
       setConfirmOpen(false);
       onClose();
       navigate('/login');
     },
-    onError: () => {
-      alert('탈퇴처리 중 오류가 발생하였습니다. 다시 시도해주세요');
-      setConfirmOpen(false);
-    }
   });
 
   const isActive = (path: string) => location.pathname === path;
@@ -80,7 +75,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             )}
           </div>
 
-          {/* 하단 탈퇴하기 */}
+          {/* 하단 로그아웃 */}
           {accessToken && (
             <button
               onClick={() => setConfirmOpen(true)}

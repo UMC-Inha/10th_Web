@@ -1,6 +1,4 @@
-// src/components/Sidebar.tsx
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
@@ -12,7 +10,7 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
-  const { accessToken, logout } = useAuth();
+  const { accessToken } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -20,32 +18,56 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const withdrawMutation = useMutation({
     mutationFn: deleteUser,
     onSuccess: () => {
-      logout();
       setConfirmOpen(false);
       onClose();
       navigate('/login');
     },
-    onError: () => {
-      alert('탈퇴처리 중 오류가 발생하였습니다. 다시 시도해주세요');
-      setConfirmOpen(false);
-    }
   });
 
   const isActive = (path: string) => location.pathname === path;
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        console.log('[Event] ESC 키가 감지되어 사이드바를 닫습니다');
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  useEffect(()=>{
+    if(isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   return (
     <>
       {/* 오버레이 - 사이드바 외부 클릭 시 닫힘 */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
-          onClick={onClose}
-        />
-      )}
+      <div
+        className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ease-in-out ${
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none lg:hidden'
+        }`}
+        onClick={onClose}
+      />
 
       {/* 사이드바 */}
       <aside
-        className={`fixed top-14 left-0 z-40 h-[calc(100vh-3.5rem)] w-52 bg-[#1a1a1a] border-r border-[#2a2a2a] transform transition-transform duration-300 ease-in-out
+        className={`fixed top-14 left-0 z-40 h-[calc(100vh-3.5rem)] w-52 bg-[#1a1a1a] border-r border-[#2a2a2a] 
+          transition-transform duration-300 ease-in-out transform
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0`}
       >
@@ -54,7 +76,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             <Link
               to="/"
               onClick={onClose}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors duration-200 ${
                 isActive('/') ? 'bg-pink-600/20 text-pink-400' : 'text-zinc-400 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -68,7 +90,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
               <Link
                 to="/my"
                 onClick={onClose}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors duration-200 ${
                   isActive('/my') ? 'bg-pink-600/20 text-pink-400' : 'text-zinc-400 hover:text-white hover:bg-white/5'
                 }`}
               >
@@ -80,11 +102,11 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             )}
           </div>
 
-          {/* 하단 탈퇴하기 */}
+          {/* 하단 로그아웃 */}
           {accessToken && (
             <button
               onClick={() => setConfirmOpen(true)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-500 hover:text-white hover:bg-white/5 transition-colors"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-500 hover:text-white hover:bg-white/5 transition-colors duration-200"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -95,6 +117,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         </nav>
       </aside>
 
+      {/* 탈퇴 모달 */}
       {confirmOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
           <div className="w-full max-w-sm rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-white shadow-xl">

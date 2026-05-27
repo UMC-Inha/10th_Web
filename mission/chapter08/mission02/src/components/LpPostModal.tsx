@@ -14,6 +14,7 @@ function LpPostModal({ isOpen, onClose }: LpPostModalProps) {
   const [tags, setTags] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const queryClient = useQueryClient();
 
@@ -31,25 +32,16 @@ function LpPostModal({ isOpen, onClose }: LpPostModalProps) {
     };
   }, [selectedFile]);
 
-  // 📌 통합된 Mutation 구조 (완벽 반영)
   const mutation = useMutation({
-    mutationFn: async (payload: { title: string; content: string; tags: string[]; published: boolean }) => {
-      const thumbnail = selectedFile ? await uploadLpThumbnail(selectedFile) : undefined;
-
-      return createLp({
-        ...payload,
-        thumbnail,
-      });
-    },
+    mutationFn: createLp,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lps"] });
       resetForm();
       onClose();
     },
-    onError: (error) => {
-      console.error(error);
-      alert("LP 생성에 실패했습니다. 다시 시도해주세요.");
-    }
+    onSettled: () => {
+      setIsSubmitting(false);
+    },
   });
 
   const resetForm = () => {
@@ -94,8 +86,7 @@ function LpPostModal({ isOpen, onClose }: LpPostModalProps) {
     fileInputRef.current?.click();
   };
 
-  // 📌 깔끔하게 정리된 handleSubmit (중복 파편 완벽 제거!)
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!lpName.trim() || !lpContent.trim()) {
       alert("LP 제목과 내용을 모두 입력해주세요.");
       return;
@@ -106,13 +97,26 @@ function LpPostModal({ isOpen, onClose }: LpPostModalProps) {
       return;
     }
 
-    mutation.mutate({
-      title: lpName,
-      content: lpContent,
-      tags,
-      published: true,
-    });
-  }; // ➔ 여기서 handleSubmit이 완벽하게 깔끔히 끝납니다!
+    setIsSubmitting(true);
+
+    try {
+      const thumbnail = selectedFile
+        ? await uploadLpThumbnail(selectedFile)
+        : undefined;
+
+      await mutation.mutateAsync({
+        title: lpName,
+        content: lpContent,
+        tags,
+        published: true,
+        thumbnail,
+      });
+    } catch (error) {
+      setIsSubmitting(false);
+      console.error(error);
+      alert("LP 생성에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -220,10 +224,10 @@ function LpPostModal({ isOpen, onClose }: LpPostModalProps) {
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={mutation.isPending}
+            disabled={isSubmitting}
             className="mt-1 w-full rounded-2xl bg-pink-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-pink-400 disabled:cursor-not-allowed disabled:bg-pink-600/70"
           >
-            {mutation.isPending ? "Posting..." : "Add LP"}
+            {isSubmitting ? "Posting..." : "Add LP"}
           </button>
         </div>
       </div>
@@ -232,3 +236,4 @@ function LpPostModal({ isOpen, onClose }: LpPostModalProps) {
 }
 
 export default LpPostModal;
+
