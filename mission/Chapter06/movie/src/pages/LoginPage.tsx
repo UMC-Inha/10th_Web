@@ -23,7 +23,7 @@ const LoginPage = () => {
 
   const { mutate: login, isPending, error } = useMutation({
     mutationFn: (data: LoginFormData) =>
-      api.post<{ data: { name: string; accessToken: string; refreshToken: string } }>(
+      api.post<{ data: { id: number; name: string; accessToken: string; refreshToken: string } }>(
         '/v1/auth/signin',
         { email: data.email, password: data.password },
       ),

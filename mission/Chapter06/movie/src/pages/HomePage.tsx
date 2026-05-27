@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useLps } from '../hooks/useLps'
+import { useLps, useSearchLps } from '../hooks/useLps'
+import { useDebounce } from '../hooks/useDebounce'
+import { useThrottle } from '../hooks/useThrottle'
 import { timeAgo } from '../lib/timeAgo'
 import { GridSkeleton, BottomSkeleton } from '../components/LoadingSkeleton'
 import ErrorMessage from '../components/ErrorMessage'
@@ -11,19 +13,20 @@ const HomePage = () => {
   const navigate = useNavigate()
   const [order, setOrder] = useState<SortOrder>('desc')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
-  const {
-    data,
-    isLoading,
-    isSuccess,
-    isError,
-    refetch,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useLps(order)
+  const debouncedQuery = useDebounce(searchQuery, 300)
+  const isSearching = debouncedQuery.trim().length > 0
 
-  // 무한스크롤 트리거: sentinelRef가 뷰포트에 들어오면 다음 페이지 fetch
+  const allLps = useLps(order)
+  const searchLps = useSearchLps(debouncedQuery, order)
+
+  const { data, isLoading, isSuccess, isError, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    isSearching ? searchLps : allLps
+
+  // 1초에 한 번만 다음 페이지를 요청하도록 스로틀 적용
+  const throttledFetchNextPage = useThrottle(fetchNextPage, 1000)
+
   const sentinelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -33,7 +36,7 @@ const HomePage = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage()
+          throttledFetchNextPage()
         }
       },
       { threshold: 0.1 },
@@ -41,32 +44,47 @@ const HomePage = () => {
 
     observer.observe(el)
     return () => observer.disconnect()
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
+  }, [hasNextPage, isFetchingNextPage, throttledFetchNextPage])
 
-  // pages 배열을 flat하게 펼쳐 LP 목록으로 변환
   const lps = data?.pages.flatMap((page) => page.data) ?? []
 
   return (
     <div className="relative min-h-full p-4">
-      {/* 정렬 버튼 */}
-      <div className="mb-4 flex justify-end gap-2">
-        {(['asc', 'desc'] as SortOrder[]).map((o) => (
-          <button
-            key={o}
-            type="button"
-            onClick={() => setOrder(o)}
-            className={`rounded border px-3 py-1 text-sm transition-colors ${
-              order === o
-                ? 'border-white bg-white text-black'
-                : 'border-neutral-600 text-neutral-300 hover:border-white hover:text-white'
-            }`}
-          >
-            {o === 'asc' ? '오래된순' : '최신순'}
-          </button>
-        ))}
+      {/* 검색 + 정렬 */}
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="LP 검색..."
+          className="flex-1 rounded border border-neutral-600 bg-neutral-900 px-3 py-1.5 text-sm text-white placeholder-neutral-500 outline-none focus:border-white"
+        />
+        <div className="flex justify-end gap-2">
+          {(['asc', 'desc'] as SortOrder[]).map((o) => (
+            <button
+              key={o}
+              type="button"
+              onClick={() => setOrder(o)}
+              className={`rounded border px-3 py-1 text-sm transition-colors ${
+                order === o
+                  ? 'border-white bg-white text-black'
+                  : 'border-neutral-600 text-neutral-300 hover:border-white hover:text-white'
+              }`}
+            >
+              {o === 'asc' ? '오래된순' : '최신순'}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* 초기 로딩 — 상단 스켈레톤 */}
+      {/* 검색 중일 때 쿼리 표시 */}
+      {isSearching && (
+        <p className="mb-2 text-sm text-neutral-400">
+          "<span className="text-white">{debouncedQuery}</span>" 검색 결과
+        </p>
+      )}
+
+      {/* 초기 로딩 */}
       {isLoading && <GridSkeleton />}
 
       {/* 에러 */}
@@ -74,45 +92,51 @@ const HomePage = () => {
 
       {/* LP 그리드 */}
       {isSuccess && (
-        <div className="grid grid-cols-2 gap-0.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 py-6 px-4">
-          {lps.map((lp) => (
-            <button
-              key={lp.id}
-              type="button"
-              onClick={() => navigate(`/lp/${lp.id}`)}
-              className="group relative aspect-square bg-neutral-800 transition-transform duration-200 hover:scale-[1.1] hover:z-10"
-            >
-              {lp.thumbnail ? (
-                <div className="absolute inset-0 overflow-hidden">
-                  <img
-                    src={lp.thumbnail}
-                    alt={lp.title}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-neutral-700 text-xs text-neutral-400">
-                  No Image
-                </div>
-              )}
+        <>
+          {lps.length === 0 ? (
+            <p className="mt-12 text-center text-neutral-500">검색 결과가 없습니다.</p>
+          ) : (
+            <div className="grid grid-cols-2 gap-0.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 py-6 px-4">
+              {lps.map((lp) => (
+                <button
+                  key={lp.id}
+                  type="button"
+                  onClick={() => navigate(`/lp/${lp.id}`)}
+                  className="group relative aspect-square bg-neutral-800 transition-transform duration-200 hover:scale-[1.1] hover:z-10"
+                >
+                  {lp.thumbnail ? (
+                    <div className="absolute inset-0 overflow-hidden">
+                      <img
+                        src={lp.thumbnail}
+                        alt={lp.title}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-neutral-700 text-xs text-neutral-400">
+                      No Image
+                    </div>
+                  )}
 
-              {/* 호버 오버레이 */}
-              <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent p-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                <p className="truncate text-sm font-semibold text-white">{lp.title}</p>
-                <div className="mt-1 flex items-center justify-between">
-                  <span className="text-xs text-neutral-400">{timeAgo(lp.createdAt)}</span>
-                  <span className="flex items-center gap-1 text-xs text-neutral-400">
-                    <span className="text-pink-400">♥</span>
-                    {lp.likes.length}
-                  </span>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
+                  {/* 호버 오버레이 */}
+                  <div className="absolute inset-0 flex flex-col justify-end bg-linear-to-t from-black/80 to-transparent p-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <p className="truncate text-sm font-semibold text-white">{lp.title}</p>
+                    <div className="mt-1 flex items-center justify-between">
+                      <span className="text-xs text-neutral-400">{timeAgo(lp.createdAt)}</span>
+                      <span className="flex items-center gap-1 text-xs text-neutral-400">
+                        <span className="text-pink-400">♥</span>
+                        {lp.likes.length}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
-      {/* 추가 로딩 — 하단 스켈레톤 (isFetchingNextPage) */}
+      {/* 추가 로딩 */}
       {isFetchingNextPage && <BottomSkeleton />}
 
       {/* IntersectionObserver 트리거 */}
