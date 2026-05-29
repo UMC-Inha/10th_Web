@@ -1,11 +1,11 @@
 import CartItemCard from '../components/CartItemCard';
 import {
   calculateTotals,
-  clearCart,
   decrease,
   increase,
   removeItem,
-} from '../store/cartSlice';
+} from '../features/cart/cartSlice';
+import { openModal } from '../features/modal/modalSlice';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 function CartPage() {
@@ -27,8 +27,8 @@ function CartPage() {
     dispatch(calculateTotals());
   };
 
-  const handleClearCart = () => {
-    dispatch(clearCart());
+  const handleOpenClearModal = () => {
+    dispatch(openModal());
   };
 
   return (
@@ -43,7 +43,7 @@ function CartPage() {
         {cartItems.length > 0 && (
           <button
             type="button"
-            onClick={handleClearCart}
+            onClick={handleOpenClearModal}
             className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-400 transition-colors hover:bg-red-500/20"
           >
             전체 삭제

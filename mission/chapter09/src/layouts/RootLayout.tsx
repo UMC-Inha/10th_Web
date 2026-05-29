@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router';
 import Footer from '../components/Footer';
+import Modal from '../components/Modal';
 import Navbar from '../components/Navbar';
 
 function RootLayout() {
@@ -10,6 +11,7 @@ function RootLayout() {
         <Outlet />
       </main>
       <Footer />
+      <Modal />
     </div>
   );
 }
