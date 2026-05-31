@@ -5,7 +5,7 @@ import cartItems from '../../constants/cartItems';
 
 const initialState: CartState = {
   cartItems,
-  amount: cartItems.length,
+  amount: cartItems.reduce((sum, item) => sum + item.amount, 0),
   total: cartItems.reduce((sum, item) => sum + Number(item.price) * item.amount, 0),
 };
 

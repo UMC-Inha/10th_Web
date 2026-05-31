@@ -1,7 +1,7 @@
-import { useCartStore } from '../store/useCartStore';
+import { useCartTotals } from '../store/useCartStore';
 
 export default function Navbar() {
-  const { amount } = useCartStore();
+  const { amount } = useCartTotals();
 
   return (
     <nav className="bg-indigo-600 text-white px-6 py-4 flex items-center justify-between shadow-md">

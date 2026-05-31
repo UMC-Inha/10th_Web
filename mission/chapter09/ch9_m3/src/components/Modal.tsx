@@ -2,12 +2,11 @@ import { useCartStore } from '../store/useCartStore';
 import { useModalStore } from '../store/useModalStore';
 
 export default function Modal() {
-  const { clearCart, calculateTotals } = useCartStore();
+  const { clearCart } = useCartStore();
   const { closeModal } = useModalStore();
 
   const handleConfirm = () => {
     clearCart();
-    calculateTotals();
     closeModal();
   };
 
