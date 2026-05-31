@@ -1,17 +1,12 @@
-import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from './store/store';
-import { calculateTotals, clearCart } from './features/cart/cartSlice';
+import {  clearCart } from './features/cart/cartSlice';
 import Navbar from './components/Navbar';
 import CartItem from './components/CartItem';
 
 export default function App() {
   const dispatch = useDispatch();
   const { cartItems, total } = useSelector((state: RootState) => state.cart);
-
-  useEffect(() => {
-    dispatch(calculateTotals());
-  }, [cartItems, dispatch]);
 
   return (
     <div className="min-h-screen bg-zinc-50 flex flex-col font-sans">

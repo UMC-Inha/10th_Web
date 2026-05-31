@@ -40,6 +40,15 @@ export default function UseReducerCompany() {
     const handleChangeDepartment = (e: ChangeEvent<HTMLInputElement>) => {
         setDepartment(e.target.value);
     }
+    
+    const handleApplyChange = () => {
+        dispatch({type: 'CHANGE_DEPARTMENT', payload: department});
+
+        if (department === '카드메이커') {
+            setDepartment('');
+        }
+    };
+
     return (
     <div>
         <h1>{state.department}</h1>
@@ -49,9 +58,7 @@ export default function UseReducerCompany() {
         value={department}
         onChange={handleChangeDepartment}/>
 
-        <button onClick={() => 
-            dispatch({type: 'CHANGE_DEPARTMENT', payload:department})
-        }> 직무 변경하기 </button>
+        <button onClick={handleApplyChange}> 직무 변경하기 </button>
     </div>
     );
 }

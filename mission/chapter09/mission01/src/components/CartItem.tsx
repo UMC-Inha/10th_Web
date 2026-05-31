@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
 import { type ICartItem } from '../constants/cartItems';
-import { increase, decrease } from '../features/cart/cartSlice';
+import { increase, decrease, removeItem } from '../features/cart/cartSlice';
 
 interface CartItemProps {
   item: ICartItem;
@@ -41,6 +41,11 @@ export default function CartItem({ item }: CartItemProps) {
           className="w-6 h-6 flex items-center justify-center bg-zinc-300 rounded hover:bg-zinc-400 text-zinc-700 font-bold text-sm transition-colors"
         >
           +
+        </button>
+        <button onClick={()=> dispatch(removeItem(item.id))}
+                className="w-8 h-8 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-md transition-colors text-lg font-medium cursor-pointer"
+                title="장바구니에서 삭제">         
+                X
         </button>
       </div>
     </div>

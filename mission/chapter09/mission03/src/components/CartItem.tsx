@@ -6,7 +6,7 @@ interface CartItemProps {
 }
 
 export default function CartItem({ item }: CartItemProps) {
-  const {increase, decrease} = useStore();
+  const {increase, decrease, removeItem} = useStore();
 
   return (
     <div className="flex items-center justify-between border-b border-zinc-100 py-4 px-2">
@@ -38,6 +38,11 @@ export default function CartItem({ item }: CartItemProps) {
           className="w-6 h-6 flex items-center justify-center bg-zinc-300 rounded hover:bg-zinc-400 text-zinc-700 font-bold text-sm transition-colors"
         >
           +
+        </button>
+                <button onClick={() => removeItem(item.id)}
+                className="w-8 h-8 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-md transition-colors text-lg font-medium cursor-pointer"
+                title="장바구니에서 삭제">         
+                X
         </button>
       </div>
     </div>
