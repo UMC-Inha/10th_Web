@@ -1,8 +1,8 @@
-import { useCartStore } from '../store/useCartStore';
+import { useCartTotals } from '../store/useCartStore';
 import { useModalStore } from '../store/useModalStore';
 
 export default function Footer() {
-  const { amount, total } = useCartStore();
+  const { amount, total } = useCartTotals();
   const { openModal } = useModalStore();
 
   return (

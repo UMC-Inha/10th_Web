@@ -6,22 +6,7 @@ type Props = {
 };
 
 export default function CartItem({ item }: Props) {
-  const { increase, decrease, removeItem, calculateTotals } = useCartStore();
-
-  const handleIncrease = () => {
-    increase(item.id);
-    calculateTotals();
-  };
-
-  const handleDecrease = () => {
-    decrease(item.id);
-    calculateTotals();
-  };
-
-  const handleRemove = () => {
-    removeItem(item.id);
-    calculateTotals();
-  };
+  const { increase, decrease, removeItem } = useCartStore();
 
   return (
     <div className="flex items-center gap-4 bg-white rounded-xl p-4 shadow-sm">
@@ -41,14 +26,14 @@ export default function CartItem({ item }: Props) {
 
       <div className="flex flex-col items-center gap-1">
         <button
-          onClick={handleIncrease}
+          onClick={() => increase(item.id)}
           className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 font-bold text-lg flex items-center justify-center hover:bg-indigo-200 transition cursor-pointer"
         >
           +
         </button>
         <span className="text-gray-800 font-semibold text-sm">{item.amount}</span>
         <button
-          onClick={handleDecrease}
+          onClick={() => decrease(item.id)}
           className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 font-bold text-lg flex items-center justify-center hover:bg-indigo-200 transition cursor-pointer"
         >
           −
@@ -56,7 +41,7 @@ export default function CartItem({ item }: Props) {
       </div>
 
       <button
-        onClick={handleRemove}
+        onClick={() => removeItem(item.id)}
         className="text-gray-400 hover:text-red-500 transition ml-2 cursor-pointer"
         aria-label="삭제"
       >
