@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Lp } from '../types/lp';
 
-export default function LpCard({ lp }: { lp: Lp }) {
+const LpCard = memo(function LpCard({ lp }: { lp: Lp }) {
   const navigate = useNavigate();
 
   return (
@@ -13,6 +14,7 @@ export default function LpCard({ lp }: { lp: Lp }) {
       <img
         src={lp.thumbnail}
         alt={lp.title}
+        loading="lazy"
         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         onError={(e) => {
           (e.currentTarget as HTMLImageElement).src = 'https://placehold.co/300x300/222/555?text=LP';
@@ -31,4 +33,6 @@ export default function LpCard({ lp }: { lp: Lp }) {
       </div>
     </div>
   );
-}
+});
+
+export default LpCard;

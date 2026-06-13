@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getLps } from '../api/lpApi';
 import type { SortOrder } from '../types/lp';
@@ -11,11 +11,16 @@ export default function HomePage() {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['lps', sort],
     queryFn: () => getLps(sort, 0, 20),
-    staleTime: 1000 * 60 * 3,   // 3분
-    gcTime: 1000 * 60 * 10,     // 10분
+    staleTime: 1000 * 60 * 3,
+    gcTime: 1000 * 60 * 10,
   });
 
-  const lps = data?.data ?? [];
+  // useMemo: data가 바뀌지 않으면 동일 배열 참조 유지 → LpCard 불필요한 리렌더 방지
+  const lps = useMemo(() => data?.data ?? [], [data]);
+
+  // useCallback: 정렬 핸들러가 매 렌더마다 새 함수로 생성되는 것을 방지
+  const handleSortDesc = useCallback(() => setSort('desc'), []);
+  const handleSortAsc = useCallback(() => setSort('asc'), []);
 
   return (
     <div className="p-6 pb-20">
@@ -26,7 +31,7 @@ export default function HomePage() {
         {/* 정렬 버튼 */}
         <div className="flex gap-2">
           <button
-            onClick={() => setSort('desc')}
+            onClick={handleSortDesc}
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer ${
               sort === 'desc'
                 ? 'bg-[#ff2d78] text-white'
@@ -36,7 +41,7 @@ export default function HomePage() {
             최신순
           </button>
           <button
-            onClick={() => setSort('asc')}
+            onClick={handleSortAsc}
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer ${
               sort === 'asc'
                 ? 'bg-[#ff2d78] text-white'
