@@ -39,7 +39,10 @@ const useStore = create<IUnifiedState>()(
 
     removeItem: (id) =>
       set((state) => {
-        state.cartItems = state.cartItems.filter((item) => item.id !== id);
+        const index = state.cartItems.findIndex((item)=> item.id === id);
+        if (index !== -1) {
+          state.cartItems.splice(index, 1);
+        }
       }),
 
     increase: (id) =>
@@ -54,7 +57,10 @@ const useStore = create<IUnifiedState>()(
         if (item) {
           item.amount -= 1;
           if (item.amount < 1) {
-            state.cartItems = state.cartItems.filter((item) => item.id !== id);
+            const index = state.cartItems.findIndex((target)=> target.id === id);
+            if (index !== -1) {
+              state.cartItems.splice(index, 1);
+            }
           }
         }
       }),
@@ -73,15 +79,9 @@ const useStore = create<IUnifiedState>()(
         state.total = totalPrice;
       }),
 
-    openModal: () =>
-      set((state) => {
-        state.isModalOpen = true;
-      }),
-
-    closeModal: () =>
-      set((state) => {
-        state.isModalOpen = false;
-      }),
+      // Boolean 변경은 객체 set 방식으로 분리하여 오버헤드 방지
+      openModal: () => set({isModalOpen: true}),
+      closeModal: () => set({isModalOpen: false}),
   }))
 );
 
