@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import SearchForm from './components/SearchForm';
 import MovieCard from './components/MovieCard';
 import MovieModal from './components/MovieModal';
@@ -6,58 +6,80 @@ import { searchMovies } from './api/tmdb';
 import { type Movie } from './types/movie';
 import './App.css';
 
+interface SearchState {
+  movies: Movie[];
+  loading: boolean;
+  error: string | null;
+  searched: boolean;
+  totalPages: number;
+  totalResults: number;
+}
+
+const initialSearchState: SearchState = {
+  movies: [],
+  loading: false,
+  error: null,
+  searched: false,
+  totalPages: 0,
+  totalResults: 0,
+};
+
 function App() {
-  const [query, setQuery] = useState('');
   const [includeAdult, setIncludeAdult] = useState(false);
   const [language, setLanguage] = useState('ko-KR');
-
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [searched, setSearched] = useState(false);
-
+  const [searchedQuery, setSearchedQuery] = useState('');
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalResults, setTotalResults] = useState(0);
-
+  const [searchState, setSearchState] = useState<SearchState>(initialSearchState);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchMovies = useCallback(
     async (targetPage: number, q: string, adult: boolean, lang: string) => {
-      setLoading(true);
-      setError(null);
+      abortControllerRef.current?.abort();
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
+      setSearchState((prev) => ({ ...prev, loading: true, error: null }));
       try {
-        const data = await searchMovies(q, adult, lang, targetPage);
-        setMovies(data.results);
-        setTotalPages(data.total_pages);
-        setTotalResults(data.total_results);
-        setSearched(true);
+        const data = await searchMovies(q, adult, lang, targetPage, controller.signal);
+        setSearchState({
+          movies: data.results,
+          loading: false,
+          error: null,
+          searched: true,
+          totalPages: data.total_pages,
+          totalResults: data.total_results,
+        });
       } catch (err) {
-        setError(err instanceof Error ? err.message : '오류가 발생했습니다.');
-      } finally {
-        setLoading(false);
+        if ((err as Error).name === 'AbortError') return;
+        setSearchState((prev) => ({
+          ...prev,
+          loading: false,
+          error: err instanceof Error ? err.message : '오류가 발생했습니다.',
+        }));
       }
     },
     []
   );
 
   const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!query.trim()) return;
+    (q: string) => {
+      if (!q.trim()) return;
+      setSearchedQuery(q);
       setPage(1);
-      fetchMovies(1, query, includeAdult, language);
+      fetchMovies(1, q, includeAdult, language);
     },
-    [query, includeAdult, language, fetchMovies]
+    [includeAdult, language, fetchMovies]
   );
 
   const handlePageChange = useCallback(
     (newPage: number) => {
       setPage(newPage);
-      fetchMovies(newPage, query, includeAdult, language);
+      fetchMovies(newPage, searchedQuery, includeAdult, language);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     },
-    [query, includeAdult, language, fetchMovies]
+    [searchedQuery, includeAdult, language, fetchMovies]
   );
 
   const handleCardClick = useCallback((movie: Movie) => {
@@ -68,10 +90,9 @@ function App() {
     setSelectedMovie(null);
   }, []);
 
-  // 검색 결과 없음 여부를 메모이제이션
   const isEmpty = useMemo(
-    () => searched && !loading && movies.length === 0,
-    [searched, loading, movies.length]
+    () => searchState.searched && !searchState.loading && searchState.movies.length === 0,
+    [searchState.searched, searchState.loading, searchState.movies.length]
   );
 
   return (
@@ -83,32 +104,30 @@ function App() {
 
       <main className="app-main">
         <SearchForm
-          query={query}
-          onQueryChange={setQuery}
           includeAdult={includeAdult}
           onIncludeAdultChange={setIncludeAdult}
           language={language}
           onLanguageChange={setLanguage}
           onSubmit={handleSearch}
-          loading={loading}
+          loading={searchState.loading}
         />
 
-        {error && (
+        {searchState.error && (
           <div className="error-msg">
-            ⚠️ 오류: {error}
+            ⚠️ 오류: {searchState.error}
           </div>
         )}
 
-        {loading && (
+        {searchState.loading && (
           <div className="loading-wrap">
             <div className="spinner" />
             <p>검색 중...</p>
           </div>
         )}
 
-        {!loading && searched && (
+        {!searchState.loading && searchState.searched && (
           <p className="result-count">
-            총 <strong>{totalResults.toLocaleString()}</strong>개의 검색 결과
+            총 <strong>{searchState.totalResults.toLocaleString()}</strong>개의 검색 결과
           </p>
         )}
 
@@ -119,10 +138,10 @@ function App() {
           </div>
         )}
 
-        {!loading && movies.length > 0 && (
+        {!searchState.loading && searchState.movies.length > 0 && (
           <>
             <div className="movie-grid">
-              {movies.map((movie) => (
+              {searchState.movies.map((movie) => (
                 <MovieCard key={movie.id} movie={movie} onClick={handleCardClick} />
               ))}
             </div>
@@ -136,12 +155,12 @@ function App() {
                 이전
               </button>
               <span className="page-info">
-                {page} / {totalPages}
+                {page} / {searchState.totalPages}
               </span>
               <button
                 className="page-btn"
                 onClick={() => handlePageChange(page + 1)}
-                disabled={page >= totalPages}
+                disabled={page >= searchState.totalPages}
               >
                 다음
               </button>

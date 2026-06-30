@@ -1,19 +1,15 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 
 interface SearchFormProps {
-  query: string;
-  onQueryChange: (value: string) => void;
   includeAdult: boolean;
   onIncludeAdultChange: (value: boolean) => void;
   language: string;
   onLanguageChange: (value: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (query: string) => void;
   loading: boolean;
 }
 
 const SearchForm = memo(function SearchForm({
-  query,
-  onQueryChange,
   includeAdult,
   onIncludeAdultChange,
   language,
@@ -21,18 +17,25 @@ const SearchForm = memo(function SearchForm({
   onSubmit,
   loading,
 }: SearchFormProps) {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(inputValue);
+  };
+
   return (
     <div className="search-area">
-      <form className="search-form" onSubmit={onSubmit}>
+      <form className="search-form" onSubmit={handleSubmit}>
         <div className="search-row">
           <input
             type="text"
             className="search-input"
             placeholder="영화 제목을 입력하세요"
-            value={query}
-            onChange={(e) => onQueryChange(e.target.value)}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
           />
-          <button type="submit" className="search-btn" disabled={loading || !query.trim()}>
+          <button type="submit" className="search-btn" disabled={loading || !inputValue.trim()}>
             {loading ? '검색 중...' : '검색'}
           </button>
         </div>

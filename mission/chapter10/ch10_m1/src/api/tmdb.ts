@@ -9,7 +9,8 @@ export async function searchMovies(
   query: string,
   includeAdult: boolean,
   language: string,
-  page: number = 1
+  page: number = 1,
+  signal?: AbortSignal
 ): Promise<MovieResponse> {
   const params = new URLSearchParams({
     api_key: API_KEY,
@@ -18,7 +19,7 @@ export async function searchMovies(
     language,
     page: String(page),
   });
-  const res = await fetch(`${BASE_URL}/search/movie?${params}`, { headers: HEADERS });
+  const res = await fetch(`${BASE_URL}/search/movie?${params}`, { headers: HEADERS, signal });
   if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
   return res.json();
 }
